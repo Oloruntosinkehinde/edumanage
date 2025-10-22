@@ -1,0 +1,5 @@
+Tophill Portal_DB_DRIVER = mysql
+Tophill Portal_DB_HOST = 127.0.0.1
+Tophill Portal_DB_NAME = Tophill Portal_db
+Tophill Portal_DB_USER = root
+Tophill Portal_DB_PASSWORD = your_password_if_any

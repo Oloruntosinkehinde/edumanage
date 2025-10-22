@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tophill Portal - Teacher Login</title>
+    <link rel="stylesheet" href="../shared/styles.css">
+
+    <script src="../shared/app.js"></script>
+    <script src="../shared/auth-manager.js"></script>
+    <script src="../shared/script.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .login-container {
+            max-width: 400px;
+            margin: 100px auto;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            padding: 40px 30px;
+            text-align: center;
+        }
+        .school-logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .school-logo img {
+            max-width: 100px;
+        }
+        .login-title {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            color: var(--success);
+        }
+        .login-subtitle {
+            font-size: 0.9rem;
+            margin-bottom: 30px;
+            color: #6c757d;
+        }
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        .form-row {
+            display: flex;
+            gap: 15px;
+        }
+        .form-row .form-group {
+            flex: 1;
+        }
+        .form-label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #495057;
+        }
+        .form-label i {
+            margin-right: 8px;
+            color: var(--success);
+            width: 16px;
+        }
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+        .form-control:focus {
+            outline: none;
+            border-color: var(--success);
+            box-shadow: 0 0 0 3px rgba(40, 167, 69, 0.1);
+        }
+        .login-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, var(--success), #1e7e34);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .login-btn i {
+            margin-right: 8px;
+        }
+        .login-btn:hover {
+            background: linear-gradient(135deg, #1e7e34, var(--success));
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(40, 167, 69, 0.3);
+        }
+        .login-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        .login-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            display: none;
+        }
+        .login-success {
+            background-color: #d4edda;
+            color: #155724;
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            display: none;
+        }
+        .login-options {
+            margin-top: 20px;
+            text-align: center;
+        }
+        .login-options a {
+            color: var(--success);
+            text-decoration: none;
+            font-size: 14px;
+            margin: 0 10px;
+        }
+        .login-footer {
+            text-align: center;
+            margin-top: 30px;
+            font-size: 12px;
+            color: #6c757d;
+        }
+        .role-selector {
+            margin-top: 30px;
+            text-align: center;
+            padding: 20px 15px;
+            border-top: 1px solid #eee;
+            background: #f8f9fa;
+            border-radius: 0 0 8px 8px;
+        }
+        .role-buttons {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .role-btn {
+            display: inline-flex;
+            align-items: center;
+            margin: 3px;
+            padding: 8px 12px;
+            background: white;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: #495057;
+            min-width: 100px;
+            justify-content: center;
+            vertical-align: top;
+        }
+        .role-btn i {
+            margin-right: 8px;
+            font-size: 16px;
+        }
+        .role-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        .admin-btn:hover {
+            background: #4361ee;
+            border-color: #4361ee;
+            color: white;
+        }
+        .teacher-btn {
+            background: var(--success);
+            border-color: var(--success);
+            color: white;
+        }
+        .teacher-btn.active {
+            cursor: default;
+            transform: none;
+        }
+        .student-btn:hover {
+            background: #4361ee;
+            border-color: #4361ee;
+            color: white;
+        }
+        .teacher-info {
+            background: #e8f5e8;
+            border-left: 4px solid var(--success);
+            padding: 12px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+            font-size: 14px;
+            text-align: left;
+        }
+        .teacher-info strong {
+            color: var(--success);
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="school-logo">
+            <img src="https://ui-avatars.com/api/?name=Teacher&background=28a745&color=fff&size=100&font-size=0.5" alt="Teacher">
+        </div>
+        
+        <div class="login-title">Teacher Portal</div>
+        <div class="login-subtitle">Academic Management & Teaching Tools</div>
+        
+        <div class="teacher-info">
+            <strong>🍎 Welcome Teachers!</strong><br>
+            Access your classes, gradebook, lesson plans, and student management tools.
+        </div>
+        
+        <div class="login-error" id="login-error">Invalid credentials. Please try again.</div>
+        <div class="login-success" id="login-success">Login successful! Redirecting...</div>
+        
+        <form id="teacher-login-form">
+            <div class="form-group">
+                <label class="form-label">
+                    <i class="fas fa-id-badge"></i>
+                    Teacher ID
+                </label>
+                <input type="text" class="form-control" id="teacher-id" placeholder="Enter your teacher ID (e.g., TCH001)" required>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">
+                    <i class="fas fa-lock"></i>
+                    Password
+                </label>
+                <input type="password" class="form-control" id="teacher-password" placeholder="Enter your password" required>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">
+                    <i class="fas fa-building"></i>
+                    Class
+                </label>
+                <select class="form-control" id="teacher-class" required>
+                    <option value="">Select Class</option>
+                    <option value="english">English</option>
+                    <option value="mathematics">Mathematics</option>
+                    <option value="science">Science</option>
+                    <option value="history">History</option>
+                    <option value="physical-education">Physical Education</option>
+                    <option value="arts">Arts</option>
+                    <option value="music">Music</option>
+                    <option value="computer-science">Computer Science</option>
+                    <option value="other">Other</option>
+                </select>
+            </div>
+            
+            <button type="submit" class="btn btn-success login-btn">
+                <i class="fas fa-chalkboard-teacher"></i>
+                Access Teaching Portal
+            </button>
+        </form>
+        
+        <div class="login-options">
+            <a href="#" id="contact-support">Contact IT Support</a>
+        </div>
+        
+        <div class="role-selector">
+            <div class="role-buttons">
+                <div class="role-btn admin-btn" onclick="window.location.href='#'">
+                    <i class="fas fa-user-shield"></i>
+                    <span>Admin Portal</span>
+                </div>
+                <div class="role-btn teacher-btn active">
+                    <i class="fas fa-chalkboard-teacher"></i>
+                    <span>Teacher Portal</span>
+                </div>
+                <div class="role-btn student-btn" onclick="window.location.href='../student/student-login.html'">
+                    <i class="fas fa-graduation-cap"></i>
+                    <span>Student Portal</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="login-footer">
+            &copy; 2025 Tophill Portal. All rights reserved.
+        </div>
+    </div>
+    
+    <script>
+        // Teacher login functionality
+        class TeacherLoginPage {
+            constructor() {
+                this.initializeEventListeners();
+            }
+
+            initializeEventListeners() {
+                const contactSupport = document.getElementById('contact-support');
+                if (contactSupport) {
+                    contactSupport.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        alert('For IT support, please contact the system administrator or email it@Tophill Portal.com');
+                    });
+                }
+                
+                // Form submission
+                const loginForm = document.getElementById('teacher-login-form');
+                if (loginForm) {
+                    loginForm.addEventListener('submit', (e) => this.handleLogin(e));
+                }
+            }
+            
+            // Quick access demo removed
+
+            async handleLogin(e) {
+                e.preventDefault();
+                
+                const teacherId = document.getElementById('teacher-id').value.trim();
+                const password = document.getElementById('teacher-password').value.trim();
+                const teacherClass = document.getElementById('teacher-class').value;
+                
+                if (!teacherId) {
+                    this.showError('Please enter your Teacher ID');
+                    return;
+                }
+                
+                if (!password) {
+                    this.showError('Please enter your password');
+                    return;
+                }
+                
+                if (!teacherClass) {
+                    this.showError('Please select your Class');
+                    return;
+                }
+
+                // Wait for authManager to be available
+                if (typeof authManager === 'undefined') {
+                    this.showError('System not ready. Please try again.');
+                    return;
+                }
+
+                try {
+                    // Disable form during login
+                    this.setFormEnabled(false);
+                    
+                    // Create teacher identifier with class
+                    const teacherIdentifier = `${teacherId}_${teacherClass}`;
+                    
+                    const result = await authManager.authenticateUser(teacherIdentifier, password, 'teacher');
+                    
+                    if (result.success) {
+                        // Store additional teacher info
+                        if (result.user) {
+                            result.user.teacherId = teacherId;
+                            result.user.className = teacherClass;
+                            result.user.displayName = result.user.name || `Teacher ${teacherId}`;
+                        }
+                        
+                        this.showSuccess(`Welcome ${result.user.displayName}! Loading your teaching dashboard...`);
+                        // Redirect to teacher dashboard
+                        setTimeout(() => {
+                            window.location.href = 'teacher-dashboard.html';
+                        }, 1000);
+                    } else {
+                        this.showError(result.error || 'Invalid teacher ID or password. Please check your credentials.');
+                    }
+                } catch (error) {
+                    console.error('Teacher login error:', error);
+                    this.showError('An error occurred during login. Please try again.');
+                } finally {
+                    this.setFormEnabled(true);
+                }
+            }
+
+            setFormEnabled(enabled) {
+                const submitBtn = document.querySelector('button[type="submit"]');
+                const inputs = document.querySelectorAll('input, select');
+                
+                if (submitBtn) {
+                    submitBtn.disabled = !enabled;
+                    submitBtn.innerHTML = enabled ? '<i class="fas fa-chalkboard-teacher"></i> Access Teaching Portal' : 'Logging In...';
+                }
+                
+                inputs.forEach(input => {
+                    input.disabled = !enabled;
+                });
+            }
+
+            showError(message) {
+                this.hideMessages();
+                const errorDiv = document.getElementById('login-error');
+                if (errorDiv) {
+                    errorDiv.textContent = message;
+                    errorDiv.style.display = 'block';
+                }
+            }
+
+            showSuccess(message) {
+                this.hideMessages();
+                const successDiv = document.getElementById('login-success');
+                if (successDiv) {
+                    successDiv.textContent = message;
+                    successDiv.style.display = 'block';
+                }
+            }
+
+            hideMessages() {
+                const errorDiv = document.getElementById('login-error');
+                const successDiv = document.getElementById('login-success');
+                
+                if (errorDiv) errorDiv.style.display = 'none';
+                if (successDiv) successDiv.style.display = 'none';
+            }
+        }
+
+        // Initialize the login page when DOM is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if user is already logged in
+            if (typeof authManager !== 'undefined' && authManager.currentUser) {
+                if (authManager.currentUser.role === 'teacher') {
+                    window.location.href = 'teacher-dashboard.html';
+                    return;
+                }
+            }
+            
+            new TeacherLoginPage();
+        });
+    </script>
+</body>
+</html>

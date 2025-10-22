@@ -1,0 +1,1719 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Portal</title>
+    <link rel="stylesheet" href="../shared/styles.css">
+    <link rel="stylesheet" href="../shared/feed.css">
+    <link rel="stylesheet" href="../shared/communication-styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Tab icon enhancements */
+        .tabs .tab {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tabs .tab i {
+            font-size: 0.95rem;
+        }
+
+        .section-title i {
+            color: var(--primary);
+            margin-right: 8px;
+        }
+
+        #notification-container {
+            display: none !important;
+        }
+
+        .feed-container {
+            margin-top: 20px;
+        }
+        
+        .feed-card {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            padding: 15px;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        
+        .feed-card.unread {
+            background-color: #e3f2fd;
+        }
+        
+        .feed-card .feed-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .feed-card .feed-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin: 0;
+        }
+        
+        .feed-card .feed-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: #666;
+            margin-top: 15px;
+        }
+        
+        .feed-card .mark-read-btn {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+    </style>
+    <!-- Enhanced Backend Scripts -->
+    <script src="../shared/app.js"></script>
+    <script src="../shared/auth-manager.js"></script>
+    <script src="../shared/result-manager.js"></script>
+    <script src="../shared/communication-manager.js"></script>
+    <script src="../shared/dropdown-manager.js"></script>
+    <script src="../shared/script.js"></script>
+    <script src="../shared/feed.js"></script>
+
+</head>
+<body>
+    <div class="container">
+        <div class="main-content">
+            <div class="header">
+                <span class="header-title"><i class="fas fa-user-graduate"></i> Student Portal</span>
+                <div class="user-info">
+                    <button class="btn btn-primary" data-action="download-report" style="margin-right: 10px;">
+                        <i class="fas fa-download"></i> Download Report
+                    </button>
+                    <span id="student-info-label"></span>
+                    <button class="btn btn-primary" id="logout-btn" style="margin-left:16px;">Logout</button>
+                </div>
+            </div>
+            <!-- Page Hero -->
+            <div class="page-hero">
+                <div class="hero-content">
+                    <div class="hero-text">
+                        <h1 class="hero-title">
+                            <i class="fas fa-user-graduate"></i>
+                            Welcome, <span id="student-name">Student</span>!
+                        </h1>
+                        <p class="hero-subtitle">
+                            Access your results, view assignments, check notifications, and stay updated with school announcements.
+                        </p>
+                    </div>
+                    <div class="hero-actions">
+                        <button class="btn btn-primary" data-action="download-report">
+                            <i class="fas fa-download"></i> Download Report
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-section">
+                
+                <!-- Navigation Tabs -->
+                <div class="tabs">
+                    <div class="tab active" data-tab="dashboard-tab">
+                        <i class="fas fa-home"></i>
+                        <span>Dashboard</span>
+                    </div>
+                    <div class="tab" data-tab="results-tab">
+                        <i class="fas fa-chart-line"></i>
+                        <span>My Results</span>
+                    </div>
+                    <div class="tab" data-tab="communication-tab">
+                        <i class="fas fa-comments"></i>
+                        <span>Communication</span>
+                    </div>
+                    <div class="tab" data-tab="schedule-tab">
+                        <i class="fas fa-calendar-alt"></i>
+                        <span>Class Schedule</span>
+                    </div>
+                    <div class="tab" data-tab="assignments-tab">
+                        <i class="fas fa-tasks"></i>
+                        <span>Assignments</span>
+                    </div>
+                    <div class="tab" data-tab="announcements-tab">
+                        <i class="fas fa-bullhorn"></i>
+                        <span>Announcements</span>
+                    </div>
+                    <div class="tab" data-tab="payments-tab">
+                        <i class="fas fa-wallet"></i>
+                        <span>My Payments</span>
+                    </div>
+                </div>
+                
+                <!-- Dashboard Tab -->
+                <div class="tab-content active" id="dashboard-tab">
+                
+                <!-- Communication Summary -->
+                <div class="communication-summary-grid">
+                    <div class="summary-card">
+                        <div class="summary-icon">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <div class="summary-content">
+                            <h3 id="unread-messages-count">0</h3>
+                            <p>Unread Messages</p>
+                        </div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="summary-icon">
+                            <i class="fas fa-bell"></i>
+                        </div>
+                        <div class="summary-content">
+                            <h3 id="pending-notifications-count">0</h3>
+                            <p>New Notifications</p>
+                        </div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="summary-icon">
+                            <i class="fas fa-tasks"></i>
+                        </div>
+                        <div class="summary-content">
+                            <h3 id="pending-assignments-count">0</h3>
+                            <p>Pending Assignments</p>
+                        </div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="summary-icon">
+                            <i class="fas fa-calendar"></i>
+                        </div>
+                        <div class="summary-content">
+                            <h3 id="upcoming-events-count">0</h3>
+                            <p>Upcoming Events</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Quick Actions -->
+                <div class="communication-widget">
+                    <div class="widget-header">
+                        <h3><i class="fas fa-bolt"></i> Quick Actions</h3>
+                    </div>
+                    <div class="widget-content">
+                        <div class="quick-actions-grid">
+                            <button class="quick-action-btn" onclick="window.communicationManager?.openQuickMessage()">
+                                <i class="fas fa-comment"></i>
+                                <span>Quick Message</span>
+                            </button>
+                            <button class="quick-action-btn" onclick="switchTab('announcements-tab')">
+                                <i class="fas fa-bullhorn"></i>
+                                <span>Announcements</span>
+                            </button>
+                            <button class="quick-action-btn" data-action="download-report">
+                                <i class="fas fa-download"></i>
+                                <span>Download Report</span>
+                            </button>
+                            <button class="quick-action-btn" onclick="switchTab('results-tab')">
+                                <i class="fas fa-chart-line"></i>
+                                <span>View Results</span>
+                            </button>
+                            <button class="quick-action-btn" onclick="switchTab('schedule-tab')">
+                                <i class="fas fa-calendar-alt"></i>
+                                <span>Class Schedule</span>
+                            </button>
+                            <button class="quick-action-btn" onclick="switchTab('assignments-tab')">
+                                <i class="fas fa-tasks"></i>
+                                <span>Assignments</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="dashboard-cards">
+                    <div class="card">
+                        <div class="card-icon" style="background-color: rgba(67, 97, 238, 0.1); color: var(--primary);">
+                            <i class="fas fa-id-card"></i>
+                        </div>
+                        <div class="card-title">Student ID</div>
+                        <div class="card-value" id="display-student-id"></div>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon" style="background-color: rgba(76, 201, 240, 0.1); color: var(--success);">
+                            <i class="fas fa-graduation-cap"></i>
+                        </div>
+                        <div class="card-title">Class</div>
+                        <div class="card-value" id="display-student-class"></div>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon" style="background-color: rgba(247, 37, 133, 0.1); color: var(--warning);">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div class="card-title">Average Grade</div>
+                        <div class="card-value" id="student-average-grade">-</div>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon" style="background-color: rgba(230, 57, 70, 0.1); color: var(--danger);">
+                            <i class="fas fa-clipboard-check"></i>
+                        </div>
+                        <div class="card-title">Completed Tests</div>
+                        <div class="card-value" id="student-tests-completed">-</div>
+                    </div>
+                </div>
+                <div class="content-section">
+                    <div class="section-header">
+                        <div class="section-title"><i class="fas fa-clipboard-check"></i> Recent Results</div>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Subject</th>
+                                <th>Test Type</th>
+                                <th>Score</th>
+                                <th>Grade</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Mathematics</td>
+                                <td>Mid-term Exam</td>
+                                <td>88/100</td>
+                                <td>B+</td>
+                                <td>15 Sep 2023</td>
+                            </tr>
+                            <tr>
+                                <td>Physics</td>
+                                <td>Quiz 2</td>
+                                <td>92/100</td>
+                                <td>A-</td>
+                                <td>12 Sep 2023</td>
+                            </tr>
+                            <tr>
+                                <td>Chemistry</td>
+                                <td>Lab Report</td>
+                                <td>85/100</td>
+                                <td>B</td>
+                                <td>10 Sep 2023</td>
+                            </tr>
+                            <tr>
+                                <td>English</td>
+                                <td>Essay</td>
+                                <td>78/100</td>
+                                <td>B-</td>
+                                <td>08 Sep 2023</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                </div>
+                
+                <!-- Communication Center Tab -->
+                <div class="tab-content" id="communication-tab">
+                    <div class="section-header">
+                        <div class="section-title">
+                            <i class="fas fa-comments"></i> Communication Center
+                        </div>
+                        <div class="section-actions">
+                            <button class="btn btn-primary" id="quick-message-btn" onclick="window.communicationManager?.openQuickMessage()" 
+                                    style="background: #ffffff; color: #4A90E2; border: 1px solid #4A90E2;">
+                                <i class="fas fa-comment"></i> Quick Message
+                            </button>
+                            <button class="btn btn-primary" onclick="window.communicationManager?.refreshAll()">
+                                <i class="fas fa-sync-alt"></i> Refresh
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Communication Widgets -->
+                    <div style="display: grid; grid-template-columns: 1fr 300px; gap: 1.5rem;">
+                        <!-- Main Communication Feed -->
+                        <div>
+                            <!-- Recent Messages -->
+                            <div class="communication-widget">
+                                <div class="widget-header">
+                                    <h3><i class="fas fa-envelope"></i> Recent Messages</h3>
+                                    <button class="btn btn-sm btn-outline" onclick="window.communicationManager?.markAllAsRead('messages')">
+                                        Mark All Read
+                                    </button>
+                                </div>
+                                <div class="widget-content">
+                                    <div id="recent-messages-container">
+                                        <div class="loading">Loading messages...</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- School Announcements -->
+                            <div class="communication-widget">
+                                <div class="widget-header">
+                                    <h3><i class="fas fa-bullhorn"></i> School Announcements</h3>
+                                    <div class="feed-filters">
+                                        <button class="feed-filter-btn active" data-filter="all">All</button>
+                                        <button class="feed-filter-btn" data-filter="announcement">Announcements</button>
+                                        <button class="feed-filter-btn" data-filter="event">Events</button>
+                                        <button class="feed-filter-btn" data-filter="academic">Academic</button>
+                                    </div>
+                                </div>
+                                <div class="widget-content">
+                                    <div id="announcements-feed-container">
+                                        <div class="loading">Loading announcements...</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Sidebar Widgets -->
+                        <div>
+                            <!-- Notifications Panel -->
+                            <div class="communication-widget">
+                                <div class="widget-header">
+                                    <h3><i class="fas fa-bell"></i> Notifications</h3>
+                                    <span class="unread-count" id="notification-count" style="display: none;">0</span>
+                                </div>
+                                <div class="widget-content">
+                                    <div id="notifications-container">
+                                        <div class="loading">Loading notifications...</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Quick Stats -->
+                            <div class="communication-widget">
+                                <div class="widget-header">
+                                    <h3><i class="fas fa-chart-pie"></i> Communication Stats</h3>
+                                </div>
+                                <div class="widget-content">
+                                    <div class="widget-section">
+                                        <div class="recent-items">
+                                            <div class="recent-item">
+                                                <div class="recent-icon">
+                                                    <i class="fas fa-envelope"></i>
+                                                </div>
+                                                <div class="recent-content">
+                                                    <h5>Messages</h5>
+                                                    <p id="total-messages">Loading...</p>
+                                                </div>
+                                            </div>
+                                            <div class="recent-item">
+                                                <div class="recent-icon">
+                                                    <i class="fas fa-bell"></i>
+                                                </div>
+                                                <div class="recent-content">
+                                                    <h5>Notifications</h5>
+                                                    <p id="total-notifications">Loading...</p>
+                                                </div>
+                                            </div>
+                                            <div class="recent-item">
+                                                <div class="recent-icon">
+                                                    <i class="fas fa-eye"></i>
+                                                </div>
+                                                <div class="recent-content">
+                                                    <h5>Read Rate</h5>
+                                                    <p id="read-rate">Loading...</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Recent Activity -->
+                            <div class="communication-widget">
+                                <div class="widget-header">
+                                    <h3><i class="fas fa-history"></i> Recent Activity</h3>
+                                </div>
+                                <div class="widget-content">
+                                    <div id="recent-activity-container">
+                                        <div class="loading">Loading activity...</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Announcements Tab -->
+                <div class="tab-content" id="announcements-tab">
+                    <div class="section-header">
+                        <div class="section-title"><i class="fas fa-bullhorn"></i> School Announcements &amp; Messages</div>
+                        <div class="section-actions">
+                            <button class="btn btn-primary" id="refresh-feeds"><i class="fas fa-sync-alt"></i> Refresh</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Feed filters -->
+                    <div class="feed-filters">
+                        <button class="feed-filter-btn active" data-filter="all">All</button>
+                        <button class="feed-filter-btn" data-filter="announcement">Announcements</button>
+                        <button class="feed-filter-btn" data-filter="notification">Notifications</button>
+                        <button class="feed-filter-btn" data-filter="event">Events</button>
+                    </div>
+                    
+                    <div class="feeds-container" id="feeds-container">
+                        <!-- Feeds will be populated here -->
+                        <p class="loading">Loading announcements...</p>
+                    </div>
+                </div>
+                
+                <!-- Results Tab -->
+                <div class="tab-content" id="results-tab">
+                    <div class="section-header">
+                        <div class="section-title"><i class="fas fa-chart-line"></i> Academic Results</div>
+                        <select class="form-control" style="width: 200px;" id="term-filter">
+                            <option>All Terms</option>
+                            <option>Term 1 - 2023</option>
+                            <option>Term 2 - 2023</option>
+                            <option>Term 3 - 2023</option>
+                        </select>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Subject</th>
+                                <th>Test Type</th>
+                                <th>Score</th>
+                                <th>Max Score</th>
+                                <th>Percentage</th>
+                                <th>Grade</th>
+                                <th>Teacher</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody id="results-table">
+                            <!-- Results will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Schedule Tab -->
+                <div class="tab-content" id="schedule-tab">
+                    <div class="section-header">
+                        <div class="section-title"><i class="fas fa-calendar-week"></i> Weekly Class Schedule</div>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Time</th>
+                                <th>Monday</th>
+                                <th>Tuesday</th>
+                                <th>Wednesday</th>
+                                <th>Thursday</th>
+                                <th>Friday</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>8:00 - 8:45</strong></td>
+                                <td>Mathematics<br><small>Mr. Johnson</small></td>
+                                <td>Physics<br><small>Dr. Smith</small></td>
+                                <td>English<br><small>Ms. Brown</small></td>
+                                <td>Chemistry<br><small>Ms. Davis</small></td>
+                                <td>Mathematics<br><small>Mr. Johnson</small></td>
+                            </tr>
+                            <tr>
+                                <td><strong>9:00 - 9:45</strong></td>
+                                <td>Physics<br><small>Dr. Smith</small></td>
+                                <td>English<br><small>Ms. Brown</small></td>
+                                <td>Mathematics<br><small>Mr. Johnson</small></td>
+                                <td>Biology<br><small>Dr. Wilson</small></td>
+                                <td>Computer Science<br><small>Mr. Tech</small></td>
+                            </tr>
+                            <tr>
+                                <td><strong>10:00 - 10:45</strong></td>
+                                <td>Chemistry<br><small>Ms. Davis</small></td>
+                                <td>Biology<br><small>Dr. Wilson</small></td>
+                                <td>Physics<br><small>Dr. Smith</small></td>
+                                <td>English<br><small>Ms. Brown</small></td>
+                                <td>History<br><small>Mr. Past</small></td>
+                            </tr>
+                            <tr>
+                                <td><strong>11:00 - 11:45</strong></td>
+                                <td>English<br><small>Ms. Brown</small></td>
+                                <td>Mathematics<br><small>Mr. Johnson</small></td>
+                                <td>Biology<br><small>Dr. Wilson</small></td>
+                                <td>Physics<br><small>Dr. Smith</small></td>
+                                <td>Physical Education<br><small>Coach Mike</small></td>
+                            </tr>
+                            <tr>
+                                <td><strong>12:00 - 1:00</strong></td>
+                                <td colspan="5" style="text-align: center; background: #f8f9fa;"><strong>LUNCH BREAK</strong></td>
+                            </tr>
+                            <tr>
+                                <td><strong>1:00 - 1:45</strong></td>
+                                <td>Biology<br><small>Dr. Wilson</small></td>
+                                <td>Chemistry<br><small>Ms. Davis</small></td>
+                                <td>Computer Science<br><small>Mr. Tech</small></td>
+                                <td>History<br><small>Mr. Past</small></td>
+                                <td>Art<br><small>Ms. Creative</small></td>
+                            </tr>
+                            <tr>
+                                <td><strong>2:00 - 2:45</strong></td>
+                                <td>History<br><small>Mr. Past</small></td>
+                                <td>Computer Science<br><small>Mr. Tech</small></td>
+                                <td>Chemistry<br><small>Ms. Davis</small></td>
+                                <td>Mathematics<br><small>Mr. Johnson</small></td>
+                                <td>Free Period</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Assignments Tab -->
+                <div class="tab-content" id="assignments-tab">
+                    <div class="section-header">
+                        <div class="section-title"><i class="fas fa-tasks"></i> My Assignments</div>
+                        <button class="btn btn-primary" onclick="window.location.href='assignments.html'">
+                            <i class="fas fa-tasks"></i> View All Assignments
+                        </button>
+                    </div>
+                    <div class="dashboard-cards">
+                        <div class="card">
+                            <div class="card-icon" style="background-color: rgba(230, 57, 70, 0.1); color: var(--danger);">
+                                <i class="fas fa-exclamation-triangle"></i>
+                            </div>
+                            <div class="card-title">Due Today</div>
+                            <div class="card-value" id="assignments-due-today">0</div>
+                            <div class="card-desc">Assignments pending</div>
+                        </div>
+                        <div class="card">
+                            <div class="card-icon" style="background-color: rgba(247, 37, 133, 0.1); color: var(--warning);">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <div class="card-title">Due This Week</div>
+                            <div class="card-value" id="assignments-due-week">0</div>
+                            <div class="card-desc">Upcoming deadlines</div>
+                        </div>
+                        <div class="card">
+                            <div class="card-icon" style="background-color: rgba(76, 201, 240, 0.1); color: var(--success);">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                            <div class="card-title">Completed</div>
+                            <div class="card-value" id="assignments-completed">0</div>
+                            <div class="card-desc">This month</div>
+                        </div>
+                    </div>
+                    <div class="content-section">
+                        <div class="section-header">
+                            <div class="section-title"><i class="fas fa-clock"></i> Recent Assignments</div>
+                        </div>
+                        <div id="student-assignments-preview">
+                            <!-- Recent assignments will be loaded here -->
+                        </div>
+                    </div>
+                            <div class="card-value">18</div>
+                            <div class="card-desc">This month</div>
+                        </div>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Subject</th>
+                                <th>Assignment</th>
+                                <th>Due Date</th>
+                                <th>Status</th>
+                                <th>Priority</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Mathematics</td>
+                                <td>Chapter 5 Problem Set</td>
+                                <td>Today</td>
+                                <td><span style="color: var(--danger);">Pending</span></td>
+                                <td><span style="color: var(--danger);">High</span></td>
+                            </tr>
+                            <tr>
+                                <td>Physics</td>
+                                <td>Lab Report - Motion</td>
+                                <td>Today</td>
+                                <td><span style="color: var(--danger);">Pending</span></td>
+                                <td><span style="color: var(--danger);">High</span></td>
+                            </tr>
+                            <tr>
+                                <td>English</td>
+                                <td>Essay - Shakespeare Analysis</td>
+                                <td>Tomorrow</td>
+                                <td><span style="color: var(--warning);">In Progress</span></td>
+                                <td><span style="color: var(--warning);">Medium</span></td>
+                            </tr>
+                            <tr>
+                                <td>Chemistry</td>
+                                <td>Chemical Reactions Worksheet</td>
+                                <td>25 Sep 2023</td>
+                                <td><span style="color: var(--warning);">Pending</span></td>
+                                <td><span style="color: var(--warning);">Medium</span></td>
+                            </tr>
+                            <tr>
+                                <td>Biology</td>
+                                <td>Cell Structure Diagram</td>
+                                <td>28 Sep 2023</td>
+                                <td><span style="color: var(--success);">Submitted</span></td>
+                                <td><span style="color: var(--success);">Low</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Announcements Tab -->
+                <div class="tab-content" id="announcements-tab">
+                    <div class="section-header">
+                        <div class="section-title"><i class="fas fa-bullhorn"></i> School Announcements</div>
+                    </div>
+                    <div class="dashboard-cards">
+                        <div class="card">
+                            <div class="card-icon" style="background-color: rgba(67, 97, 238, 0.1); color: var(--primary);">
+                                <i class="fas fa-bullhorn"></i>
+                            </div>
+                            <div class="card-title">New Announcements</div>
+                            <div class="card-value">3</div>
+                            <div class="card-desc">This week</div>
+                        </div>
+                        <div class="card">
+                            <div class="card-icon" style="background-color: rgba(76, 201, 240, 0.1); color: var(--success);">
+                                <i class="fas fa-calendar-event"></i>
+                            </div>
+                            <div class="card-title">Upcoming Events</div>
+                            <div class="card-value">2</div>
+                            <div class="card-desc">Next month</div>
+                        </div>
+                    </div>
+                    <div style="margin-bottom: 20px;">
+                        <div style="border-left: 4px solid var(--primary); padding: 15px; background: #f8f9fa; border-radius: 0 6px 6px 0; margin-bottom: 15px;">
+                            <h4 style="margin: 0 0 10px 0; color: var(--primary);">📅 Parent-Teacher Conference</h4>
+                            <p style="margin: 0; color: #666;"><strong>Date:</strong> October 15, 2023 | <strong>Time:</strong> 2:00 PM - 6:00 PM</p>
+                            <p style="margin: 5px 0 0 0;">Individual meetings scheduled. Check with class teacher for your time slot.</p>
+                        </div>
+                        
+                        <div style="border-left: 4px solid var(--warning); padding: 15px; background: #fff3cd; border-radius: 0 6px 6px 0; margin-bottom: 15px;">
+                            <h4 style="margin: 0 0 10px 0; color: var(--warning);">⚠️ Mid-term Exam Schedule Released</h4>
+                            <p style="margin: 0; color: #666;"><strong>Exam Period:</strong> October 20-25, 2023</p>
+                            <p style="margin: 5px 0 0 0;">Detailed timetable has been sent to your email. Please prepare accordingly.</p>
+                        </div>
+                        
+                        <div style="border-left: 4px solid var(--success); padding: 15px; background: #d4edda; border-radius: 0 6px 6px 0; margin-bottom: 15px;">
+                            <h4 style="margin: 0 0 10px 0; color: var(--success);">🎉 Science Fair 2023</h4>
+                            <p style="margin: 0; color: #666;"><strong>Date:</strong> November 5, 2023 | <strong>Registration Deadline:</strong> October 30</p>
+                            <p style="margin: 5px 0 0 0;">Show your innovative projects! Prizes for top 3 participants in each category.</p>
+                        </div>
+                        
+                        <div style="border-left: 4px solid var(--info); padding: 15px; background: #e3f2fd; border-radius: 0 6px 6px 0; margin-bottom: 15px;">
+                            <h4 style="margin: 0 0 10px 0; color: var(--info);">📚 Library Extended Hours</h4>
+                            <p style="margin: 0; color: #666;"><strong>New Timing:</strong> 7:00 AM - 8:00 PM (Monday to Friday)</p>
+                            <p style="margin: 5px 0 0 0;">Additional study space available during exam preparation period.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Payments Tab -->
+                <div class="tab-content" id="payments-tab">
+                    <div class="section-header">
+                        <div class="section-title"><i class="fas fa-credit-card"></i> Payment Status</div>
+                        <button class="btn btn-primary" onclick="studentPortal.printPaymentReceipt()">
+                            <i class="fas fa-print"></i> Print Receipt
+                        </button>
+                    </div>
+                    
+                    <!-- Payment Summary Cards -->
+                    <div class="dashboard-cards">
+                        <div class="card">
+                            <div class="card-icon" style="background-color: rgba(67, 97, 238, 0.1); color: var(--primary);">
+                                <i class="fas fa-money-bill-wave"></i>
+                            </div>
+                            <div class="card-title">Total Amount</div>
+                            <div class="card-value" id="student-total-amount">₦0.00</div>
+                            <div class="card-desc">Current term</div>
+                        </div>
+                        <div class="card">
+                            <div class="card-icon" style="background-color: rgba(76, 201, 240, 0.1); color: var(--success);">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                            <div class="card-title">Amount Paid</div>
+                            <div class="card-value" id="student-amount-paid">₦0.00</div>
+                            <div class="card-desc">Completed payments</div>
+                        </div>
+                        <div class="card">
+                            <div class="card-icon" style="background-color: rgba(247, 37, 133, 0.1); color: var(--warning);">
+                                <i class="fas fa-exclamation-triangle"></i>
+                            </div>
+                            <div class="card-title">Outstanding</div>
+                            <div class="card-value" id="student-balance">₦0.00</div>
+                            <div class="card-desc">Remaining balance</div>
+                        </div>
+                        <div class="card">
+                            <div class="card-icon" style="background-color: rgba(230, 57, 70, 0.1); color: var(--info);">
+                                <i class="fas fa-calendar-check"></i>
+                            </div>
+                            <div class="card-title">Payment Status</div>
+                            <div class="card-value" id="student-payment-status">-</div>
+                            <div class="card-desc">Current status</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Payment Items Table -->
+                    <div class="content-section">
+                        <div class="section-header">
+                            <div class="section-title"><i class="fas fa-list-ul"></i> Payment Breakdown</div>
+                        </div>
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Payment Item</th>
+                                    <th>Category</th>
+                                    <th>Expected Amount</th>
+                                    <th>Amount Paid</th>
+                                    <th>Balance</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="student-payments-breakdown">
+                                <!-- Payment breakdown will be populated here -->
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- Payment History -->
+                    <div class="content-section">
+                        <div class="section-header">
+                            <div class="section-title"><i class="fas fa-history"></i> Payment History</div>
+                        </div>
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Payment Date</th>
+                                    <th>Items Paid</th>
+                                    <th>Amount</th>
+                                    <th>Method</th>
+                                    <th>Receipt</th>
+                                </tr>
+                            </thead>
+                            <tbody id="student-payment-history">
+                                <!-- Payment history will be populated here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        // Student Portal Specific JavaScript
+        class StudentPortal {
+            constructor() {
+                this.currentStudent = null;
+                this.studentResults = [];
+                this.studentSubjects = [];
+                this.studentAssignments = [];
+                this.paymentSummary = null;
+                this.subjectIndex = {};
+                this.teacherIndex = {};
+                this.dom = {};
+                this.communicationSynced = false;
+                this.tabsInitialized = false;
+
+                this.init().catch(error => console.error('Student portal initialization failed:', error));
+            }
+
+            async init() {
+                this.cacheElements();
+                const authorized = await this.checkAuth();
+                if (!authorized) return;
+
+                this.setupEventListeners();
+                this.initializeTabs();
+                this.loadStudentData();
+                this.syncCommunicationManager();
+            }
+
+            cacheElements() {
+                this.dom = {
+                    studentName: document.getElementById('student-name'),
+                    studentInfoLabel: document.getElementById('student-info-label'),
+                    displayStudentId: document.getElementById('display-student-id'),
+                    displayStudentClass: document.getElementById('display-student-class'),
+                    resultsTable: document.getElementById('results-table'),
+                    termFilter: document.getElementById('term-filter'),
+                    averageGrade: document.getElementById('student-average-grade'),
+                    testsCompleted: document.getElementById('student-tests-completed'),
+                    assignmentsSummary: {
+                        dueToday: document.getElementById('assignments-due-today'),
+                        dueWeek: document.getElementById('assignments-due-week'),
+                        completed: document.getElementById('assignments-completed')
+                    },
+                    assignmentsPreview: document.getElementById('student-assignments-preview'),
+                    summaryCounters: {
+                        unreadMessages: document.getElementById('unread-messages-count'),
+                        pendingNotifications: document.getElementById('pending-notifications-count'),
+                        pendingAssignments: document.getElementById('pending-assignments-count'),
+                        upcomingEvents: document.getElementById('upcoming-events-count')
+                    },
+                    payment: {
+                        totalAmount: document.getElementById('student-total-amount'),
+                        amountPaid: document.getElementById('student-amount-paid'),
+                        balance: document.getElementById('student-balance'),
+                        status: document.getElementById('student-payment-status'),
+                        breakdown: document.getElementById('student-payments-breakdown'),
+                        history: document.getElementById('student-payment-history')
+                    },
+                    communicationStats: {
+                        totalMessages: document.getElementById('total-messages'),
+                        totalNotifications: document.getElementById('total-notifications'),
+                        readRate: document.getElementById('read-rate')
+                    },
+                    logoutBtn: document.getElementById('logout-btn'),
+                    downloadButtons: document.querySelectorAll('[data-action="download-report"]')
+                };
+            }
+
+            async checkAuth() {
+                if (!authManager.requireAuth()) return false;
+
+                if (authManager.currentUser?.role !== 'student') {
+                    authManager.app.showNotification('Access denied. Students only.', 'error');
+                    authManager.redirectToLogin();
+                    return false;
+                }
+
+                this.currentStudent = authManager.currentUser;
+                this.displayStudentInfo();
+                return true;
+            }
+
+            displayStudentInfo() {
+                if (!this.currentStudent) return;
+
+                const studentRecord = app.data.students.find(s => s.id === this.currentStudent.studentId);
+                const name = studentRecord?.name || this.currentStudent.name || 'Student';
+                const studentId = studentRecord?.id || this.currentStudent.studentId || 'N/A';
+                const studentClass = studentRecord?.class || this.currentStudent.class || 'N/A';
+
+                this.updateText(this.dom.studentName, name);
+                this.updateText(this.dom.studentInfoLabel, `${name} (${studentId})`);
+                this.updateText(this.dom.displayStudentId, studentId);
+                this.updateText(this.dom.displayStudentClass, studentClass);
+            }
+
+            setupEventListeners() {
+                if (this.dom.logoutBtn && !this.dom.logoutBtn.dataset.bound) {
+                    this.dom.logoutBtn.addEventListener('click', () => authManager.logout());
+                    this.dom.logoutBtn.dataset.bound = 'true';
+                }
+
+                if (this.dom.downloadButtons?.length) {
+                    this.dom.downloadButtons.forEach(button => {
+                        if (!button.dataset.bound) {
+                            button.addEventListener('click', () => this.downloadStudentPDF());
+                            button.dataset.bound = 'true';
+                        }
+                    });
+                }
+
+                if (this.dom.termFilter && !this.dom.termFilter.dataset.bound) {
+                    this.dom.termFilter.addEventListener('change', event => {
+                        const displayedResults = this.populateStudentResults(event.target.value);
+                        this.updateResultSummaryMetrics(displayedResults);
+                    });
+                    this.dom.termFilter.dataset.bound = 'true';
+                }
+            }
+
+            initializeTabs() {
+                if (this.tabsInitialized) return;
+
+                const tabs = document.querySelectorAll('.tab');
+                const tabContents = document.querySelectorAll('.tab-content');
+
+                tabs.forEach(tab => {
+                    if (!tab.dataset.bound) {
+                        tab.addEventListener('click', () => {
+                            tabs.forEach(t => t.classList.remove('active'));
+                            tabContents.forEach(c => c.classList.remove('active'));
+
+                            tab.classList.add('active');
+                            const tabId = tab.getAttribute('data-tab');
+                            const tabElement = document.getElementById(tabId);
+                            tabElement?.classList.add('active');
+                        });
+                        tab.dataset.bound = 'true';
+                    }
+                });
+
+                this.tabsInitialized = true;
+            }
+
+            loadStudentData() {
+                if (!this.currentStudent) return;
+
+                this.studentResults = authManager.getFilteredData('results', app.data.results) || [];
+                this.studentSubjects = authManager.getFilteredData('subjects', app.data.subjects) || [];
+                this.studentAssignments = app.getAssignmentsForUser('student', this.currentStudent.studentId) || [];
+
+                this.subjectIndex = this.buildIndex(this.studentSubjects, subject => subject.code || subject.id);
+                this.teacherIndex = this.buildIndex(app.data.teachers, teacher => teacher.id);
+
+                this.updateTermFilterOptions();
+                const displayedResults = this.populateStudentResults();
+                this.updateResultSummaryMetrics(displayedResults);
+                this.updateAssignmentsSummary();
+                this.renderAssignmentsPreview();
+
+                this.loadPaymentData();
+                this.updateCommunicationSummary();
+            }
+
+            buildIndex(items, getKey) {
+                const index = {};
+                (items || []).forEach(item => {
+                    const key = getKey(item);
+                    if (key) {
+                        index[key] = item;
+                    }
+                });
+                return index;
+            }
+
+            populateStudentResults(termFilter) {
+                const table = this.dom.resultsTable;
+                if (!table) return [];
+
+                const selectedTerm = termFilter || this.dom.termFilter?.value;
+                let results = Array.isArray(this.studentResults) ? [...this.studentResults] : [];
+
+                if (selectedTerm && selectedTerm !== 'All Terms') {
+                    results = results.filter(result => (result.term || '').toLowerCase() === selectedTerm.toLowerCase());
+                }
+
+                results.sort((a, b) => {
+                    const dateA = new Date(a.examDate || a.date || 0);
+                    const dateB = new Date(b.examDate || b.date || 0);
+                    return dateB - dateA;
+                });
+
+                if (results.length === 0) {
+                    table.innerHTML = `
+                        <tr>
+                            <td colspan="8" style="text-align: center; color: #666; padding: 20px;">
+                                No results available yet.
+                            </td>
+                        </tr>
+                    `;
+                    return [];
+                }
+
+                const rowsHtml = results.map(result => {
+                    const subject = this.subjectIndex[result.subjectCode || result.subjectId];
+                    const subjectName = subject?.name || result.subjectName || result.subject || 'Subject';
+
+                    let teacherName = 'N/A';
+                    if (result.teacherId && this.teacherIndex[result.teacherId]) {
+                        teacherName = this.teacherIndex[result.teacherId].name;
+                    } else {
+                        const fallbackTeacher = app.data.teachers.find(teacher => {
+                            const teacherSubjects = Array.isArray(teacher.subjects) ? teacher.subjects : [];
+                            return teacherSubjects.includes(result.subjectCode) || teacherSubjects.includes(result.subjectId);
+                        });
+                        if (fallbackTeacher) {
+                            teacherName = fallbackTeacher.name;
+                        }
+                    }
+
+                    const percentage = this.calculatePercentage(result.score, result.maxScore || 100);
+                    const formattedDate = this.formatDate(result.examDate || result.date);
+
+                    return `
+                        <tr>
+                            <td>${this.escapeHtml(subjectName)}</td>
+                            <td>${this.escapeHtml(result.assessmentType || 'Exam')}</td>
+                            <td>${this.escapeHtml(result.score)}</td>
+                            <td>${this.escapeHtml(result.maxScore || '100')}</td>
+                            <td>${percentage}%</td>
+                            <td>${this.escapeHtml(result.grade || '-')}</td>
+                            <td>${this.escapeHtml(teacherName)}</td>
+                            <td>${formattedDate}</td>
+                        </tr>
+                    `;
+                }).join('');
+
+                table.innerHTML = rowsHtml;
+                return results;
+            }
+
+            updateTermFilterOptions() {
+                const termFilter = this.dom.termFilter;
+                if (!termFilter) return;
+
+                const terms = [...new Set((this.studentResults || []).map(result => result.term).filter(Boolean))];
+
+                if (terms.length === 0) {
+                    termFilter.value = 'All Terms';
+                    return;
+                }
+
+                const currentSelection = termFilter.value;
+                termFilter.innerHTML = '';
+
+                const allOption = document.createElement('option');
+                allOption.value = 'All Terms';
+                allOption.textContent = 'All Terms';
+                termFilter.appendChild(allOption);
+
+                terms.forEach(term => {
+                    const option = document.createElement('option');
+                    option.value = term;
+                    option.textContent = term;
+                    termFilter.appendChild(option);
+                });
+
+                if (currentSelection && terms.includes(currentSelection)) {
+                    termFilter.value = currentSelection;
+                } else {
+                    termFilter.value = 'All Terms';
+                }
+            }
+
+            updateResultSummaryMetrics(results = this.studentResults) {
+                const metrics = Array.isArray(results) ? results : [];
+
+                const totalEntries = metrics.length;
+                const totalPercentage = metrics.reduce((sum, result) => {
+                    if (typeof result.percentage === 'number') {
+                        return sum + result.percentage;
+                    }
+                    return sum + this.calculatePercentage(result.score, result.maxScore || 100);
+                }, 0);
+
+                const average = totalEntries > 0 ? Math.round(totalPercentage / totalEntries) : null;
+                const publishedCount = metrics.filter(result => (result.status || '').toLowerCase() === 'published').length;
+
+                this.updateText(this.dom.averageGrade, average !== null ? `${average}%` : '—');
+                this.updateText(this.dom.testsCompleted, totalEntries > 0 ? `${publishedCount}/${totalEntries}` : '0');
+            }
+
+            updateAssignmentsSummary() {
+                const assignments = Array.isArray(this.studentAssignments) ? this.studentAssignments : [];
+                const today = this.startOfDay(new Date());
+                const endOfWeek = new Date(today);
+                endOfWeek.setDate(endOfWeek.getDate() + 7);
+
+                const dueToday = assignments.filter(assignment => this.isSameDay(new Date(assignment.dueDate), today)).length;
+                const dueThisWeek = assignments.filter(assignment => {
+                    const due = new Date(assignment.dueDate);
+                    return due > today && due <= endOfWeek;
+                }).length;
+                const completed = assignments.filter(assignment => (assignment.status || '').toLowerCase() === 'completed').length;
+                const pending = assignments.length - completed;
+
+                this.updateText(this.dom.assignmentsSummary.dueToday, dueToday);
+                this.updateText(this.dom.assignmentsSummary.dueWeek, dueThisWeek);
+                this.updateText(this.dom.assignmentsSummary.completed, completed);
+                this.updateText(this.dom.summaryCounters.pendingAssignments, Math.max(pending, 0));
+            }
+
+            renderAssignmentsPreview() {
+                const container = this.dom.assignmentsPreview;
+                if (!container) return;
+
+                const assignments = Array.isArray(this.studentAssignments) ? [...this.studentAssignments] : [];
+
+                if (assignments.length === 0) {
+                    container.innerHTML = '<p class="text-muted">No assignments available right now.</p>';
+                    return;
+                }
+
+                const getDueTime = value => {
+                    const date = new Date(value);
+                    return Number.isNaN(date.getTime()) ? Number.POSITIVE_INFINITY : date.getTime();
+                };
+
+                assignments.sort((a, b) => getDueTime(a.dueDate) - getDueTime(b.dueDate));
+                const previewItems = assignments.slice(0, 3).map(assignment => {
+                    const title = assignment.title || assignment.name || 'Untitled Assignment';
+                    const subject = assignment.subject || assignment.subjectName || 'Subject not set';
+                    const priority = assignment.priority || 'Normal';
+                    const status = assignment.status || 'Pending';
+                    const dueDate = this.formatDate(assignment.dueDate);
+                    const description = assignment.description || 'Stay on track and submit before the deadline.';
+
+                    return `
+                        <div class="feed-card assignment-preview-card">
+                            <div class="feed-header">
+                                <h4 class="feed-title">${this.escapeHtml(title)}</h4>
+                                <span>${dueDate}</span>
+                            </div>
+                            <p>${this.escapeHtml(description)}</p>
+                            <div class="feed-meta">
+                                <span><i class="fas fa-book"></i> ${this.escapeHtml(subject)}</span>
+                                <span><i class="fas fa-flag"></i> ${this.escapeHtml(priority)}</span>
+                                <span><i class="fas fa-tasks"></i> ${this.escapeHtml(status)}</span>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+                container.innerHTML = previewItems;
+            }
+
+            loadPaymentData() {
+                if (!this.currentStudent?.studentId) {
+                    this.showNoPaymentData();
+                    return;
+                }
+
+                const summary = app.getStudentPaymentSummary(this.currentStudent.studentId);
+                this.paymentSummary = summary;
+
+                if (summary) {
+                    this.updatePaymentSummaryCards(summary);
+                    this.updatePaymentBreakdown(summary);
+                    this.updatePaymentHistory(summary.payments);
+                } else {
+                    this.showNoPaymentData();
+                }
+            }
+
+            updatePaymentSummaryCards(summary) {
+                const payment = this.dom.payment;
+                if (!payment || !summary) return;
+
+                this.updateText(payment.totalAmount, `₦${Number(summary.totalExpected || 0).toLocaleString()}`);
+                this.updateText(payment.amountPaid, `₦${Number(summary.totalPaid || 0).toLocaleString()}`);
+                this.updateText(payment.balance, `₦${Number(summary.balance || 0).toLocaleString()}`);
+
+                const statusText = summary.status === 'paid'
+                    ? 'Fully Paid'
+                    : summary.status === 'partial'
+                        ? 'Partial'
+                        : summary.status === 'unpaid'
+                            ? 'Unpaid'
+                            : 'Not Set';
+
+                this.updateText(payment.status, statusText);
+
+                const statusCard = payment.status?.closest('.card');
+                const statusIcon = statusCard?.querySelector('.card-icon');
+                if (statusIcon) {
+                    const palette = {
+                        paid: ['rgba(76, 201, 240, 0.1)', 'var(--success)'],
+                        partial: ['rgba(247, 37, 133, 0.1)', 'var(--warning)'],
+                        unpaid: ['rgba(230, 57, 70, 0.1)', 'var(--danger)'],
+                        not_set: ['rgba(148, 163, 184, 0.15)', '#64748b']
+                    };
+                    const key = summary.status === 'paid' || summary.status === 'partial' || summary.status === 'unpaid'
+                        ? summary.status
+                        : 'not_set';
+                    const [background, color] = palette[key];
+                    statusIcon.style.backgroundColor = background;
+                    statusIcon.style.color = color;
+                }
+            }
+
+            updatePaymentBreakdown(summary) {
+                const payment = this.dom.payment;
+                if (!payment?.breakdown) return;
+
+                const expectedItems = summary.expectedItems || [];
+                const payments = summary.payments || [];
+
+                if (expectedItems.length === 0) {
+                    payment.breakdown.innerHTML = `
+                        <tr>
+                            <td colspan="6" class="text-center text-muted">
+                                No payment items configured for your class.
+                            </td>
+                        </tr>
+                    `;
+                    return;
+                }
+
+                payment.breakdown.innerHTML = expectedItems.map(item => {
+                    const paidAmount = payments.reduce((total, paymentItem) => {
+                        const matched = paymentItem.items?.find(pItem => pItem.itemId === item.id);
+                        return total + (matched ? Number(matched.paidAmount) || 0 : 0);
+                    }, 0);
+
+                    const balance = Math.max(Number(item.amount) - paidAmount, 0);
+                    const status = balance <= 0 ? 'Paid' : paidAmount > 0 ? 'Partial' : 'Unpaid';
+                    const statusClass = status === 'Paid' ? 'success' : status === 'Partial' ? 'warning' : 'danger';
+
+                    return `
+                        <tr>
+                            <td>
+                                <strong>${this.escapeHtml(item.name)}</strong>
+                                ${item.mandatory ? '<span class="badge badge-danger ml-2">Required</span>' : ''}
+                            </td>
+                            <td><span class="badge badge-secondary">${this.escapeHtml(item.category)}</span></td>
+                            <td class="text-right">₦${Number(item.amount).toLocaleString()}</td>
+                            <td class="text-right">₦${paidAmount.toLocaleString()}</td>
+                            <td class="text-right">₦${balance.toLocaleString()}</td>
+                            <td><span class="badge badge-${statusClass}">${status}</span></td>
+                        </tr>
+                    `;
+                }).join('');
+            }
+
+            updatePaymentHistory(payments) {
+                const payment = this.dom.payment;
+                if (!payment?.history) return;
+
+                const history = Array.isArray(payments) ? payments : [];
+                if (history.length === 0) {
+                    payment.history.innerHTML = `
+                        <tr>
+                            <td colspan="5" class="text-center text-muted">
+                                No payment history available.
+                            </td>
+                        </tr>
+                    `;
+                    return;
+                }
+
+                payment.history.innerHTML = history.map(entry => {
+                    const paymentDate = this.formatDate(entry.paymentDate);
+                    const itemsPaid = (entry.items || [])
+                        .filter(item => Number(item.paidAmount) > 0)
+                        .map(item => item.name)
+                        .join(', ') || 'No items';
+                    const itemsLabel = itemsPaid.length > 45 ? `${itemsPaid.slice(0, 42)}…` : itemsPaid;
+
+                    return `
+                        <tr>
+                            <td>${paymentDate}</td>
+                            <td>
+                                <div title="${this.escapeHtml(itemsPaid)}">${this.escapeHtml(itemsLabel)}</div>
+                            </td>
+                            <td class="text-right">₦${Number(entry.amountPaid || 0).toLocaleString()}</td>
+                            <td><span class="badge badge-info">${this.escapeHtml(entry.paymentMethod || 'N/A')}</span></td>
+                            <td>
+                                <button class="btn btn-sm btn-outline-primary" onclick="studentPortal.printPaymentReceipt('${entry.id}')">
+                                    <i class="fas fa-receipt"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            }
+
+            showNoPaymentData() {
+                const payment = this.dom.payment;
+                if (!payment) return;
+
+                this.paymentSummary = null;
+                this.updateText(payment.totalAmount, '₦0.00');
+                this.updateText(payment.amountPaid, '₦0.00');
+                this.updateText(payment.balance, '₦0.00');
+                this.updateText(payment.status, 'Not Configured');
+
+                if (payment.breakdown) {
+                    payment.breakdown.innerHTML = `
+                        <tr>
+                            <td colspan="6" class="text-center text-muted">
+                                Payment information not available.
+                            </td>
+                        </tr>
+                    `;
+                }
+
+                if (payment.history) {
+                    payment.history.innerHTML = `
+                        <tr>
+                            <td colspan="5" class="text-center text-muted">
+                                No payment history.
+                            </td>
+                        </tr>
+                    `;
+                }
+            }
+
+            syncCommunicationManager() {
+                const manager = window.communicationManager;
+                if (!manager || this.communicationSynced) {
+                    this.updateCommunicationSummary(manager);
+                    return;
+                }
+
+                if (typeof manager.showNotification === 'function') {
+                    manager.showNotification = () => null;
+                }
+
+                const update = () => this.updateCommunicationSummary(manager);
+                manager.on?.('initialized', update);
+                manager.on?.('updated', update);
+
+                update();
+                this.communicationSynced = true;
+            }
+
+            updateCommunicationSummary(manager = window.communicationManager) {
+                const counters = this.dom.summaryCounters;
+                if (!counters) return;
+
+                const notifications = manager?.notifications || [];
+                const feeds = manager?.feeds || [];
+
+                const unreadNotifications = notifications.filter(notification => !notification.isRead).length;
+                const unreadMessages = feeds.filter(feed => !feed.isRead).length;
+                const upcomingEvents = feeds.filter(feed => feed.category === 'event' && this.isUpcomingEvent(feed.timestamp)).length;
+
+                this.updateText(counters.pendingNotifications, unreadNotifications);
+                this.updateText(counters.unreadMessages, unreadMessages);
+                this.updateText(counters.upcomingEvents, upcomingEvents);
+
+                const stats = this.dom.communicationStats;
+                if (stats) {
+                    const totalMessages = feeds.length;
+                    const totalNotifications = notifications.length;
+                    const totalItems = totalMessages + totalNotifications;
+                    const readItems = feeds.filter(feed => feed.isRead).length + notifications.filter(notification => notification.isRead).length;
+                    const readRate = totalItems > 0 ? Math.round((readItems / totalItems) * 100) : null;
+
+                    this.updateText(stats.totalMessages, totalMessages);
+                    this.updateText(stats.totalNotifications, totalNotifications);
+                    this.updateText(stats.readRate, readRate !== null ? `${readRate}%` : '—');
+                }
+            }
+
+            downloadStudentPDF() {
+                if (!authManager.canManage('own_profile')) {
+                    authManager.app.showNotification('Access denied', 'error');
+                    return;
+                }
+
+                const studentRecord = app.data.students.find(s => s.id === this.currentStudent.studentId);
+                const printWindow = window.open('', '_blank');
+
+                const rows = (this.studentResults || []).map(result => {
+                    const subject = this.subjectIndex[result.subjectCode || result.subjectId];
+                    const subjectName = subject?.name || result.subjectName || result.subject || 'Subject';
+                    const percentage = this.calculatePercentage(result.score, result.maxScore || 100);
+                    const formattedDate = this.formatDate(result.examDate || result.date);
+
+                    return `
+                        <tr>
+                            <td>${this.escapeHtml(subjectName)}</td>
+                            <td>${this.escapeHtml(result.assessmentType || 'Exam')}</td>
+                            <td>${this.escapeHtml(result.score)}</td>
+                            <td>${this.escapeHtml(result.maxScore || '100')}</td>
+                            <td>${percentage}%</td>
+                            <td>${this.escapeHtml(result.grade || '-')}</td>
+                            <td>${formattedDate}</td>
+                        </tr>
+                    `;
+                }).join('');
+
+                const resultsTable = rows
+                    ? `
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Subject</th>
+                                    <th>Assessment</th>
+                                    <th>Score</th>
+                                    <th>Max Score</th>
+                                    <th>Percentage</th>
+                                    <th>Grade</th>
+                                    <th>Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>${rows || ''}</tbody>
+                        </table>
+                    `
+                    : '<p>No results available.</p>';
+
+                printWindow.document.write(`
+                    <!DOCTYPE html>
+                    <html>
+                    <head>
+                        <title>Student Report - ${studentRecord ? this.escapeHtml(studentRecord.name) : this.escapeHtml(this.currentStudent.name)}</title>
+                        <style>
+                            body { font-family: Arial, sans-serif; margin: 20px; }
+                            .header { text-align: center; margin-bottom: 30px; border-bottom: 2px solid #4361ee; padding-bottom: 10px; }
+                            .student-info { margin-bottom: 20px; background: #f8f9fa; padding: 15px; border-radius: 6px; }
+                            table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+                            th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+                            th { background-color: #f8f9fa; font-weight: bold; }
+                            @media print { body { margin: 0; } }
+                        </style>
+                    </head>
+                    <body>
+                        <div class="header">
+                            <h1>Tophill Portal Student Report</h1>
+                            <p>Generated on ${new Date().toLocaleDateString()}</p>
+                        </div>
+                        <div class="student-info">
+                            <h2>Student Information</h2>
+                            <p><strong>Name:</strong> ${studentRecord ? this.escapeHtml(studentRecord.name) : this.escapeHtml(this.currentStudent.name)}</p>
+                            <p><strong>Student ID:</strong> ${studentRecord ? this.escapeHtml(studentRecord.id) : this.escapeHtml(this.currentStudent.studentId)}</p>
+                            <p><strong>Class:</strong> ${studentRecord ? this.escapeHtml(studentRecord.class) : 'N/A'}</p>
+                            <p><strong>Email:</strong> ${studentRecord ? this.escapeHtml(studentRecord.email) : this.escapeHtml(this.currentStudent.email || 'N/A')}</p>
+                        </div>
+                        <h2>Academic Results</h2>
+                        ${resultsTable}
+                    </body>
+                    </html>
+                `);
+
+                printWindow.document.close();
+                setTimeout(() => printWindow.print(), 500);
+            }
+
+            printPaymentReceipt(paymentId = null) {
+                if (!this.currentStudent) return;
+
+                const student = app.data.students.find(s => s.id === this.currentStudent.studentId);
+                const paymentSummary = this.paymentSummary || app.getStudentPaymentSummary(this.currentStudent.studentId);
+
+                let receiptContent = '';
+                let receiptTitle = 'Payment Receipt';
+
+                if (paymentId && paymentSummary) {
+                    const payment = paymentSummary.payments?.find(record => record.id === paymentId);
+                    if (payment) {
+                        receiptTitle = `Payment Receipt - ${payment.paymentDate ? new Date(payment.paymentDate).toLocaleDateString() : 'N/A'}`;
+                        receiptContent = this.generateSinglePaymentReceipt(payment, student);
+                    }
+                }
+
+                if (!receiptContent) {
+                    receiptTitle = 'Payment Summary Report';
+                    receiptContent = this.generatePaymentSummaryReceipt(paymentSummary, student);
+                }
+
+                const printWindow = window.open('', '_blank');
+                printWindow.document.write(`
+                    <!DOCTYPE html>
+                    <html>
+                    <head>
+                        <title>${receiptTitle}</title>
+                        <style>
+                            body { font-family: Arial, sans-serif; margin: 20px; }
+                            .header { text-align: center; margin-bottom: 30px; border-bottom: 2px solid #4361ee; padding-bottom: 10px; }
+                            .student-info { margin-bottom: 20px; background: #f8f9fa; padding: 15px; border-radius: 6px; }
+                            table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+                            th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+                            th { background-color: #f8f9fa; font-weight: bold; }
+                            .total-row { font-weight: bold; background-color: #e9ecef; }
+                            @media print { body { margin: 0; } }
+                        </style>
+                    </head>
+                    <body>
+                        <div class="header">
+                            <h1>Tophill Portal School System</h1>
+                            <h2>${receiptTitle}</h2>
+                            <p>Generated on: ${new Date().toLocaleDateString()}</p>
+                        </div>
+                        ${receiptContent}
+                    </body>
+                    </html>
+                `);
+
+                printWindow.document.close();
+                setTimeout(() => printWindow.print(), 500);
+            }
+
+            generateSinglePaymentReceipt(payment, student) {
+                const itemsTable = payment.items?.map(item => `
+                    <tr>
+                        <td>${this.escapeHtml(item.name)}</td>
+                        <td class="text-right">₦${Number(item.amount).toLocaleString()}</td>
+                        <td class="text-right">₦${Number(item.paidAmount).toLocaleString()}</td>
+                    </tr>
+                `).join('') || '<tr><td colspan="3">No items</td></tr>';
+
+                return `
+                    <div class="student-info">
+                        <h3>Student Information</h3>
+                        <p><strong>Name:</strong> ${student?.name || this.currentStudent.name}</p>
+                        <p><strong>Student ID:</strong> ${student?.id || this.currentStudent.studentId}</p>
+                        <p><strong>Class:</strong> ${student?.class || 'N/A'}</p>
+                        <p><strong>Term:</strong> ${payment.term || 'N/A'}</p>
+                        <p><strong>Session:</strong> ${payment.session || 'N/A'}</p>
+                    </div>
+                    <h3>Payment Details</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Payment Item</th>
+                                <th>Amount</th>
+                                <th>Paid</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${itemsTable}
+                            <tr class="total-row">
+                                <td><strong>Total</strong></td>
+                                <td class="text-right"><strong>₦${Number(payment.totalAmount).toLocaleString()}</strong></td>
+                                <td class="text-right"><strong>₦${Number(payment.amountPaid).toLocaleString()}</strong></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="payment-info">
+                        <p><strong>Payment Method:</strong> ${payment.paymentMethod || 'N/A'}</p>
+                        <p><strong>Payment Date:</strong> ${this.formatDate(payment.paymentDate)}</p>
+                        ${payment.notes ? `<p><strong>Notes:</strong> ${this.escapeHtml(payment.notes)}</p>` : ''}
+                    </div>
+                `;
+            }
+
+            generatePaymentSummaryReceipt(summary, student) {
+                if (!summary) {
+                    return '<p>No payment data available.</p>';
+                }
+
+                const itemsTable = summary.expectedItems?.map(item => {
+                    const paidAmount = summary.payments?.reduce((total, payment) => {
+                        const matched = payment.items?.find(pItem => pItem.itemId === item.id);
+                        return total + (matched ? Number(matched.paidAmount) || 0 : 0);
+                    }, 0) || 0;
+
+                    const balance = Math.max(Number(item.amount) - paidAmount, 0);
+
+                    return `
+                        <tr>
+                            <td>${this.escapeHtml(item.name)}</td>
+                            <td class="text-right">₦${Number(item.amount).toLocaleString()}</td>
+                            <td class="text-right">₦${paidAmount.toLocaleString()}</td>
+                            <td class="text-right">₦${balance.toLocaleString()}</td>
+                        </tr>
+                    `;
+                }).join('') || '<tr><td colspan="4">No payment items configured</td></tr>';
+
+                return `
+                    <div class="student-info">
+                        <h3>Student Information</h3>
+                        <p><strong>Name:</strong> ${student?.name || this.currentStudent.name}</p>
+                        <p><strong>Student ID:</strong> ${student?.id || this.currentStudent.studentId}</p>
+                        <p><strong>Class:</strong> ${student?.class || 'N/A'}</p>
+                    </div>
+                    <h3>Payment Summary</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Payment Item</th>
+                                <th>Expected</th>
+                                <th>Paid</th>
+                                <th>Balance</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${itemsTable}
+                            <tr class="total-row">
+                                <td><strong>Total</strong></td>
+                                <td class="text-right"><strong>₦${Number(summary.totalExpected).toLocaleString()}</strong></td>
+                                <td class="text-right"><strong>₦${Number(summary.totalPaid).toLocaleString()}</strong></td>
+                                <td class="text-right"><strong>₦${Number(summary.balance).toLocaleString()}</strong></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="payment-status">
+                        <p><strong>Payment Status:</strong> ${summary.status === 'paid' ? 'Fully Paid' : summary.status === 'partial' ? 'Partially Paid' : summary.status === 'unpaid' ? 'Unpaid' : 'Not Configured'}</p>
+                        ${summary.latestPaymentDate ? `<p><strong>Latest Payment:</strong> ${this.formatDate(summary.latestPaymentDate)}</p>` : ''}
+                    </div>
+                `;
+            }
+
+            calculatePercentage(score, maxScore) {
+                const scoreNum = Number(score) || 0;
+                const maxNum = Number(maxScore);
+                if (!maxNum || maxNum <= 0) return 0;
+                return Math.round((scoreNum / maxNum) * 100);
+            }
+
+            updateText(element, value) {
+                if (!element) return;
+                element.textContent = value ?? '0';
+            }
+
+            startOfDay(date) {
+                const clone = new Date(date);
+                clone.setHours(0, 0, 0, 0);
+                return clone;
+            }
+
+            isSameDay(dateA, dateB) {
+                if (!(dateA instanceof Date) || Number.isNaN(dateA.getTime())) return false;
+                return dateA.getFullYear() === dateB.getFullYear() &&
+                    dateA.getMonth() === dateB.getMonth() &&
+                    dateA.getDate() === dateB.getDate();
+            }
+
+            isUpcomingEvent(timestamp) {
+                if (!timestamp) return false;
+                const eventDate = new Date(timestamp);
+                if (Number.isNaN(eventDate.getTime())) return false;
+                const now = new Date();
+                return eventDate >= now;
+            }
+
+            formatDate(value) {
+                if (!value) return 'N/A';
+                const date = new Date(value);
+                if (Number.isNaN(date.getTime())) return this.escapeHtml(value);
+                return date.toLocaleDateString();
+            }
+
+            escapeHtml(value) {
+                if (value === undefined || value === null) return '';
+                const div = document.createElement('div');
+                div.textContent = value;
+                return div.innerHTML;
+            }
+        }
+
+        // Initialize student portal when page loads
+        let studentPortal;
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(() => {
+                if (typeof authManager !== 'undefined' && typeof app !== 'undefined') {
+                    studentPortal = new StudentPortal();
+                }
+
+                if (window.app) {
+                    window.app.showNotification = (message, type) => {
+                        console.log(`[notification:${type || 'info'}] ${message}`);
+                        return null;
+                    };
+                }
+
+                if (window.notificationManager) {
+                    window.notificationManager.hideAll();
+                }
+
+                const manager = window.communicationManager;
+                if (manager) {
+                    if (typeof manager.showNotification === 'function') {
+                        manager.showNotification = () => null;
+                    }
+
+                    if (manager.config) {
+                        manager.config.enableRealTime = true;
+                    }
+
+                    studentPortal?.syncCommunicationManager();
+                }
+            }, 100);
+        });
+        
+        // Helper function for tab switching
+        function switchTab(tabId) {
+            const tabs = document.querySelectorAll('.tab');
+            const tabContents = document.querySelectorAll('.tab-content');
+            
+            tabs.forEach(t => t.classList.remove('active'));
+            tabContents.forEach(c => c.classList.remove('active'));
+            
+            const targetTab = document.querySelector(`[data-tab="${tabId}"]`);
+            const targetContent = document.getElementById(tabId);
+            
+            if (targetTab && targetContent) {
+                targetTab.classList.add('active');
+                targetContent.classList.add('active');
+            }
+        }
+    </script>
+</body>
+</html>

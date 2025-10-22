@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tophill Portal - Student Management</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../shared/styles.css">
+    <link rel="stylesheet" href="../shared/feed.css">
+
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <button class="toggle-btn" id="sidebar-toggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h3>Tophill Portal</h3>
+            </div>
+            <div class="sidebar-menu">
+                <a href="admin-dashboard.html" class="menu-item"><i class="fas fa-home"></i><span>Dashboard</span></a>
+                <a href="students.html" class="menu-item active"><i class="fas fa-users"></i><span>Students</span></a>
+                <a href="teachers.html" class="menu-item"><i class="fas fa-chalkboard-teacher"></i><span>Teachers</span></a>
+                <a href="subjects.html" class="menu-item"><i class="fas fa-book"></i><span>Subjects</span></a>
+                <a href="results.html" class="menu-item"><i class="fas fa-clipboard-list"></i><span>Results</span></a>
+                <a href="payments.html" class="menu-item"><i class="fas fa-credit-card"></i><span>Payments</span></a>
+                <a href="user-management.html" class="menu-item"><i class="fas fa-user-cog"></i><span>User Management</span></a>
+                <a href="feed.html" class="menu-item"><i class="fas fa-bullhorn"></i><span>Feed</span></a>
+                <a href="settings.html" class="menu-item"><i class="fas fa-cog"></i><span>Settings</span></a>
+                <a href="../student/student-login.html" class="menu-item" style="color:inherit;text-decoration:none;"><i class="fas fa-user-graduate"></i><span>Student Portal</span></a>
+                <a href="../teacher/teacher-login.html" class="menu-item" style="color:inherit;text-decoration:none;"><i class="fas fa-chalkboard-teacher"></i><span>Teacher Portal</span></a>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="page-hero" aria-label="Student management overview">
+                <div class="hero-content">
+                    <div class="hero-text">
+                        <h1 class="hero-title"><i class="fas fa-users" aria-hidden="true"></i> Student Management</h1>
+                        <p class="hero-subtitle">Manage student records, enrollments, and academic progress from a centralized dashboard.</p>
+                    </div>
+                    <div class="hero-actions">
+                        <button class="btn btn-primary" onclick="uploadCSV()">
+                            <i class="fas fa-upload" aria-hidden="true"></i> Upload CSV
+                        </button>
+                        <button class="btn btn-success" onclick="downloadPDF('students')">
+                            <i class="fas fa-download" aria-hidden="true"></i> Download PDF
+                        </button>
+                    </div>
+                </div>
+                <div class="hero-meta">
+                    <span class="meta-pill">
+                        <i class="fas fa-user-graduate" aria-hidden="true"></i>
+                        Total students: <span id="metricTotalStudents">0</span>
+                    </span>
+                    <span class="meta-pill">
+                        <i class="fas fa-clock" aria-hidden="true"></i>
+                        Last updated: <span id="metricLastUpdated">just now</span>
+                    </span>
+                </div>
+                <input type="file" id="csvFileInput" accept=".csv" style="display: none;">
+            </header>
+
+            <!-- Students Page -->
+            <div class="page-content active" id="students">
+                <div class="content-section">
+                    <div class="section-header">
+                        <div class="section-title">Student Management</div>
+                        <button class="btn btn-primary" onclick="openAddStudentModal()">Add New Student</button>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Class</th>
+                                <th>Guardian</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="studentsTableBody">
+                            <!-- Dynamic content will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Add Student Modal -->
+    <div id="addStudentModal" class="modal">
+        <div class="modal-content" style="max-width: 800px;">
+            <div class="modal-header">
+                <h3><i class="fas fa-user-plus"></i> Add New Student</h3>
+                <span class="close" onclick="closeModal('addStudentModal')">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="addStudentForm">
+                    <div class="form-section">
+                        <h4 class="form-section-title">Personal Information</h4>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="studentName" class="form-label">Full Name:</label>
+                                <input type="text" id="studentName" name="studentName" class="form-control" placeholder="Enter student's full name" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="studentEmail" class="form-label">Email Address:</label>
+                                <input type="email" id="studentEmail" name="studentEmail" class="form-control" placeholder="student@example.com" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="studentDOB" class="form-label">Date of Birth:</label>
+                                <input type="date" id="studentDOB" name="studentDOB" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="studentPhone" class="form-label">Phone Number:</label>
+                                <input type="tel" id="studentPhone" name="studentPhone" class="form-control" placeholder="+234 XXX XXX XXXX" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="studentAddress" class="form-label">Home Address:</label>
+                            <textarea id="studentAddress" name="studentAddress" class="form-control" rows="3" placeholder="Enter complete home address" required></textarea>
+                        </div>
+                    </div>
+                    
+                    <div class="form-section">
+                        <h4 class="form-section-title">Academic Information</h4>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="studentClass" class="form-label">Class:</label>
+                                <select id="studentClass" name="studentClass" class="form-control" data-class-select required>
+                                    <option value="">Select Class</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="studentSubjects" class="form-label">Subjects:</label>
+                                <input type="text" id="studentSubjects" name="studentSubjects" class="form-control" placeholder="e.g., MATH101, PHY102, CHE103" required>
+                                <small class="form-text text-muted">Enter subject codes separated by commas</small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-section">
+                        <h4 class="form-section-title">Guardian Information</h4>
+                        <div class="form-group">
+                            <label for="studentGuardian" class="form-label">Guardian Name:</label>
+                            <input type="text" id="studentGuardian" name="studentGuardian" class="form-control" placeholder="Enter parent/guardian full name" required>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeModal('addStudentModal')">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="addStudent()">Add Student</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Student Modal -->
+    <div id="editStudentModal" class="modal">
+        <div class="modal-content" style="max-width: 800px;">
+            <div class="modal-header">
+                <h3><i class="fas fa-user-edit"></i> Edit Student</h3>
+                <span class="close" onclick="closeModal('editStudentModal')">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="editStudentForm">
+                    <input type="hidden" id="editStudentId" name="editStudentId">
+                    
+                    <div class="form-section">
+                        <h4 class="form-section-title">Personal Information</h4>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="editStudentName" class="form-label">Full Name:</label>
+                                <input type="text" id="editStudentName" name="editStudentName" class="form-control" placeholder="Enter student's full name" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="editStudentEmail" class="form-label">Email Address:</label>
+                                <input type="email" id="editStudentEmail" name="editStudentEmail" class="form-control" placeholder="student@example.com" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="editStudentDOB" class="form-label">Date of Birth:</label>
+                                <input type="date" id="editStudentDOB" name="editStudentDOB" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="editStudentPhone" class="form-label">Phone Number:</label>
+                                <input type="tel" id="editStudentPhone" name="editStudentPhone" class="form-control" placeholder="+234 XXX XXX XXXX" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="editStudentAddress" class="form-label">Home Address:</label>
+                            <textarea id="editStudentAddress" name="editStudentAddress" class="form-control" rows="3" placeholder="Enter complete home address" required></textarea>
+                        </div>
+                    </div>
+                    
+                    <div class="form-section">
+                        <h4 class="form-section-title">Academic Information</h4>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="editStudentClass" class="form-label">Class:</label>
+                                <select id="editStudentClass" name="editStudentClass" class="form-control" data-class-select required>
+                                    <option value="">Select Class</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="editStudentSubjects" class="form-label">Subjects:</label>
+                                <input type="text" id="editStudentSubjects" name="editStudentSubjects" class="form-control" placeholder="e.g., MATH101, PHY102, CHE103" required>
+                                <small class="form-text text-muted">Enter subject codes separated by commas</small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-section">
+                        <h4 class="form-section-title">Guardian Information</h4>
+                        <div class="form-group">
+                            <label for="editStudentGuardian" class="form-label">Guardian Name:</label>
+                            <input type="text" id="editStudentGuardian" name="editStudentGuardian" class="form-control" placeholder="Enter parent/guardian full name" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-section">
+                        <h4 class="form-section-title">Status Information</h4>
+                        <div class="form-group">
+                            <label for="editStudentStatus" class="form-label">Current Status:</label>
+                            <select id="editStudentStatus" name="editStudentStatus" class="form-control" required>
+                                <option value="active">Active</option>
+                                <option value="inactive">Inactive</option>
+                                <option value="suspended">Suspended</option>
+                                <option value="graduated">Graduated</option>
+                            </select>
+                            <small class="form-text text-muted">Select the current status of the student</small>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeModal('editStudentModal')">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="updateStudent()">Update Student</button>
+                <button type="button" class="btn btn-warning" onclick="resetStudentPassword()">Reset Password</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Student Password Reset Modal -->
+    <div id="studentPasswordResetModal" class="modal">
+        <div class="modal-content" style="max-width: 500px;">
+            <div class="modal-header">
+                <h3><i class="fas fa-key"></i> Student Password Reset</h3>
+                <span class="close" onclick="closeModal('studentPasswordResetModal')">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="password-reset-info">
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i>
+                        <strong>New Password Generated Successfully</strong>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Generated Password:</label>
+                        <div class="input-group">
+                            <input type="text" id="newStudentPassword" class="form-control" readonly>
+                            <button type="button" class="btn btn-info" onclick="copyStudentPassword()">
+                                <i class="fas fa-copy"></i> Copy
+                            </button>
+                        </div>
+                    </div>
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <small>Please save this password and share it with the student/guardian. They can change it after first login.</small>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" onclick="closeModal('studentPasswordResetModal')">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../shared/app.js" defer></script>
+    <script src="../shared/auth-manager.js" defer></script>
+    <script src="../shared/script.js" defer></script>
+    <script>
+        // Student Management Functions
+        let currentEditingStudent = null;
+
+        function openAddStudentModal() {
+            document.getElementById('addStudentModal').style.display = 'block';
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        function addStudent() {
+            const form = document.getElementById('addStudentForm');
+            const formData = new FormData(form);
+            
+            const newStudent = {
+                name: formData.get('studentName'),
+                email: formData.get('studentEmail'),
+                class: formData.get('studentClass'),
+                subjects: formData.get('studentSubjects').split(',').map(s => s.trim()),
+                guardian: formData.get('studentGuardian'),
+                phone: formData.get('studentPhone'),
+                address: formData.get('studentAddress'),
+                dateOfBirth: formData.get('studentDOB'),
+                enrollmentDate: new Date().toISOString().split('T')[0],
+                status: 'active'
+            };
+
+            try {
+                const result = app.createStudent(newStudent);
+                if (result.success) {
+                    app.showNotification('Student added successfully!', 'success');
+                    closeModal('addStudentModal');
+                    form.reset();
+                    loadStudents();
+                } else {
+                    app.showNotification(result.message, 'error');
+                }
+            } catch (error) {
+                app.showNotification('Error adding student: ' + error.message, 'error');
+            }
+        }
+
+        function editStudent(studentId) {
+            const student = app.getStudent(studentId);
+            if (student) {
+                currentEditingStudent = student;
+                
+                document.getElementById('editStudentId').value = student.id;
+                document.getElementById('editStudentName').value = student.name;
+                document.getElementById('editStudentEmail').value = student.email;
+                document.getElementById('editStudentClass').value = student.class;
+                document.getElementById('editStudentSubjects').value = Array.isArray(student.subjects) ? student.subjects.join(', ') : student.subjects;
+                document.getElementById('editStudentGuardian').value = student.guardian;
+                document.getElementById('editStudentPhone').value = student.phone;
+                document.getElementById('editStudentAddress').value = student.address;
+                document.getElementById('editStudentDOB').value = student.dateOfBirth;
+                document.getElementById('editStudentStatus').value = student.status;
+                
+                document.getElementById('editStudentModal').style.display = 'block';
+            }
+        }
+
+        function updateStudent() {
+            const form = document.getElementById('editStudentForm');
+            const formData = new FormData(form);
+            
+            const updatedStudent = {
+                id: formData.get('editStudentId'),
+                name: formData.get('editStudentName'),
+                email: formData.get('editStudentEmail'),
+                class: formData.get('editStudentClass'),
+                subjects: formData.get('editStudentSubjects').split(',').map(s => s.trim()),
+                guardian: formData.get('editStudentGuardian'),
+                phone: formData.get('editStudentPhone'),
+                address: formData.get('editStudentAddress'),
+                dateOfBirth: formData.get('editStudentDOB'),
+                status: formData.get('editStudentStatus')
+            };
+
+            try {
+                const result = app.updateStudent(updatedStudent.id, updatedStudent);
+                if (result.success) {
+                    app.showNotification('Student updated successfully!', 'success');
+                    closeModal('editStudentModal');
+                    loadStudents();
+                } else {
+                    app.showNotification(result.message, 'error');
+                }
+            } catch (error) {
+                app.showNotification('Error updating student: ' + error.message, 'error');
+            }
+        }
+
+        function deleteStudent(studentId) {
+            if (confirm('Are you sure you want to delete this student? This action cannot be undone.')) {
+                try {
+                    const result = app.deleteStudent(studentId);
+                    if (result.success) {
+                        app.showNotification('Student deleted successfully!', 'success');
+                        loadStudents();
+                    } else {
+                        app.showNotification(result.message, 'error');
+                    }
+                } catch (error) {
+                    app.showNotification('Error deleting student: ' + error.message, 'error');
+                }
+            }
+        }
+
+        function resetStudentPassword() {
+            if (currentEditingStudent) {
+                const newPassword = generateRandomPassword();
+                
+                // Update student with new password (in real app, this would be hashed)
+                const studentUpdate = {
+                    ...currentEditingStudent,
+                    password: newPassword,
+                    passwordReset: true
+                };
+                
+                try {
+                    const result = app.updateStudent(currentEditingStudent.id, studentUpdate);
+                    if (result.success) {
+                        document.getElementById('newStudentPassword').value = newPassword;
+                        closeModal('editStudentModal');
+                        document.getElementById('studentPasswordResetModal').style.display = 'block';
+                        app.showNotification('Password reset successfully!', 'success');
+                    } else {
+                        app.showNotification(result.message, 'error');
+                    }
+                } catch (error) {
+                    app.showNotification('Error resetting password: ' + error.message, 'error');
+                }
+            }
+        }
+
+        function generateRandomPassword() {
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*';
+            let password = '';
+            for (let i = 0; i < 12; i++) {
+                password += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return password;
+        }
+
+        function copyStudentPassword() {
+            const passwordField = document.getElementById('newStudentPassword');
+            passwordField.select();
+            document.execCommand('copy');
+            app.showNotification('Password copied to clipboard!', 'success');
+        }
+
+        function loadStudents() {
+            const students = app.getAllStudents();
+            const tbody = document.getElementById('studentsTableBody');
+            
+            tbody.innerHTML = '';
+            
+            students.forEach(student => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${student.id}</td>
+                    <td>${student.name}</td>
+                    <td>${student.email}</td>
+                    <td>${student.class}</td>
+                    <td>${student.guardian}</td>
+                    <td><span class="status ${student.status}">${student.status.charAt(0).toUpperCase() + student.status.slice(1)}</span></td>
+                    <td>
+                        <button class="btn-icon btn-edit" onclick="editStudent('${student.id}')" title="Edit Student">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn-icon btn-delete" onclick="deleteStudent('${student.id}')" title="Delete Student">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // Load students when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            window.populateGlobalClassSelects?.();
+            loadStudents();
+        });
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modals = document.querySelectorAll('.modal');
+            modals.forEach(modal => {
+                if (event.target === modal) {
+                    modal.style.display = 'none';
+                }
+            });
+        }
+    </script>
+</body>
+</html>

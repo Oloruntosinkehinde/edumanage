@@ -1,0 +1,1344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tophill Portal - Payment Management</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../shared/styles.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <button class="toggle-btn" id="sidebar-toggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h3>Tophill Portal</h3>
+            </div>
+            <div class="sidebar-menu">
+                <a href="admin-dashboard.html" class="menu-item"><i class="fas fa-home"></i><span>Dashboard</span></a>
+                <a href="students.html" class="menu-item"><i class="fas fa-users"></i><span>Students</span></a>
+                <a href="teachers.html" class="menu-item"><i class="fas fa-chalkboard-teacher"></i><span>Teachers</span></a>
+                <a href="subjects.html" class="menu-item"><i class="fas fa-book"></i><span>Subjects</span></a>
+                <a href="results.html" class="menu-item"><i class="fas fa-clipboard-list"></i><span>Results</span></a>
+                <a href="payments.html" class="menu-item active"><i class="fas fa-credit-card"></i><span>Payments</span></a>
+                <a href="user-management.html" class="menu-item"><i class="fas fa-user-cog"></i><span>User Management</span></a>
+                <a href="feed.html" class="menu-item"><i class="fas fa-bullhorn"></i><span>Feed</span></a>
+                <a href="settings.html" class="menu-item"><i class="fas fa-cog"></i><span>Settings</span></a>
+                <a href="../student/student-login.html" class="menu-item"><i class="fas fa-user-graduate"></i><span>Student Portal</span></a>
+                <a href="../teacher/teacher-login.html" class="menu-item"><i class="fas fa-chalkboard-teacher"></i><span>Teacher Portal</span></a>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="header">
+                <span class="header-title">Payment Management</span>
+                <div class="user-info">
+                    <span id="user-info-label">Admin User</span>
+                    <button class="btn btn-primary" id="logout-btn">Logout</button>
+                </div>
+            </div>
+
+            <!-- Page Hero -->
+            <div class="page-hero" style="border-bottom: none;">
+                <div class="hero-content">
+                    <div class="hero-text">
+                        <p class="hero-subtitle">
+                            Track student fees, manage payment records, generate invoices, and monitor outstanding balances across all fee categories.
+                        </p>
+                    </div>
+                    <div class="hero-actions">
+                        <button class="btn btn-primary" id="add-payment-btn">
+                            <i class="fas fa-plus"></i> Add Payment
+                        </button>
+                        <button class="btn btn-secondary" id="export-payments-btn">
+                            <i class="fas fa-download"></i> Export
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Content Section -->
+            <div class="content-section">
+                <!-- Payment Summary Cards -->
+                <div class="payment-summary" style="gap: 24px; margin-bottom: 30px;">
+                    <div class="summary-card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 28px 24px;">
+                        <div class="summary-icon">
+                            <i class="fas fa-money-bill-wave"></i>
+                        </div>
+                        <div class="summary-title">Total Revenue</div>
+                        <div class="summary-value" id="total-revenue">₦0.00</div>
+                        <div class="summary-change">+12% from last month</div>
+                    </div>
+                    <div class="summary-card" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); padding: 28px 24px;">
+                        <div class="summary-icon">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="summary-title">Paid Students</div>
+                        <div class="summary-value" id="paid-students">0</div>
+                        <div class="summary-change">85% completion rate</div>
+                    </div>
+                    <div class="summary-card" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); padding: 28px 24px;">
+                        <div class="summary-icon">
+                            <i class="fas fa-exclamation-circle"></i>
+                        </div>
+                        <div class="summary-title">Pending Payments</div>
+                        <div class="summary-value" id="pending-payments">0</div>
+                        <div class="summary-change">15% remaining</div>
+                    </div>
+                    <div class="summary-card" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); padding: 28px 24px;">
+                        <div class="summary-icon">
+                            <i class="fas fa-calendar-alt"></i>
+                        </div>
+                        <div class="summary-title">This Month</div>
+                        <div class="summary-value" id="month-revenue">₦0.00</div>
+                        <div class="summary-change">Current term progress</div>
+                    </div>
+                </div>
+
+                <!-- Payment Controls -->
+                <div class="section-header" style="display: flex; align-items: flex-start; gap: 30px;">
+                    <div class="section-title" style="flex-shrink: 0; padding-top: 8px;">Payment Status & Management</div>
+                    <div class="section-actions" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; max-width: 600px;">
+                        <button class="btn btn-success" id="bulk-update-btn">
+                            <i class="fas fa-edit"></i> Bulk Status Update
+                        </button>
+                        <button class="btn btn-warning" id="mark-paid-btn">
+                            <i class="fas fa-check-circle"></i> Mark as Paid
+                        </button>
+                        <button class="btn btn-info" id="mark-pending-btn">
+                            <i class="fas fa-clock"></i> Mark as Pending
+                        </button>
+                        <button class="btn btn-secondary" id="mark-unpaid-btn">
+                            <i class="fas fa-times-circle"></i> Mark as Unpaid
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Payment Filters -->
+                <div class="filter-section payment-filter-section">
+                    <div class="filter-row payment-filter-grid">
+                        <div class="filter-group name-filter">
+                            <label for="filter-name">Student Name:</label>
+                            <input type="text" id="filter-name" class="form-control" placeholder="Search by name...">
+                        </div>
+                        <div class="filter-group">
+                            <label for="filter-class">Class:</label>
+                            <select id="filter-class" class="form-control">
+                                <option value="">All Classes</option>
+                                <option value="JSS1">JSS1</option>
+                                <option value="JSS2">JSS2</option>
+                                <option value="JSS3">JSS3</option>
+                                <option value="SS1">SS1</option>
+                                <option value="SS2">SS2</option>
+                                <option value="SS3">SS3</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label for="filter-status">Payment Status:</label>
+                            <select id="filter-status" class="form-control">
+                                <option value="">All Status</option>
+                                <option value="paid">Paid</option>
+                                <option value="unpaid">Unpaid</option>
+                                <option value="partial">Partial</option>
+                                <option value="overdue">Overdue</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label for="filter-term">Term:</label>
+                            <select id="filter-term" class="form-control">
+                                <option value="">All Terms</option>
+                                <option value="first">First Term</option>
+                                <option value="second">Second Term</option>
+                                <option value="third">Third Term</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label for="filter-session">Session:</label>
+                            <select id="filter-session" class="form-control">
+                                <option value="">All Sessions</option>
+                                <option value="2023/2024">2023/2024</option>
+                                <option value="2024/2025">2024/2025</option>
+                                <option value="2025/2026">2025/2026</option>
+                                <option value="2026/2027">2026/2027</option>
+                            </select>
+                        </div>
+                        <div class="filter-actions payment-filter-actions">
+                            <button class="btn btn-secondary" id="apply-filters">
+                                <i class="fas fa-filter"></i> Apply Filters
+                            </button>
+                            <button class="btn btn-outline-secondary" id="clear-filters">
+                                <i class="fas fa-times"></i> Clear Filters
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Payment Items Configuration (Admin Only) -->
+                <div class="payment-config-section" id="payment-config">
+                    <div class="config-header">
+                        <h3>Payment Items Configuration</h3>
+                        <span class="admin-badge">ADMIN ONLY</span>
+                    </div>
+                    <div class="config-grid">
+                        <!-- Tuition Fee -->
+                        <div class="payment-item-card">
+                            <div class="item-header">
+                                <h4>Tuition Fee</h4>
+                                <div class="item-actions">
+                                    <button class="btn btn-sm btn-outline-primary" title="Edit">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-danger" title="Delete">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="item-details">
+                                <p><strong>Amount:</strong> ₦120,000</p>
+                                <p><strong>Category:</strong> academic</p>
+                                <p><strong>Classes:</strong> All Classes</p>
+                                <p class="item-mandatory"><i class="fas fa-exclamation-triangle"></i> Mandatory</p>
+                            </div>
+                            <div class="item-description">
+                                Main academic fee per term/semester
+                            </div>
+                        </div>
+
+                        <!-- Examination Fee -->
+                        <div class="payment-item-card">
+                            <div class="item-header">
+                                <h4>Examination Fee</h4>
+                                <div class="item-actions">
+                                    <button class="btn btn-sm btn-outline-primary" title="Edit">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-danger" title="Delete">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="item-details">
+                                <p><strong>Amount:</strong> ₦25,000</p>
+                                <p><strong>Category:</strong> academic</p>
+                                <p><strong>Classes:</strong> All Classes</p>
+                                <p class="item-mandatory"><i class="fas fa-exclamation-triangle"></i> Mandatory</p>
+                            </div>
+                            <div class="item-description">
+                                Internal and external exams (WAEC/NECO/IGCSE)
+                            </div>
+                        </div>
+
+                        <!-- Registration/Admission Fee -->
+                        <div class="payment-item-card">
+                            <div class="item-header">
+                                <h4>Registration/Admission Fee</h4>
+                                <div class="item-actions">
+                                    <button class="btn btn-sm btn-outline-primary" title="Edit">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-danger" title="Delete">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="item-details">
+                                <p><strong>Amount:</strong> ₦15,000</p>
+                                <p><strong>Category:</strong> academic</p>
+                                <p><strong>Classes:</strong> All Classes</p>
+                                <p class="item-mandatory"><i class="fas fa-exclamation-triangle"></i> Mandatory</p>
+                            </div>
+                            <div class="item-description">
+                                One-time payment when enrolling (new students)
+                            </div>
+                        </div>
+
+                        <!-- Library Fee -->
+                        <div class="payment-item-card">
+                            <div class="item-header">
+                                <h4>Library Fee</h4>
+                                <div class="item-actions">
+                                    <button class="btn btn-sm btn-outline-primary" title="Edit">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-danger" title="Delete">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="item-details">
+                                <p><strong>Amount:</strong> ₦8,000</p>
+                                <p><strong>Category:</strong> academic</p>
+                                <p><strong>Classes:</strong> All Classes</p>
+                                <p class="item-mandatory"><i class="fas fa-exclamation-triangle"></i> Mandatory</p>
+                            </div>
+                            <div class="item-description">
+                                Library access and resource usage
+                            </div>
+                        </div>
+
+                        <!-- ICT/Computer Lab Fee -->
+                        <div class="payment-item-card">
+                            <div class="item-header">
+                                <h4>ICT/Computer Lab Fee</h4>
+                                <div class="item-actions">
+                                    <button class="btn btn-sm btn-outline-primary" title="Edit">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-danger" title="Delete">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="item-details">
+                                <p><strong>Amount:</strong> ₦18,000</p>
+                                <p><strong>Category:</strong> academic</p>
+                                <p><strong>Classes:</strong> All Classes</p>
+                                <p class="item-mandatory"><i class="fas fa-exclamation-triangle"></i> Mandatory</p>
+                            </div>
+                            <div class="item-description">
+                                Computer lab usage and maintenance
+                            </div>
+                        </div>
+
+                        <!-- Laboratory Fee -->
+                        <div class="payment-item-card">
+                            <div class="item-header">
+                                <h4>Laboratory Fee</h4>
+                                <div class="item-actions">
+                                    <button class="btn btn-sm btn-outline-primary" title="Edit">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-danger" title="Delete">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="item-details">
+                                <p><strong>Amount:</strong> ₦22,000</p>
+                                <p><strong>Category:</strong> academic</p>
+                                <p><strong>Classes:</strong> All Classes</p>
+                                <p class="item-mandatory"><i class="fas fa-exclamation-triangle"></i> Mandatory</p>
+                            </div>
+                            <div class="item-description">
+                                Science labs and practical sessions
+                            </div>
+                        </div>
+
+                        <!-- Add New Payment Item Card -->
+                        <div class="add-item-card" id="add-new-item">
+                            <div class="add-item-content">
+                                <i class="fas fa-plus"></i>
+                                <div>Add New Payment Item</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="config-actions">
+                        <button class="btn btn-primary" id="save-config-btn">
+                            <i class="fas fa-save"></i> Save Configuration
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Payment Status Table -->
+                <div class="payment-status-frame">
+                    <div class="table-section">
+                        <div class="table-header">
+                            <h3>Student Payment Status</h3>
+                            <div class="table-actions">
+                                <button class="btn btn-sm btn-outline-primary" id="refresh-table">
+                                    <i class="fas fa-sync-alt"></i> Refresh
+                                </button>
+                            </div>
+                        </div>
+                        <div class="table-container">
+                            <table class="table" id="payments-table">
+                                <thead>
+                                    <tr>
+                                        <th><input type="checkbox" id="select-all"></th>
+                                        <th>Student Name</th>
+                                        <th>Class</th>
+                                        <th>Term</th>
+                                        <th>Session</th>
+                                        <th>Total Amount</th>
+                                        <th>Amount Paid</th>
+                                        <th>Balance</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="payments-table-body">
+                                    <tr>
+                                        <td><input type="checkbox" class="student-checkbox" data-student="S001"></td>
+                                        <td>John Adebayo</td>
+                                        <td>SS3</td>
+                                        <td>First Term</td>
+                                        <td>2024/2025</td>
+                                        <td>₦203,000</td>
+                                        <td>₦203,000</td>
+                                        <td>₦0</td>
+                                        <td><span class="badge badge-success">Paid</span></td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline-primary" title="View Details">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-warning" title="Edit">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><input type="checkbox" class="student-checkbox" data-student="S002"></td>
+                                        <td>Sarah Okafor</td>
+                                        <td>SS2</td>
+                                        <td>First Term</td>
+                                        <td>2024/2025</td>
+                                        <td>₦203,000</td>
+                                        <td>₦120,000</td>
+                                        <td>₦83,000</td>
+                                        <td><span class="badge badge-warning">Partial</span></td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline-primary" title="View Details">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-warning" title="Edit">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><input type="checkbox" class="student-checkbox" data-student="S003"></td>
+                                        <td>Michael Chukwu</td>
+                                        <td>SS1</td>
+                                        <td>First Term</td>
+                                        <td>2024/2025</td>
+                                        <td>₦203,000</td>
+                                        <td>₦0</td>
+                                        <td>₦203,000</td>
+                                        <td><span class="badge badge-danger">Unpaid</span></td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline-primary" title="View Details">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-warning" title="Edit">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><input type="checkbox" class="student-checkbox" data-student="S004"></td>
+                                        <td>Grace Aniebiet</td>
+                                        <td>JSS3</td>
+                                        <td>First Term</td>
+                                        <td>2024/2025</td>
+                                        <td>₦203,000</td>
+                                        <td>₦150,000</td>
+                                        <td>₦53,000</td>
+                                        <td><span class="badge badge-info">Pending</span></td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline-primary" title="View Details">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-warning" title="Edit">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><input type="checkbox" class="student-checkbox" data-student="S005"></td>
+                                        <td>David Emeka</td>
+                                        <td>JSS2</td>
+                                        <td>First Term</td>
+                                        <td>2024/2025</td>
+                                        <td>₦203,000</td>
+                                        <td>₦203,000</td>
+                                        <td>₦0</td>
+                                        <td><span class="badge badge-success">Paid</span></td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline-primary" title="View Details">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-warning" title="Edit">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><input type="checkbox" class="student-checkbox" data-student="S006"></td>
+                                        <td>Amina Yusuf</td>
+                                        <td>JSS1</td>
+                                        <td>First Term</td>
+                                        <td>2024/2025</td>
+                                        <td>₦203,000</td>
+                                        <td>₦25,000</td>
+                                        <td>₦178,000</td>
+                                        <td><span class="badge badge-warning">Partial</span></td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline-primary" title="View Details">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-warning" title="Edit">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><input type="checkbox" class="student-checkbox" data-student="S007"></td>
+                                        <td>Emmanuel Bassey</td>
+                                        <td>SS3</td>
+                                        <td>First Term</td>
+                                        <td>2024/2025</td>
+                                        <td>₦203,000</td>
+                                        <td>₦0</td>
+                                        <td>₦203,000</td>
+                                        <td><span class="badge badge-danger">Overdue</span></td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline-primary" title="View Details">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-warning" title="Edit">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><input type="checkbox" class="student-checkbox" data-student="S008"></td>
+                                        <td>Fatima Ibrahim</td>
+                                        <td>SS2</td>
+                                        <td>First Term</td>
+                                        <td>2024/2025</td>
+                                        <td>₦203,000</td>
+                                        <td>₦203,000</td>
+                                        <td>₦0</td>
+                                        <td><span class="badge badge-success">Paid</span></td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline-primary" title="View Details">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-warning" title="Edit">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals Section -->
+    
+    <!-- Add/Edit Payment Modal -->
+    <div class="modal" id="payment-modal">
+        <div class="modal-content" style="max-width: 800px;">
+            <div class="modal-header">
+                <h3 id="modal-title">Add Payment Record</h3>
+                <span class="close" id="close-modal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="payment-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="student-select">Student:</label>
+                            <select id="student-select" class="form-control" required>
+                                <option value="">Select Student</option>
+                                <option value="S001">John Adebayo (SS3)</option>
+                                <option value="S002">Sarah Okafor (SS2)</option>
+                                <option value="S003">Michael Chukwu (SS1)</option>
+                                <option value="S004">Grace Aniebiet (JSS3)</option>
+                                <option value="S005">David Emeka (JSS2)</option>
+                                <option value="S006">Amina Yusuf (JSS1)</option>
+                                <option value="S007">Emmanuel Bassey (SS3)</option>
+                                <option value="S008">Fatima Ibrahim (SS2)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="payment-session">Session:</label>
+                            <select id="payment-session" class="form-control" required>
+                                <!-- Options will be populated dynamically -->
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="payment-term">Term:</label>
+                            <select id="payment-term" class="form-control" required>
+                                <!-- Options will be populated dynamically -->
+                            </select>
+                        </div>
+                    </div>
+                    <div class="payment-items-section">
+                        <h4>Payment Items</h4>
+                        <div id="payment-items-container">
+                            <!-- Payment items will be populated here -->
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="payment-method">Payment Method:</label>
+                            <select id="payment-method" class="form-control">
+                                <option value="cash">Cash</option>
+                                <option value="bank_transfer">Bank Transfer</option>
+                                <option value="card">Card Payment</option>
+                                <option value="mobile_money">Mobile Money</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="payment-date">Payment Date:</label>
+                            <input type="date" id="payment-date" class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="payment-notes">Notes:</label>
+                        <textarea id="payment-notes" class="form-control" rows="3" placeholder="Additional notes..."></textarea>
+                    </div>
+                    <div class="total-section" style="background: #f8f9fa; padding: 15px; border-radius: 5px; margin-top: 20px;">
+                        <div class="total-row" style="display: flex; justify-content: space-between; font-size: 18px; font-weight: bold;">
+                            <span>Total Amount:</span>
+                            <span id="total-amount">₦0.00</span>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" id="cancel-btn">Cancel</button>
+                <button type="submit" class="btn btn-primary" form="payment-form">Save Payment</button>
+            </div>
+        </div>
+    </div>
+                            <span id="total-amount">₦0.00</span>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" id="cancel-btn">Cancel</button>
+                <button type="submit" class="btn btn-primary" form="payment-form">Save Payment</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Payment Item Configuration Modal -->
+    <div class="modal" id="item-config-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Configure Payment Item</h3>
+                <span class="close" id="close-item-modal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="item-config-form">
+                    <div class="form-group">
+                        <label for="item-name">Item Name:</label>
+                        <input type="text" id="item-name" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="item-amount">Amount (₦):</label>
+                        <input type="number" id="item-amount" class="form-control" step="0.01" min="0" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="item-category">Category:</label>
+                        <select id="item-category" class="form-control">
+                            <option value="academic">Academic Fees</option>
+                            <option value="uniform">Uniform & Clothing</option>
+                            <option value="boarding">Boarding Fees</option>
+                            <option value="welfare">Student Welfare & Activities</option>
+                            <option value="administrative">Administrative & Development</option>
+                            <option value="transport">Transport</option>
+                            <option value="other">Other Fees</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="item-description">Description:</label>
+                        <textarea id="item-description" class="form-control" rows="3"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="item-mandatory"> Mandatory Item
+                        </label>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" id="cancel-item-btn">Cancel</button>
+                <button type="submit" class="btn btn-primary" form="item-config-form">Save Item</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bulk Status Update Modal -->
+    <div class="modal" id="bulk-status-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Bulk Payment Status Update</h3>
+                <span class="close" id="close-bulk-modal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="bulk-status-form">
+                    <div class="form-group">
+                        <label for="bulk-payment-item">Payment Item:</label>
+                        <select id="bulk-payment-item" class="form-control" required>
+                            <option value="">Select Payment Item</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="bulk-status">New Status:</label>
+                        <select id="bulk-status" class="form-control" required>
+                            <option value="paid">Paid</option>
+                            <option value="partial">Partial</option>
+                            <option value="unpaid">Unpaid</option>
+                            <option value="pending">Pending</option>
+                        </select>
+                    </div>
+                    <div class="form-group" id="bulk-amount-group" style="display: none;">
+                        <label for="bulk-amount">Amount Paid:</label>
+                        <input type="number" id="bulk-amount" class="form-control" step="0.01" min="0">
+                    </div>
+                    <div class="form-group">
+                        <label for="bulk-filter-class">Filter by Class (optional):</label>
+                        <select id="bulk-filter-class" class="form-control">
+                            <option value="">All Classes</option>
+                        </select>
+                    </div>
+                    <div class="selected-students-info">
+                        <p><strong>Selected Students:</strong> <span id="selected-count">0</span></p>
+                        <small class="text-muted">Use checkboxes in the table to select specific students, or leave none selected to apply to all filtered students.</small>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" id="cancel-bulk-btn">Cancel</button>
+                <button type="submit" class="btn btn-primary" form="bulk-status-form">Update Status</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Payment Details Modal -->
+    <div class="modal" id="payment-details-modal">
+        <div class="modal-content modal-large">
+            <div class="modal-header">
+                <h3>Payment Details</h3>
+                <span class="close" onclick="paymentManager.closeModal('payment-details-modal')">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <h5>Student Information</h5>
+                        <p><strong>Name:</strong> <span id="detail-student-name">-</span></p>
+                        <p><strong>Class:</strong> <span id="detail-class">-</span></p>
+                        <p><strong>Term:</strong> <span id="detail-term">-</span></p>
+                        <p><strong>Session:</strong> <span id="detail-session">-</span></p>
+                    </div>
+                    <div class="col-md-6">
+                        <h5>Payment Summary</h5>
+                        <p><strong>Total Amount:</strong> <span id="detail-total-amount">₦0</span></p>
+                        <p><strong>Amount Paid:</strong> <span id="detail-paid-amount">₦0</span></p>
+                        <p><strong>Balance:</strong> <span id="detail-balance">₦0</span></p>
+                        <p><strong>Status:</strong> <span id="detail-status">-</span></p>
+                    </div>
+                </div>
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <p><strong>Created:</strong> <span id="detail-created-date">-</span></p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Last Updated:</strong> <span id="detail-updated-date">-</span></p>
+                    </div>
+                </div>
+                <h5>Payment Items Breakdown</h5>
+                <div class="table-container">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Item Name</th>
+                                <th>Category</th>
+                                <th>Amount</th>
+                                <th>Paid</th>
+                                <th>Balance</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="payment-items-table-body">
+                            <!-- Items will be populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="paymentManager.closeModal('payment-details-modal')">Close</button>
+                <button type="button" class="btn btn-primary" onclick="window.print()">Print Details</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../shared/app.js" defer></script>
+    <script src="../shared/auth-manager.js" defer></script>
+    <script src="../shared/payment-manager.js" defer></script>
+    <script src="../shared/script.js"></script>
+    <script>
+        // Payment Management JavaScript
+        document.addEventListener('DOMContentLoaded', function() {
+            // Payment configuration data
+            const paymentItems = [
+                { name: 'Tuition Fee', amount: 120000, category: 'academic', mandatory: true },
+                { name: 'Examination Fee', amount: 25000, category: 'academic', mandatory: true },
+                { name: 'Registration/Admission Fee', amount: 15000, category: 'academic', mandatory: true },
+                { name: 'Library Fee', amount: 8000, category: 'academic', mandatory: true },
+                { name: 'ICT/Computer Lab Fee', amount: 18000, category: 'academic', mandatory: true },
+                { name: 'Laboratory Fee', amount: 22000, category: 'academic', mandatory: true }
+            ];
+
+            // Student payment data
+            const studentPayments = {
+                'S001': { 
+                    name: 'John Adebayo', class: 'SS3', term: 'First Term', session: '2024/2025',
+                    payments: {
+                        'Tuition Fee': { paid: 120000, status: 'paid' },
+                        'Examination Fee': { paid: 25000, status: 'paid' },
+                        'Registration/Admission Fee': { paid: 15000, status: 'paid' },
+                        'Library Fee': { paid: 8000, status: 'paid' },
+                        'ICT/Computer Lab Fee': { paid: 18000, status: 'paid' },
+                        'Laboratory Fee': { paid: 17000, status: 'paid' }
+                    }
+                },
+                'S002': { 
+                    name: 'Sarah Okafor', class: 'SS2', term: 'First Term', session: '2024/2025',
+                    payments: {
+                        'Tuition Fee': { paid: 120000, status: 'paid' },
+                        'Examination Fee': { paid: 0, status: 'unpaid' },
+                        'Registration/Admission Fee': { paid: 0, status: 'unpaid' },
+                        'Library Fee': { paid: 0, status: 'unpaid' },
+                        'ICT/Computer Lab Fee': { paid: 0, status: 'unpaid' },
+                        'Laboratory Fee': { paid: 0, status: 'unpaid' }
+                    }
+                },
+                'S003': { 
+                    name: 'Michael Chukwu', class: 'SS1', term: 'First Term', session: '2024/2025',
+                    payments: {
+                        'Tuition Fee': { paid: 0, status: 'unpaid' },
+                        'Examination Fee': { paid: 0, status: 'unpaid' },
+                        'Registration/Admission Fee': { paid: 0, status: 'unpaid' },
+                        'Library Fee': { paid: 0, status: 'unpaid' },
+                        'ICT/Computer Lab Fee': { paid: 0, status: 'unpaid' },
+                        'Laboratory Fee': { paid: 0, status: 'unpaid' }
+                    }
+                },
+                'S004': { 
+                    name: 'Grace Aniebiet', class: 'JSS3', term: 'First Term', session: '2024/2025',
+                    payments: {
+                        'Tuition Fee': { paid: 120000, status: 'paid' },
+                        'Examination Fee': { paid: 25000, status: 'paid' },
+                        'Registration/Admission Fee': { paid: 5000, status: 'partial' },
+                        'Library Fee': { paid: 0, status: 'pending' },
+                        'ICT/Computer Lab Fee': { paid: 0, status: 'pending' },
+                        'Laboratory Fee': { paid: 0, status: 'pending' }
+                    }
+                },
+                'S005': { 
+                    name: 'David Emeka', class: 'JSS2', term: 'First Term', session: '2024/2025',
+                    payments: {
+                        'Tuition Fee': { paid: 120000, status: 'paid' },
+                        'Examination Fee': { paid: 25000, status: 'paid' },
+                        'Registration/Admission Fee': { paid: 15000, status: 'paid' },
+                        'Library Fee': { paid: 8000, status: 'paid' },
+                        'ICT/Computer Lab Fee': { paid: 18000, status: 'paid' },
+                        'Laboratory Fee': { paid: 17000, status: 'paid' }
+                    }
+                },
+                'S006': { 
+                    name: 'Amina Yusuf', class: 'JSS1', term: 'First Term', session: '2024/2025',
+                    payments: {
+                        'Tuition Fee': { paid: 25000, status: 'partial' },
+                        'Examination Fee': { paid: 0, status: 'unpaid' },
+                        'Registration/Admission Fee': { paid: 0, status: 'unpaid' },
+                        'Library Fee': { paid: 0, status: 'unpaid' },
+                        'ICT/Computer Lab Fee': { paid: 0, status: 'unpaid' },
+                        'Laboratory Fee': { paid: 0, status: 'unpaid' }
+                    }
+                },
+                'S007': { 
+                    name: 'Emmanuel Bassey', class: 'SS3', term: 'First Term', session: '2024/2025',
+                    payments: {
+                        'Tuition Fee': { paid: 0, status: 'overdue' },
+                        'Examination Fee': { paid: 0, status: 'overdue' },
+                        'Registration/Admission Fee': { paid: 0, status: 'overdue' },
+                        'Library Fee': { paid: 0, status: 'overdue' },
+                        'ICT/Computer Lab Fee': { paid: 0, status: 'overdue' },
+                        'Laboratory Fee': { paid: 0, status: 'overdue' }
+                    }
+                },
+                'S008': { 
+                    name: 'Fatima Ibrahim', class: 'SS2', term: 'First Term', session: '2024/2025',
+                    payments: {
+                        'Tuition Fee': { paid: 120000, status: 'paid' },
+                        'Examination Fee': { paid: 25000, status: 'paid' },
+                        'Registration/Admission Fee': { paid: 15000, status: 'paid' },
+                        'Library Fee': { paid: 8000, status: 'paid' },
+                        'ICT/Computer Lab Fee': { paid: 18000, status: 'paid' },
+                        'Laboratory Fee': { paid: 17000, status: 'paid' }
+                    }
+                }
+            };
+
+            // Modal elements
+            const addPaymentBtn = document.getElementById('add-payment-btn');
+            const addNewItemCard = document.getElementById('add-new-item');
+            const paymentModal = document.getElementById('payment-modal');
+            const itemConfigModal = document.getElementById('item-config-modal');
+            const paymentDetailsModal = document.getElementById('payment-details-modal');
+            const bulkUpdateModal = document.getElementById('bulk-update-modal');
+            const closeModal = document.getElementById('close-modal');
+            const closeItemModal = document.getElementById('close-item-modal');
+            const cancelBtn = document.getElementById('cancel-btn');
+            const cancelItemBtn = document.getElementById('cancel-item-btn');
+            const cancelBulkBtn = document.getElementById('cancel-bulk-btn');
+
+            // Button elements
+            const exportBtn = document.getElementById('export-payments-btn');
+            const bulkUpdateBtn = document.getElementById('bulk-update-btn');
+            const markPaidBtn = document.getElementById('mark-paid-btn');
+            const markPendingBtn = document.getElementById('mark-pending-btn');
+            const markUnpaidBtn = document.getElementById('mark-unpaid-btn');
+            const applyFiltersBtn = document.getElementById('apply-filters');
+            const clearFiltersBtn = document.getElementById('clear-filters');
+            const refreshTableBtn = document.getElementById('refresh-table');
+            const saveConfigBtn = document.getElementById('save-config-btn');
+
+            // Utility functions
+            function showModal(modal) {
+                modal.style.display = 'block';
+                modal.classList.add('active');
+            }
+
+            function hideModal(modal) {
+                modal.style.display = 'none';
+                modal.classList.remove('active');
+            }
+
+            function formatCurrency(amount) {
+                return '₦' + amount.toLocaleString();
+            }
+
+            function getStatusBadge(status) {
+                const badges = {
+                    'paid': '<span class="badge badge-success">Paid</span>',
+                    'partial': '<span class="badge badge-warning">Partial</span>',
+                    'unpaid': '<span class="badge badge-danger">Unpaid</span>',
+                    'pending': '<span class="badge badge-info">Pending</span>',
+                    'overdue': '<span class="badge badge-danger">Overdue</span>'
+                };
+                return badges[status] || '<span class="badge badge-secondary">Unknown</span>';
+            }
+
+            // Show student payment details
+            function showStudentDetails(studentId) {
+                const student = studentPayments[studentId];
+                if (!student) return;
+
+                // Populate student information
+                document.getElementById('detail-student-name').textContent = student.name;
+                document.getElementById('detail-class').textContent = student.class;
+                document.getElementById('detail-term').textContent = student.term;
+                document.getElementById('detail-session').textContent = student.session;
+
+                // Calculate totals
+                let totalAmount = 0;
+                let totalPaid = 0;
+                
+                paymentItems.forEach(item => {
+                    totalAmount += item.amount;
+                    if (student.payments[item.name]) {
+                        totalPaid += student.payments[item.name].paid;
+                    }
+                });
+
+                const balance = totalAmount - totalPaid;
+                const overallStatus = balance === 0 ? 'Paid' : (totalPaid > 0 ? 'Partial' : 'Unpaid');
+
+                // Populate payment summary
+                document.getElementById('detail-total-amount').textContent = formatCurrency(totalAmount);
+                document.getElementById('detail-paid-amount').textContent = formatCurrency(totalPaid);
+                document.getElementById('detail-balance').textContent = formatCurrency(balance);
+                document.getElementById('detail-status').innerHTML = getStatusBadge(overallStatus.toLowerCase());
+
+                // Populate dates (sample data)
+                document.getElementById('detail-created-date').textContent = '2024-01-15';
+                document.getElementById('detail-updated-date').textContent = new Date().toISOString().split('T')[0];
+
+                // Populate payment items breakdown
+                const tableBody = document.getElementById('payment-items-table-body');
+                tableBody.innerHTML = '';
+
+                paymentItems.forEach(item => {
+                    const payment = student.payments[item.name] || { paid: 0, status: 'unpaid' };
+                    const balance = item.amount - payment.paid;
+                    
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${item.name}</td>
+                        <td>${item.category}</td>
+                        <td>${formatCurrency(item.amount)}</td>
+                        <td>${formatCurrency(payment.paid)}</td>
+                        <td>${formatCurrency(balance)}</td>
+                        <td>${getStatusBadge(payment.status)}</td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+
+                showModal(paymentDetailsModal);
+            }
+
+            // Event listeners
+            if (addPaymentBtn) {
+                addPaymentBtn.addEventListener('click', function() {
+                    document.getElementById('modal-title').textContent = 'Add Payment Record';
+                    showModal(paymentModal);
+                });
+            }
+
+            if (addNewItemCard) {
+                addNewItemCard.addEventListener('click', function() {
+                    showModal(itemConfigModal);
+                });
+            }
+
+            // Close modal events
+            if (closeModal) closeModal.addEventListener('click', () => hideModal(paymentModal));
+            if (closeItemModal) closeItemModal.addEventListener('click', () => hideModal(itemConfigModal));
+            if (cancelBtn) cancelBtn.addEventListener('click', () => hideModal(paymentModal));
+            if (cancelItemBtn) cancelItemBtn.addEventListener('click', () => hideModal(itemConfigModal));
+            if (cancelBulkBtn) cancelBulkBtn.addEventListener('click', () => hideModal(bulkUpdateModal));
+
+            // Export button functionality
+            if (exportBtn) {
+                exportBtn.addEventListener('click', function() {
+                    // Get all payment data
+                    const data = Object.entries(studentPayments).map(([id, student]) => {
+                        let totalPaid = 0;
+                        let totalAmount = 0;
+                        paymentItems.forEach(item => {
+                            totalAmount += item.amount;
+                            if (student.payments[item.name]) {
+                                totalPaid += student.payments[item.name].paid;
+                            }
+                        });
+                        return {
+                            'Student ID': id,
+                            'Name': student.name,
+                            'Class': student.class,
+                            'Total Amount': totalAmount,
+                            'Paid': totalPaid,
+                            'Balance': totalAmount - totalPaid,
+                            'Status': totalPaid === totalAmount ? 'Paid' : (totalPaid > 0 ? 'Partial' : 'Unpaid')
+                        };
+                    });
+
+                    // Convert to CSV
+                    const headers = Object.keys(data[0]);
+                    const csv = [
+                        headers.join(','),
+                        ...data.map(row => headers.map(header => row[header]).join(','))
+                    ].join('\n');
+
+                    // Download CSV
+                    const blob = new Blob([csv], { type: 'text/csv' });
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'payment_records_' + new Date().toISOString().split('T')[0] + '.csv';
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    window.URL.revokeObjectURL(url);
+                    
+                    alert('Payment records exported successfully!');
+                });
+            }
+
+            // Bulk Update button
+            if (bulkUpdateBtn) {
+                bulkUpdateBtn.addEventListener('click', function() {
+                    showModal(bulkUpdateModal);
+                    updateSelectedCount();
+                });
+            }
+
+            // Mark as Paid button
+            if (markPaidBtn) {
+                markPaidBtn.addEventListener('click', function() {
+                    const checkboxes = document.querySelectorAll('.student-checkbox:checked');
+                    if (checkboxes.length === 0) {
+                        alert('Please select at least one student.');
+                        return;
+                    }
+                    
+                    if (confirm(`Mark ${checkboxes.length} student(s) as Paid?`)) {
+                        checkboxes.forEach(checkbox => {
+                            const studentId = checkbox.getAttribute('data-student');
+                            if (studentPayments[studentId]) {
+                                paymentItems.forEach(item => {
+                                    studentPayments[studentId].payments[item.name] = {
+                                        paid: item.amount,
+                                        status: 'paid'
+                                    };
+                                });
+                            }
+                        });
+                        alert('Payment status updated to Paid successfully!');
+                        loadPaymentTable();
+                    }
+                });
+            }
+
+            // Mark as Pending button
+            if (markPendingBtn) {
+                markPendingBtn.addEventListener('click', function() {
+                    const checkboxes = document.querySelectorAll('.student-checkbox:checked');
+                    if (checkboxes.length === 0) {
+                        alert('Please select at least one student.');
+                        return;
+                    }
+                    
+                    if (confirm(`Mark ${checkboxes.length} student(s) as Pending?`)) {
+                        checkboxes.forEach(checkbox => {
+                            const studentId = checkbox.getAttribute('data-student');
+                            if (studentPayments[studentId]) {
+                                paymentItems.forEach(item => {
+                                    const current = studentPayments[studentId].payments[item.name];
+                                    if (current.status !== 'paid') {
+                                        studentPayments[studentId].payments[item.name].status = 'pending';
+                                    }
+                                });
+                            }
+                        });
+                        alert('Payment status updated to Pending successfully!');
+                        loadPaymentTable();
+                    }
+                });
+            }
+
+            // Mark as Unpaid button
+            if (markUnpaidBtn) {
+                markUnpaidBtn.addEventListener('click', function() {
+                    const checkboxes = document.querySelectorAll('.student-checkbox:checked');
+                    if (checkboxes.length === 0) {
+                        alert('Please select at least one student.');
+                        return;
+                    }
+                    
+                    if (confirm(`Mark ${checkboxes.length} student(s) as Unpaid?`)) {
+                        checkboxes.forEach(checkbox => {
+                            const studentId = checkbox.getAttribute('data-student');
+                            if (studentPayments[studentId]) {
+                                paymentItems.forEach(item => {
+                                    studentPayments[studentId].payments[item.name] = {
+                                        paid: 0,
+                                        status: 'unpaid'
+                                    };
+                                });
+                            }
+                        });
+                        alert('Payment status updated to Unpaid successfully!');
+                        loadPaymentTable();
+                    }
+                });
+            }
+
+            // Apply Filters button
+            if (applyFiltersBtn) {
+                applyFiltersBtn.addEventListener('click', function() {
+                    const nameFilter = document.getElementById('filter-name').value.toLowerCase();
+                    const classFilter = document.getElementById('filter-class').value;
+                    const statusFilter = document.getElementById('filter-status').value;
+                    const termFilter = document.getElementById('filter-term').value;
+                    const sessionFilter = document.getElementById('filter-session').value;
+                    
+                    loadPaymentTable(nameFilter, classFilter, statusFilter, termFilter, sessionFilter);
+                    alert('Filters applied successfully!');
+                });
+            }
+
+            // Clear Filters button
+            if (clearFiltersBtn) {
+                clearFiltersBtn.addEventListener('click', function() {
+                    document.getElementById('filter-name').value = '';
+                    document.getElementById('filter-class').value = '';
+                    document.getElementById('filter-status').value = '';
+                    document.getElementById('filter-term').value = '';
+                    document.getElementById('filter-session').value = '';
+                    
+                    loadPaymentTable();
+                    alert('Filters cleared!');
+                });
+            }
+
+            // Refresh Table button
+            if (refreshTableBtn) {
+                refreshTableBtn.addEventListener('click', function() {
+                    loadPaymentTable();
+                    alert('Table refreshed!');
+                });
+            }
+
+            // Save Config button
+            if (saveConfigBtn) {
+                saveConfigBtn.addEventListener('click', function() {
+                    if (confirm('Save payment configuration?')) {
+                        // In a real app, this would save to backend
+                        alert('Payment configuration saved successfully!');
+                    }
+                });
+            }
+
+            // Function to update selected count
+            function updateSelectedCount() {
+                const count = document.querySelectorAll('.student-checkbox:checked').length;
+                const countElement = document.getElementById('selected-count');
+                if (countElement) {
+                    countElement.textContent = count;
+                }
+            }
+
+            // Listen for checkbox changes
+            document.addEventListener('change', function(event) {
+                if (event.target.classList.contains('student-checkbox')) {
+                    updateSelectedCount();
+                }
+            });
+
+            // Function to load payment table with filters
+            function loadPaymentTable(nameFilter = '', classFilter = '', statusFilter = '', termFilter = '', sessionFilter = '') {
+                const tbody = document.getElementById('payments-table-body');
+                if (!tbody) return;
+                
+                tbody.innerHTML = '';
+                
+                Object.entries(studentPayments).forEach(([id, student]) => {
+                    // Apply filters
+                    if (nameFilter && !student.name.toLowerCase().includes(nameFilter)) return;
+                    if (classFilter && student.class !== classFilter) return;
+                    if (termFilter && student.term !== termFilter) return;
+                    if (sessionFilter && student.session !== sessionFilter) return;
+                    
+                    // Calculate totals
+                    let totalAmount = 0;
+                    let totalPaid = 0;
+                    paymentItems.forEach(item => {
+                        totalAmount += item.amount;
+                        if (student.payments[item.name]) {
+                            totalPaid += student.payments[item.name].paid;
+                        }
+                    });
+                    
+                    const balance = totalAmount - totalPaid;
+                    const overallStatus = balance === 0 ? 'paid' : (totalPaid > 0 ? 'partial' : 'unpaid');
+                    
+                    // Apply status filter
+                    if (statusFilter && overallStatus !== statusFilter) return;
+                    
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td><input type="checkbox" class="student-checkbox" data-student="${id}"></td>
+                        <td>${student.name}</td>
+                        <td>${student.class}</td>
+                        <td>${student.term}</td>
+                        <td>${student.session}</td>
+                        <td>${formatCurrency(totalAmount)}</td>
+                        <td>${formatCurrency(totalPaid)}</td>
+                        <td>${formatCurrency(balance)}</td>
+                        <td>${getStatusBadge(overallStatus)}</td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-primary" title="View Details" onclick="viewStudentPaymentDetails('${id}')">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button class="btn btn-sm btn-outline-warning" title="Edit" onclick="editStudentPayment('${id}')">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                        </td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            }
+
+            // Make functions globally available
+            window.viewStudentPaymentDetails = function(studentId) {
+                showStudentDetails(studentId);
+            };
+
+            window.addPaymentForStudent = function(studentId) {
+                const student = studentPayments[studentId];
+                if (student) {
+                    document.getElementById('modal-title').textContent = 'Add Payment for ' + student.name;
+                    document.getElementById('student-id').value = studentId;
+                    showModal(paymentModal);
+                }
+            };
+
+            window.editStudentPayment = function(studentId) {
+                const student = studentPayments[studentId];
+                if (student) {
+                    document.getElementById('modal-title').textContent = 'Edit Payment for ' + student.name;
+                    document.getElementById('student-id').value = studentId;
+                    // Pre-fill form with existing data
+                    showModal(paymentModal);
+                }
+            };
+
+            // Select All functionality
+            const selectAllCheckbox = document.getElementById('select-all');
+            if (selectAllCheckbox) {
+                selectAllCheckbox.addEventListener('change', function() {
+                    const checkboxes = document.querySelectorAll('.student-checkbox');
+                    checkboxes.forEach(cb => {
+                        cb.checked = this.checked;
+                    });
+                    updateSelectedCount();
+                });
+            }
+
+            // Initialize table on load
+            loadPaymentTable();
+
+            // Close modal events (continued)
+
+            // View Details buttons
+            document.addEventListener('click', function(event) {
+                if (event.target.closest('.btn-outline-primary[title="View Details"]')) {
+                    const row = event.target.closest('tr');
+                    const checkbox = row.querySelector('.student-checkbox');
+                    if (checkbox) {
+                        const studentId = checkbox.getAttribute('data-student');
+                        showStudentDetails(studentId);
+                    }
+                }
+            });
+
+            // Close payment details modal
+            document.addEventListener('click', function(event) {
+                if (event.target.matches('[onclick*="payment-details-modal"]') || 
+                    event.target.closest('[onclick*="payment-details-modal"]')) {
+                    hideModal(paymentDetailsModal);
+                }
+            });
+
+            // Close modal when clicking outside
+            window.addEventListener('click', function(event) {
+                if (event.target === paymentModal) hideModal(paymentModal);
+                if (event.target === itemConfigModal) hideModal(itemConfigModal);
+                if (event.target === paymentDetailsModal) hideModal(paymentDetailsModal);
+                if (event.target === bulkUpdateModal) hideModal(bulkUpdateModal);
+            });
+
+            // Sample data population for summary cards
+            document.getElementById('total-revenue').textContent = '₦2,850,000.00';
+            document.getElementById('paid-students').textContent = '342';
+            document.getElementById('pending-payments').textContent = '58';
+            document.getElementById('month-revenue').textContent = '₦1,200,000.00';
+        });
+    </script>
+</body>
+</html>

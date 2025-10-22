@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tophill Portal - Settings</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../shared/styles.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <button class="toggle-btn" id="sidebar-toggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h3>Tophill Portal</h3>
+            </div>
+            <div class="sidebar-menu">
+                <a href="admin-dashboard.html" class="menu-item"><i class="fas fa-home"></i><span>Dashboard</span></a>
+                <a href="students.html" class="menu-item"><i class="fas fa-users"></i><span>Students</span></a>
+                <a href="teachers.html" class="menu-item"><i class="fas fa-chalkboard-teacher"></i><span>Teachers</span></a>
+                <a href="subjects.html" class="menu-item"><i class="fas fa-book"></i><span>Subjects</span></a>
+                <a href="results.html" class="menu-item"><i class="fas fa-clipboard-list"></i><span>Results</span></a>
+                <a href="payments.html" class="menu-item"><i class="fas fa-credit-card"></i><span>Payments</span></a>
+                <a href="user-management.html" class="menu-item"><i class="fas fa-user-cog"></i><span>User Management</span></a>
+                <a href="feed.html" class="menu-item"><i class="fas fa-bullhorn"></i><span>Feed</span></a>
+                <a href="settings.html" class="menu-item active"><i class="fas fa-cog"></i><span>Settings</span></a>
+                <a href="../student/student-login.html" class="menu-item" style="color:inherit;text-decoration:none;"><i class="fas fa-user-graduate"></i><span>Student Portal</span></a>
+                <a href="../teacher/teacher-login.html" class="menu-item" style="color:inherit;text-decoration:none;"><i class="fas fa-chalkboard-teacher"></i><span>Teacher Portal</span></a>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Header -->
+            <div class="header">
+                <div>
+                    <button class="menu-toggle" id="mobile-menu-toggle">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <span class="header-title">Settings</span>
+                </div>
+                <div class="user-info">
+                    <button class="btn btn-primary" onclick="exportSettings()">
+                        <i class="fas fa-download"></i> Export Settings
+                    </button>
+                    <button class="btn btn-secondary" onclick="resetSettings()">
+                        <i class="fas fa-undo"></i> Reset to Default
+                    </button>
+                    <img src="https://ui-avatars.com/api/?name=Admin+User&background=random" alt="User">
+                    <span>Admin User</span>
+                    <input type="file" id="settingsFileInput" accept=".json" class="hidden">
+                </div>
+            </div>
+
+            <!-- Settings Page -->
+            <div class="page-content active" id="settings">
+                <!-- Page Hero -->
+                <div class="page-hero">
+                    <div class="hero-content">
+                        <div class="hero-text">
+                            <h1 class="hero-title">
+                                <i class="fas fa-cog"></i>
+                                System Settings
+                            </h1>
+                            <p class="hero-subtitle">
+                                Configure school information, academic calendars, grading systems, notifications, and manage global application preferences.
+                            </p>
+                        </div>
+                        <div class="hero-actions">
+                            <button class="btn btn-primary" onclick="saveAllSettings()">
+                                <i class="fas fa-save"></i> Save Settings
+                            </button>
+                            <button class="btn btn-secondary" onclick="exportSettings()">
+                                <i class="fas fa-download"></i> Export
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    
+                    <!-- Settings Tabs -->
+                    <div class="tabs-container">
+                        <div class="tabs">
+                            <div class="tab active" data-tab="general">
+                                <i class="fas fa-cog"></i>
+                                <span>General</span>
+                            </div>
+                            <div class="tab" data-tab="academic">
+                                <i class="fas fa-graduation-cap"></i>
+                                <span>Academic</span>
+                            </div>
+                            <div class="tab" data-tab="notifications">
+                                <i class="fas fa-bell"></i>
+                                <span>Notifications</span>
+                            </div>
+                            <div class="tab" data-tab="security">
+                                <i class="fas fa-shield-alt"></i>
+                                <span>Security</span>
+                            </div>
+                            <div class="tab" data-tab="system">
+                                <i class="fas fa-server"></i>
+                                <span>System</span>
+                            </div>
+                        </div>
+                        
+                        <!-- General Settings Tab -->
+                        <div class="tab-content active" id="general">
+                            <div class="settings-section">
+                                <h3 class="settings-section-title">School Information</h3>
+                                <div class="form-grid">
+                                    <div class="form-group">
+                                        <label class="form-label">School Name</label>
+                                        <input type="text" id="schoolName" class="form-control" placeholder="Enter school name">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">School Code</label>
+                                        <input type="text" id="schoolCode" class="form-control" placeholder="Enter school code">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Principal Name</label>
+                                        <input type="text" id="principalName" class="form-control" placeholder="Enter principal name">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">School Email</label>
+                                        <input type="email" id="schoolEmail" class="form-control" placeholder="Enter school email">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">School Phone</label>
+                                        <input type="tel" id="schoolPhone" class="form-control" placeholder="Enter school phone">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Website</label>
+                                        <input type="url" id="schoolWebsite" class="form-control" placeholder="Enter school website">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">School Address</label>
+                                    <textarea id="schoolAddress" class="form-control" rows="3" placeholder="Enter school address"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Academic Settings Tab -->
+                        <div class="tab-content" id="academic">
+                            <div class="settings-section">
+                                <h3 class="settings-section-title">Academic Configuration</h3>
+                                <div class="form-grid">
+                                    <div class="form-group">
+                                        <label class="form-label">Current Academic Year</label>
+                                        <input type="text" id="academicYear" class="form-control" placeholder="e.g., 2024-2025">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Academic Session Start</label>
+                                        <input type="date" id="sessionStart" class="form-control">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Academic Session End</label>
+                                        <input type="date" id="sessionEnd" class="form-control">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Grading System</label>
+                                        <select id="gradingSystem" class="form-control">
+                                            <option value="percentage">Percentage (0-100)</option>
+                                            <option value="letter">Letter Grades (A-F)</option>
+                                            <option value="gpa">GPA System (0.0-4.0)</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Passing Grade</label>
+                                        <input type="number" id="passingGrade" class="form-control" min="1" max="100" placeholder="e.g., 35">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Maximum Marks</label>
+                                        <input type="number" id="maxMarks" class="form-control" min="1" placeholder="e.g., 100">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Result Publication</label>
+                                    <select id="resultPublication" class="form-control">
+                                        <option value="immediate">Immediate</option>
+                                        <option value="approval">After Approval</option>
+                                        <option value="scheduled">Scheduled Date</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Notifications Settings Tab -->
+                        <div class="tab-content" id="notifications">
+                            <div class="settings-section">
+                                <h3 class="settings-section-title">Notification Preferences</h3>
+                                <div class="notification-settings">
+                                    <div class="notification-item">
+                                        <div class="notification-info">
+                                            <h4>Email Notifications</h4>
+                                            <p>Receive notifications via email</p>
+                                        </div>
+                                        <label class="switch">
+                                            <input type="checkbox" id="emailNotifications">
+                                            <span class="slider"></span>
+                                        </label>
+                                    </div>
+                                    <div class="notification-item">
+                                        <div class="notification-info">
+                                            <h4>SMS Notifications</h4>
+                                            <p>Receive notifications via SMS</p>
+                                        </div>
+                                        <label class="switch">
+                                            <input type="checkbox" id="smsNotifications">
+                                            <span class="slider"></span>
+                                        </label>
+                                    </div>
+                                    <div class="notification-item">
+                                        <div class="notification-info">
+                                            <h4>Assignment Reminders</h4>
+                                            <p>Send reminders for pending assignments</p>
+                                        </div>
+                                        <label class="switch">
+                                            <input type="checkbox" id="assignmentReminders">
+                                            <span class="slider"></span>
+                                        </label>
+                                    </div>
+                                    <div class="notification-item">
+                                        <div class="notification-info">
+                                            <h4>Attendance Alerts</h4>
+                                            <p>Send alerts for low attendance</p>
+                                        </div>
+                                        <label class="switch">
+                                            <input type="checkbox" id="attendanceAlerts">
+                                            <span class="slider"></span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Security Settings Tab -->
+                        <div class="tab-content" id="security">
+                            <div class="settings-section">
+                                <h3 class="settings-section-title">Security Configuration</h3>
+                                <div class="form-grid">
+                                    <div class="form-group">
+                                        <label class="form-label">Password Policy</label>
+                                        <select id="passwordPolicy" class="form-control">
+                                            <option value="basic">Basic (6+ characters)</option>
+                                            <option value="medium">Medium (8+ chars, numbers)</option>
+                                            <option value="strong">Strong (12+ chars, mixed case, symbols)</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Session Timeout (minutes)</label>
+                                        <input type="number" id="sessionTimeout" class="form-control" min="5" max="480" placeholder="e.g., 30">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Max Login Attempts</label>
+                                        <input type="number" id="maxLoginAttempts" class="form-control" min="3" max="10" placeholder="e.g., 5">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Backup Frequency</label>
+                                        <select id="backupFrequency" class="form-control">
+                                            <option value="daily">Daily</option>
+                                            <option value="weekly">Weekly</option>
+                                            <option value="monthly">Monthly</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="security-actions">
+                                    <button class="btn btn-warning" onclick="changeAdminPassword()">
+                                        <i class="fas fa-key"></i> Change Admin Password
+                                    </button>
+                                    <button class="btn btn-info" onclick="downloadBackup()">
+                                        <i class="fas fa-download"></i> Download Backup
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- System Settings Tab -->
+                        <div class="tab-content" id="system">
+                            <div class="settings-section">
+                                <h3 class="settings-section-title">System Information</h3>
+                                <div class="system-info">
+                                    <div class="info-item">
+                                        <span class="info-label">Version:</span>
+                                        <span class="info-value">Tophill Portal v1.0.0</span>
+                                    </div>
+                                    <div class="info-item">
+                                        <span class="info-label">Last Updated:</span>
+                                        <span class="info-value">September 27, 2025</span>
+                                    </div>
+                                    <div class="info-item">
+                                        <span class="info-label">Database Size:</span>
+                                        <span class="info-value">2.5 MB</span>
+                                    </div>
+                                    <div class="info-item">
+                                        <span class="info-label">Total Users:</span>
+                                        <span class="info-value" id="totalUsers">Loading...</span>
+                                    </div>
+                                </div>
+                                <div class="system-actions">
+                                    <button class="btn btn-info" onclick="clearCache()">
+                                        <i class="fas fa-broom"></i> Clear Cache
+                                    </button>
+                                    <button class="btn btn-warning" onclick="resetDatabase()">
+                                        <i class="fas fa-database"></i> Reset Database
+                                    </button>
+                                    <button class="btn btn-success" onclick="checkUpdates()">
+                                        <i class="fas fa-sync"></i> Check Updates
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Change Admin Password Modal -->
+    <div id="changePasswordModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Change Admin Password</h3>
+                <span class="close" onclick="closeModal('changePasswordModal')">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="changePasswordForm">
+                    <div class="form-group">
+                        <label for="currentPassword">Current Password:</label>
+                        <input type="password" id="currentPassword" name="currentPassword" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="newPassword">New Password:</label>
+                        <input type="password" id="newPassword" name="newPassword" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="confirmPassword">Confirm New Password:</label>
+                        <input type="password" id="confirmPassword" name="confirmPassword" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeModal('changePasswordModal')">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="updateAdminPassword()">Update Password</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../shared/app.js" defer></script>
+    <script src="../shared/auth-manager.js" defer></script>
+    <script src="../shared/script.js" defer></script>
+    <script>
+        // Settings Management Functions
+        let currentSettings = {};
+
+        function initializeSettings() {
+            // Load current settings from localStorage or set defaults
+            currentSettings = JSON.parse(localStorage.getItem('Tophill PortalSettings')) || {
+                schoolName: 'Excel Academy',
+                schoolCode: 'EA001',
+                principalName: 'Dr. John Smith',
+                schoolEmail: 'info@excelacademy.edu',
+                schoolPhone: '+1234567890',
+                schoolWebsite: 'https://excelacademy.edu',
+                schoolAddress: '123 Education Street, Academic City, State 12345',
+                academicYear: '2024-2025',
+                sessionStart: '2024-04-01',
+                sessionEnd: '2025-03-31',
+                gradingSystem: 'percentage',
+                passingGrade: 35,
+                maxMarks: 100,
+                resultPublication: 'approval',
+                emailNotifications: true,
+                smsNotifications: false,
+                assignmentReminders: true,
+                attendanceAlerts: true,
+                passwordPolicy: 'medium',
+                sessionTimeout: 30,
+                maxLoginAttempts: 5,
+                backupFrequency: 'weekly'
+            };
+            
+            populateSettingsForm();
+            updateSystemInfo();
+        }
+
+        function populateSettingsForm() {
+            // Populate form fields with current settings
+            Object.keys(currentSettings).forEach(key => {
+                const element = document.getElementById(key);
+                if (element) {
+                    if (element.type === 'checkbox') {
+                        element.checked = currentSettings[key];
+                    } else {
+                        element.value = currentSettings[key];
+                    }
+                }
+            });
+        }
+
+        function updateSystemInfo() {
+            // Update system information
+            const totalUsers = (app.getAllStudents().length + app.getAllTeachers().length);
+            document.getElementById('totalUsers').textContent = totalUsers;
+        }
+
+        function saveAllSettings() {
+            // Collect all settings from form
+            const formElements = document.querySelectorAll('#settings input, #settings select, #settings textarea');
+            
+            formElements.forEach(element => {
+                if (element.type === 'checkbox') {
+                    currentSettings[element.id] = element.checked;
+                } else if (element.id) {
+                    currentSettings[element.id] = element.value;
+                }
+            });
+            
+            // Save to localStorage
+            localStorage.setItem('Tophill PortalSettings', JSON.stringify(currentSettings));
+            app.showNotification('Settings saved successfully!', 'success');
+        }
+
+        function exportSettings() {
+            const dataStr = JSON.stringify(currentSettings, null, 2);
+            const dataBlob = new Blob([dataStr], {type: 'application/json'});
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'Tophill Portal-settings.json';
+            link.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function resetSettings() {
+            if (confirm('Are you sure you want to reset all settings to default? This action cannot be undone.')) {
+                localStorage.removeItem('Tophill PortalSettings');
+                initializeSettings();
+                app.showNotification('Settings reset to default values!', 'info');
+            }
+        }
+
+        function changeAdminPassword() {
+            document.getElementById('changePasswordModal').style.display = 'block';
+        }
+
+        function updateAdminPassword() {
+            const current = document.getElementById('currentPassword').value;
+            const newPass = document.getElementById('newPassword').value;
+            const confirm = document.getElementById('confirmPassword').value;
+            
+            if (newPass !== confirm) {
+                app.showNotification('New passwords do not match!', 'error');
+                return;
+            }
+            
+            if (newPass.length < 8) {
+                app.showNotification('Password must be at least 8 characters long!', 'error');
+                return;
+            }
+            
+            // In a real application, you would verify the current password
+            // and update it securely on the server
+            app.showNotification('Admin password updated successfully!', 'success');
+            closeModal('changePasswordModal');
+            document.getElementById('changePasswordForm').reset();
+        }
+
+        function downloadBackup() {
+            const backupData = {
+                settings: currentSettings,
+                students: app.getAllStudents(),
+                teachers: app.getAllTeachers(),
+                subjects: app.getAllSubjects(),
+                results: app.getAllResults(),
+                assignments: app.getAllAssignments(),
+                attendance: app.data.attendance,
+                timestamp: new Date().toISOString()
+            };
+            
+            const dataStr = JSON.stringify(backupData, null, 2);
+            const dataBlob = new Blob([dataStr], {type: 'application/json'});
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `Tophill Portal-backup-${new Date().toISOString().split('T')[0]}.json`;
+            link.click();
+            URL.revokeObjectURL(url);
+            app.showNotification('Backup downloaded successfully!', 'success');
+        }
+
+        function clearCache() {
+            if (confirm('Are you sure you want to clear the application cache?')) {
+                localStorage.removeItem('Tophill PortalData');
+                app.showNotification('Cache cleared successfully!', 'success');
+            }
+        }
+
+        function resetDatabase() {
+            if (confirm('WARNING: This will delete ALL data including students, teachers, results, etc. This action cannot be undone! Are you sure?')) {
+                if (confirm('This is your final warning. All data will be permanently deleted. Continue?')) {
+                    localStorage.clear();
+                    app.showNotification('Database reset completed. Page will reload.', 'info');
+                    setTimeout(() => location.reload(), 2000);
+                }
+            }
+        }
+
+        function checkUpdates() {
+            app.showNotification('Checking for updates...', 'info');
+            setTimeout(() => {
+                app.showNotification('You are running the latest version of Tophill Portal!', 'success');
+            }, 2000);
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        // Tab switching functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeSettings();
+            
+            // Tab switching
+            const tabs = document.querySelectorAll('.tab');
+            const tabContents = document.querySelectorAll('.tab-content');
+            
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const targetTab = tab.dataset.tab;
+                    
+                    // Remove active class from all tabs and contents
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tabContents.forEach(tc => tc.classList.remove('active'));
+                    
+                    // Add active class to clicked tab and corresponding content
+                    tab.classList.add('active');
+                    document.getElementById(targetTab).classList.add('active');
+                });
+            });
+        });
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modals = document.querySelectorAll('.modal');
+            modals.forEach(modal => {
+                if (event.target === modal) {
+                    modal.style.display = 'none';
+                }
+            });
+        }
+    </script>
+</body>
+</html>

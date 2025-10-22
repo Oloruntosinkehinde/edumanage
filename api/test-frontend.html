@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tophill Portal - Frontend Test</title>
+    <link rel="stylesheet" href="shared/styles.css">
+    <style>
+        .test-container {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+        .test-result {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .test-result.success {
+            background: #d4edda;
+            color: #155724;
+        }
+        .test-result.error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>Tophill Portal Frontend Integration Test</h1>
+        <button onclick="runTests()" class="btn btn-primary">Run Tests</button>
+        <div id="results"></div>
+    </div>
+
+    <script src="shared/apiClient.js"></script>
+    <script>
+        const resultsDiv = document.getElementById('results');
+
+        function logResult(name, success, message = '') {
+            const div = document.createElement('div');
+            div.className = `test-result ${success ? 'success' : 'error'}`;
+            div.textContent = `${success ? '✅' : '❌'} ${name}${message ? ': ' + message : ''}`;
+            resultsDiv.appendChild(div);
+        }
+
+        async function runTests() {
+            resultsDiv.innerHTML = '<h2>Running Tests...</h2>';
+
+            // Test 1: API Client Initialization
+            try {
+                logResult('API Client Initialized', typeof apiClient !== 'undefined');
+            } catch (error) {
+                logResult('API Client Initialized', false, error.message);
+            }
+
+            // Test 2: Switch to API mode
+            try {
+                apiClient.setMode('api');
+                logResult('API Mode Enabled', apiClient.mode === 'api');
+            } catch (error) {
+                logResult('API Mode Enabled', false, error.message);
+            }
+
+            // Test 3: Check API Connection
+            try {
+                const health = await apiClient.get('/health');
+                logResult('API Connection', health.status === 'ok');
+            } catch (error) {
+                logResult('API Connection', false, error.message);
+            }
+
+            // Test 4: Login Test
+            try {
+                const loginResult = await apiClient.post('/auth/login', {
+                    email: 'test@Tophill Portal.app',
+                    password: 'Test123!'
+                });
+                logResult('Login Test', !!loginResult.token);
+            } catch (error) {
+                logResult('Login Test', false, error.message);
+            }
+
+            // Test 5: Get Feeds
+            try {
+                const feeds = await apiClient.get('/feeds');
+                logResult('Get Feeds', Array.isArray(feeds));
+            } catch (error) {
+                logResult('Get Feeds', false, error.message);
+            }
+
+            // Test 6: Get Notifications
+            try {
+                const notifications = await apiClient.get('/notifications');
+                logResult('Get Notifications', Array.isArray(notifications));
+            } catch (error) {
+                logResult('Get Notifications', false, error.message);
+            }
+        }
+    </script>
+</body>
+</html>

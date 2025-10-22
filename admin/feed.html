@@ -1,0 +1,1625 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tophill Portal - Communication Center</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../shared/styles.css">
+    <link rel="stylesheet" href="../shared/feed.css">
+    <link rel="stylesheet" href="../shared/message-panel-fix.css">
+    <script src="../shared/app.js" defer></script>
+    <script src="../shared/auth-manager.js" defer></script>
+    <script src="../shared/feed.js" defer></script>
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <button class="toggle-btn" id="sidebar-toggle" aria-label="Toggle sidebar">
+                    <i class="fas fa-bars" aria-hidden="true"></i>
+                </button>
+                <h3>Tophill Portal</h3>
+            </div>
+            <nav class="sidebar-menu">
+                <a href="admin-dashboard.html" class="menu-item"><i class="fas fa-home" aria-hidden="true"></i><span>Dashboard</span></a>
+                <a href="students.html" class="menu-item"><i class="fas fa-users" aria-hidden="true"></i><span>Students</span></a>
+                <a href="teachers.html" class="menu-item"><i class="fas fa-chalkboard-teacher" aria-hidden="true"></i><span>Teachers</span></a>
+                <a href="subjects.html" class="menu-item"><i class="fas fa-book" aria-hidden="true"></i><span>Subjects</span></a>
+                <a href="results.html" class="menu-item"><i class="fas fa-clipboard-list" aria-hidden="true"></i><span>Results</span></a>
+                <a href="test-runner.html" class="menu-item"><i class="fas fa-edit" aria-hidden="true"></i><span>Tests</span></a>
+                <a href="user-management.html" class="menu-item"><i class="fas fa-user-cog" aria-hidden="true"></i><span>User Management</span></a>
+                <a href="feed.html" class="menu-item active"><i class="fas fa-bullhorn" aria-hidden="true"></i><span>Communication</span></a>
+                <a href="settings.html" class="menu-item"><i class="fas fa-cog" aria-hidden="true"></i><span>Settings</span></a>
+                <a href="../student/student-login.html" class="menu-item"><i class="fas fa-user-graduate" aria-hidden="true"></i><span>Student Portal</span></a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="page-hero" aria-label="Communication center overview">
+                <div class="hero-content">
+                    <div class="hero-text">
+                        <h1 class="hero-title"><i class="fas fa-comments" aria-hidden="true"></i> Communication Center</h1>
+                        <p class="hero-subtitle">Coordinate announcements, assignments, and urgent notices from a single, beautifully organized workspace.</p>
+                    </div>
+                    <div class="hero-actions">
+                        <button id="demoLoginBtn" class="btn btn-warning" style="display: none;">
+                            <i class="fas fa-sign-in-alt" aria-hidden="true"></i> Demo Login
+                        </button>
+                        <button id="refreshMessagesBtn" class="btn btn-primary">
+                            <i class="fas fa-sync-alt" aria-hidden="true"></i> Refresh
+                        </button>
+                        <button id="newMessageBtn" class="btn btn-success">
+                            <i class="fas fa-plus" aria-hidden="true"></i> New Message
+                        </button>
+                        <button id="logoutBtn" class="btn btn-secondary" style="display: none;" onclick="feedManager.logout()">
+                            <i class="fas fa-sign-out-alt" aria-hidden="true"></i> Logout
+                        </button>
+                    </div>
+                </div>
+                <div class="hero-meta">
+                    <span class="meta-pill">
+                        <i class="fas fa-signal" aria-hidden="true"></i>
+                        Live sync <span id="metricLastUpdated">just now</span>
+                    </span>
+                    <span class="meta-pill">
+                        <i class="fas fa-filter" aria-hidden="true"></i>
+                        Focus: <span id="metricActiveFilterLabel">All messages</span>
+                    </span>
+                </div>
+            </header>
+
+            <section class="communication-summary" aria-label="Communication insights">
+                <article class="summary-card">
+                    <div class="summary-icon primary"><i class="fas fa-broadcast-tower" aria-hidden="true"></i></div>
+                    <div class="summary-content">
+                        <span class="summary-label">Broadcasts sent</span>
+                        <span class="summary-value" id="metricTotalMessages">0</span>
+                        <span class="summary-footnote" id="metricTotalTrend">All-time total</span>
+                    </div>
+                </article>
+                <article class="summary-card">
+                    <div class="summary-icon warning"><i class="fas fa-inbox" aria-hidden="true"></i></div>
+                    <div class="summary-content">
+                        <span class="summary-label">Unread items</span>
+                        <span class="summary-value" id="metricUnread">0</span>
+                        <span class="summary-footnote">Awaiting follow-up</span>
+                    </div>
+                </article>
+                <article class="summary-card">
+                    <div class="summary-icon danger"><i class="fas fa-bolt" aria-hidden="true"></i></div>
+                    <div class="summary-content">
+                        <span class="summary-label">Priority alerts</span>
+                        <span class="summary-value" id="metricPriority">0</span>
+                        <span class="summary-footnote" id="metricPriorityBreakdown">High + urgent notices</span>
+                    </div>
+                </article>
+                <article class="summary-card">
+                    <div class="summary-icon accent"><i class="fas fa-users" aria-hidden="true"></i></div>
+                    <div class="summary-content">
+                        <span class="summary-label">Audience focus</span>
+                        <span class="summary-value" id="metricAudience">All recipients</span>
+                        <span class="summary-footnote">Filters update this view</span>
+                    </div>
+                </article>
+            </section>
+
+            <!-- Communication Layout -->
+            <div class="communication-layout">
+                <!-- Left Panel - Directory & Quick Actions -->
+                <section class="feed-directory" aria-labelledby="feed-directory-heading">
+                    <!-- Compose Section -->
+                    <div class="compose-section">
+                        <button id="composeMessageBtn" class="compose-btn primary">
+                            <i class="fas fa-plus" aria-hidden="true"></i>
+                            Compose Message
+                        </button>
+                        
+                        <!-- Quick Actions -->
+                        <div class="quick-actions">
+                            <h4>Quick Messages</h4>
+                            <div id="quickActionsContainer" class="quick-buttons">
+                                <!-- Quick action buttons will be generated dynamically -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Directory Section -->
+                    <div class="directory-section">
+                        <h3 id="feed-directory-heading">Message Categories</h3>
+                        <div class="category-list" id="categoryList">
+                            <!-- Category buttons will be generated dynamically -->
+                        </div>
+                    </div>
+
+                    <!-- Audience Filters -->
+                    <div class="audience-filters">
+                        <h4>Filter by Audience</h4>
+                        <div class="filter-group" id="audienceFilters">
+                            <button class="filter-btn active" data-audience="all">
+                                <i class="fas fa-users" aria-hidden="true"></i>
+                                All
+                            </button>
+                            <button class="filter-btn" data-audience="students">
+                                <i class="fas fa-user-graduate" aria-hidden="true"></i>
+                                Students
+                            </button>
+                            <button class="filter-btn" data-audience="teachers">
+                                <i class="fas fa-chalkboard-teacher" aria-hidden="true"></i>
+                                Teachers
+                            </button>
+                            <button class="filter-btn" data-audience="parents">
+                                <i class="fas fa-user-friends" aria-hidden="true"></i>
+                                Parents
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Class Filters -->
+                    <div class="class-filters">
+                        <h4>Filter by Class</h4>
+                        <div class="filter-group" id="classFilters">
+                            <button class="filter-btn active" data-class="all">All Classes</button>
+                            <!-- Class filter buttons will be generated dynamically -->
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Middle Panel - Message List -->
+                <section class="message-list-area" aria-labelledby="message-list-heading">
+                    <div class="message-list-header">
+                        <h2 id="message-list-heading" class="sr-only">Message List</h2>
+                        
+                        <!-- Search and Filters -->
+                        <div class="search-filters">
+                            <div class="search-box">
+                                <button class="search-btn" id="searchBtn" aria-label="Search messages">
+                                    <i class="fas fa-search" aria-hidden="true"></i>
+                                </button>
+                                <input type="search" id="searchInput" placeholder="Search messages, content, or sender...">
+                                <button class="clear-search-btn" id="clearSearchBtn" aria-label="Clear search">
+                                    <i class="fas fa-times" aria-hidden="true"></i>
+                                </button>
+                            </div>
+                            
+                            <!-- Advanced Filters -->
+                            <div class="filter-buttons">
+                                <div class="filter-group priority-filters" id="priorityFilterBtns">
+                                    <span class="filter-label">Priority:</span>
+                                    <button class="filter-btn active" data-priority="all">All</button>
+                                    <button class="filter-btn priority-high" data-priority="high">High</button>
+                                    <button class="filter-btn priority-normal" data-priority="normal">Normal</button>
+                                    <button class="filter-btn priority-low" data-priority="low">Low</button>
+                                </div>
+                                
+                                <div class="filter-group date-filters" id="dateFilterBtns">
+                                    <span class="filter-label">Date:</span>
+                                    <button class="filter-btn active" data-date="all">All</button>
+                                    <button class="filter-btn" data-date="today">Today</button>
+                                    <button class="filter-btn" data-date="week">This Week</button>
+                                    <button class="filter-btn" data-date="month">This Month</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Sort Options -->
+                    <div class="sort-options">
+                        <label for="sortSelect">Sort by:</label>
+                        <select id="sortSelect">
+                            <option value="date-desc">Newest First</option>
+                            <option value="date-asc">Oldest First</option>
+                            <option value="priority">Priority</option>
+                            <option value="sender">Sender</option>
+                            <option value="category">Category</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Message List -->
+                    <div class="message-list" id="messageList">
+                        <!-- Messages will be populated here dynamically -->
+                    </div>
+                    
+                    <!-- Pagination -->
+                    <div class="pagination" id="pagination">
+                        <!-- Pagination will be added dynamically -->
+                    </div>
+                </section>
+
+                <!-- Right Panel - Message Compose Space -->
+                <section class="message-detail-panel active" id="messageDetailPanel" aria-labelledby="message-detail-heading">
+                    <div class="message-detail-content">
+                        <div class="detail-header">
+                            <h2 id="message-detail-heading">
+                                <i class="fas fa-pen-alt" aria-hidden="true"></i> 
+                                Quick Message
+                            </h2>
+                            <button id="closeDetailBtn" class="close-detail-btn" aria-label="Close">
+                                <i class="fas fa-times" aria-hidden="true"></i>
+                            </button>
+                        </div>
+
+                        <div class="detail-body">
+                            <section class="message-space" id="messageSpacePanel">
+                                <form id="quickComposeForm" class="message-space-form">
+                                    <div class="form-group">
+                                        <label for="inlineSubject">Subject:</label>
+                                        <input type="text" id="inlineSubject" name="subject" required placeholder="What's this message about?" class="form-control">
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="inlineContent">Compose:</label>
+                                        <textarea id="inlineContent" name="content" rows="12" required placeholder="Type your message here..." class="form-control"></textarea>
+                                    </div>
+
+                                    <div class="message-space-actions">
+                                        <button type="submit" class="btn btn-primary btn-block">
+                                            <i class="fas fa-paper-plane" aria-hidden="true"></i> Send Message
+                                        </button>
+                                    </div>
+                                    
+                                    <div id="messageSendStatus" class="message-send-status" style="display: none;">
+                                        <div class="status-success">
+                                            <i class="fas fa-check-circle" aria-hidden="true"></i>
+                                            <span>Message sent successfully!</span>
+                                        </div>
+                                    </div>
+                                </form>
+                            </section>
+
+                            <div class="detail-view" id="messageDetailContent" style="display: none;">
+                                <!-- Hidden as not needed in the simplified interface -->
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <!-- Compose Modal -->
+    <div id="composeModal" class="modal" role="dialog" aria-labelledby="composeModalTitle" aria-modal="true">
+        <div class="modal-content large">
+            <div class="modal-header">
+                <h2 id="composeModalTitle"><i class="fas fa-pencil-alt" aria-hidden="true"></i> Compose Message</h2>
+                <button id="closeComposeBtn" class="close-btn" aria-label="Close compose dialog">
+                    <i class="fas fa-times" aria-hidden="true"></i>
+                </button>
+            </div>
+            <form id="composeForm">
+                <div class="modal-body">
+                    <!-- Message Type Selection -->
+                    <div class="form-group">
+                        <label>Message Type:</label>
+                        <div class="category-buttons" id="modalCategoryBtns">
+                            <!-- Category buttons will be generated dynamically -->
+                        </div>
+                        <input type="hidden" id="messageCategory" name="category" required>
+                    </div>
+
+                    <!-- Priority and Audience -->
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="messagePriority">Priority:</label>
+                            <select id="messagePriority" name="priority" required>
+                                <option value="normal">Normal</option>
+                                <option value="high">High</option>
+                                <option value="low">Low</option>
+                                <option value="urgent">Urgent</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="messageAudience">Audience:</label>
+                            <select id="messageAudience" name="audience" required>
+                                <option value="all">All Users</option>
+                                <option value="teachers">Teachers Only</option>
+                                <option value="students">Students Only</option>
+                                <option value="parents">Parents Only</option>
+                                <option value="admin">Admin Only</option>
+                                <option value="custom">Custom Selection</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Custom Target Selection -->
+                    <div id="customTargetSection" class="form-section" style="display: none;">
+                        <h4>Custom Target Selection</h4>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="targetClasses">Classes:</label>
+                                <div class="multi-select" id="targetClasses">
+                                    <!-- Classes will be populated dynamically -->
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="targetTeachers">Teachers:</label>
+                                <div class="multi-select" id="targetTeachers">
+                                    <!-- Teachers will be populated dynamically -->
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="targetStudents">Students:</label>
+                                <div class="multi-select" id="targetStudents">
+                                    <!-- Students will be populated dynamically -->
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="targetSubjects">Subjects:</label>
+                                <div class="multi-select" id="targetSubjects">
+                                    <!-- Subjects will be populated dynamically -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Message Content -->
+                    <div class="form-group">
+                        <label for="messageSubject">Subject:</label>
+                        <input type="text" id="messageSubject" name="subject" required placeholder="Enter message subject">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="messageContent">Message Content:</label>
+                        <textarea id="messageContent" name="content" required rows="8" placeholder="Type your message here..."></textarea>
+                    </div>
+
+                    <!-- Schedule Options -->
+                    <div class="form-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="scheduleMessage" name="schedule">
+                            Schedule this message
+                        </label>
+                    </div>
+
+                    <div id="scheduleSection" class="form-section" style="display: none;">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="scheduleDate">Date:</label>
+                                <input type="date" id="scheduleDate" name="scheduleDate">
+                            </div>
+                            <div class="form-group">
+                                <label for="scheduleTime">Time:</label>
+                                <input type="time" id="scheduleTime" name="scheduleTime">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Attachments -->
+                    <div class="form-group">
+                        <label for="messageAttachments">Attachments:</label>
+                        <input type="file" id="messageAttachments" name="attachments" multiple>
+                        <small>You can attach multiple files (max 10MB each)</small>
+                    </div>
+
+                    <!-- Notification Options -->
+                    <div class="form-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="sendNotification" name="notification" checked>
+                            Send push notification to recipients
+                        </label>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="requireReply" name="requireReply">
+                            Require reply/acknowledgment
+                        </label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="cancelComposeBtn" class="btn btn-secondary">Cancel</button>
+                    <button type="button" id="saveDraftBtn" class="btn btn-info">Save Draft</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-paper-plane" aria-hidden="true"></i> Send Message
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Message Detail Modal -->
+    <div id="messageDetailModal" class="modal" role="dialog" aria-labelledby="messageDetailModalTitle" aria-modal="true">
+        <div class="modal-content large">
+            <div class="modal-header">
+                <h2 id="messageDetailModalTitle">Message Details</h2>
+                <button id="closeDetailModalBtn" class="close-btn" aria-label="Close message details">
+                    <i class="fas fa-times" aria-hidden="true"></i>
+                </button>
+            </div>
+            <div class="modal-body" id="messageDetailModalBody">
+                <!-- Message details will be populated here -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="replyBtn" class="btn btn-primary">
+                    <i class="fas fa-reply" aria-hidden="true"></i> Reply
+                </button>
+                <button type="button" id="forwardBtn" class="btn btn-secondary">
+                    <i class="fas fa-share" aria-hidden="true"></i> Forward
+                </button>
+                <button type="button" id="deleteBtn" class="btn btn-danger">
+                    <i class="fas fa-trash" aria-hidden="true"></i> Delete
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../shared/script.js"></script>
+    <script>
+        // Enhanced Feed Manager Class
+        class OptimizedFeedManager {
+            constructor() {
+                this.messages = [];
+                this.filteredMessages = [];
+                this.categories = this.getMessageCategories();
+                this.quickActions = this.getQuickActions();
+                this.filters = {
+                    category: 'all',
+                    audience: 'all',
+                    class: 'all',
+                    priority: 'all',
+                    date: 'all',
+                    search: ''
+                };
+                this.sortBy = 'date-desc';
+                this.currentPage = 1;
+                this.messagesPerPage = 10;
+                this.demoMode = false;
+                this.lastUpdated = null;
+                
+                this.init();
+            }
+
+            init() {
+                this.checkAuthentication();
+                this.loadSampleData();
+                this.renderDynamicElements();
+                this.bindEventListeners();
+                this.applyFilters();
+                this.renderRecentMessages();
+                
+                // Make sure the message detail panel is visible
+                const detailPanel = document.getElementById('messageDetailPanel');
+                if (detailPanel) {
+                    detailPanel.classList.add('active');
+                    console.log('Added active class to message detail panel');
+                }
+            }
+
+            checkAuthentication() {
+                // Check if user is authenticated
+                const session = localStorage.getItem('Tophill Portal_session');
+                if (!session) {
+                    console.log('No authentication session found, running in demo mode');
+                    this.demoMode = true;
+                    this.showDemoNotification();
+                    this.setupDemoMode();
+                    return;
+                }
+
+                try {
+                    const sessionData = JSON.parse(session);
+                    const user = sessionData.user;
+                    if (!user || (user.role !== 'admin' && user.role !== 'admin2')) {
+                        console.log('User not authorized for admin panel, running in demo mode');
+                        this.demoMode = true;
+                        this.showDemoNotification();
+                        this.setupDemoMode();
+                        return;
+                    }
+                    
+                    console.log('Authenticated user:', user.username, 'Role:', user.role);
+                    this.showWelcomeMessage(user);
+                } catch (error) {
+                    console.error('Error parsing session:', error);
+                    this.demoMode = true;
+                    this.showDemoNotification();
+                    this.setupDemoMode();
+                }
+            }
+
+            showDemoNotification() {
+                const notification = document.createElement('div');
+                notification.className = 'demo-notification';
+                notification.innerHTML = `
+                    <div class="demo-content">
+                        <i class="fas fa-info-circle"></i>
+                        <span>Demo Mode - <a href="admin-login.html" style="color: #007bff; text-decoration: underline;">Login</a> for full access</span>
+                        <button onclick="this.parentElement.parentElement.remove()" style="background: none; border: none; color: #6c757d; margin-left: 10px; cursor: pointer;">&times;</button>
+                    </div>
+                `;
+                notification.style.cssText = `
+                    position: fixed;
+                    top: 10px;
+                    right: 10px;
+                    background: #fff3cd;
+                    border: 1px solid #ffeaa7;
+                    border-radius: 6px;
+                    padding: 10px 15px;
+                    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+                    z-index: 1000;
+                    font-size: 14px;
+                    color: #856404;
+                `;
+                document.body.appendChild(notification);
+
+                // Auto remove after 10 seconds
+                setTimeout(() => {
+                    if (notification.parentElement) {
+                        notification.remove();
+                    }
+                }, 10000);
+            }
+
+            showWelcomeMessage(user) {
+                const welcomeDiv = document.createElement('div');
+                welcomeDiv.className = 'welcome-notification';
+                welcomeDiv.innerHTML = `
+                    <div class="welcome-content">
+                        <i class="fas fa-user-shield"></i>
+                        <span>Welcome back, ${user.name}!</span>
+                        <button onclick="this.parentElement.parentElement.remove()" style="background: none; border: none; color: #6c757d; margin-left: 10px; cursor: pointer;">&times;</button>
+                    </div>
+                `;
+                welcomeDiv.style.cssText = `
+                    position: fixed;
+                    top: 10px;
+                    right: 10px;
+                    background: #d4edda;
+                    border: 1px solid #c3e6cb;
+                    border-radius: 6px;
+                    padding: 10px 15px;
+                    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+                    z-index: 1000;
+                    font-size: 14px;
+                    color: #155724;
+                `;
+                document.body.appendChild(welcomeDiv);
+
+                // Show logout button
+                const logoutBtn = document.getElementById('logoutBtn');
+                if (logoutBtn) logoutBtn.style.display = 'inline-block';
+
+                // Auto remove after 5 seconds
+                setTimeout(() => {
+                    if (welcomeDiv.parentElement) {
+                        welcomeDiv.remove();
+                    }
+                }, 5000);
+            }
+
+            setupDemoMode() {
+                // Show demo login button
+                const demoLoginBtn = document.getElementById('demoLoginBtn');
+                if (demoLoginBtn) {
+                    demoLoginBtn.style.display = 'inline-block';
+                    demoLoginBtn.addEventListener('click', () => this.performDemoLogin());
+                }
+            }
+
+            performDemoLogin() {
+                // Create a demo session
+                const demoUser = {
+                    id: 'DEMO001',
+                    username: 'demo-admin',
+                    role: 'admin',
+                    name: 'Demo Administrator',
+                    status: 'active'
+                };
+
+                const session = {
+                    user: demoUser,
+                    timestamp: Date.now()
+                };
+
+                localStorage.setItem('Tophill Portal_session', JSON.stringify(session));
+                
+                // Refresh the page to apply authentication
+                window.location.reload();
+            }
+
+            logout() {
+                localStorage.removeItem('Tophill Portal_session');
+                localStorage.removeItem('Tophill Portal_current_user');
+                localStorage.removeItem('Tophill Portal_data');
+                window.location.href = 'admin-login.html';
+            }
+
+            getMessageCategories() {
+                return [
+                    { id: 'all', icon: 'fas fa-inbox', label: 'All Messages', count: 0 },
+                    { id: 'announcement', icon: 'fas fa-bullhorn', label: 'Announcements', count: 0 },
+                    { id: 'assignment', icon: 'fas fa-tasks', label: 'Assignments', count: 0 },
+                    { id: 'result', icon: 'fas fa-chart-line', label: 'Results', count: 0 },
+                    { id: 'subject', icon: 'fas fa-book', label: 'Subjects', count: 0 },
+                    { id: 'timetable', icon: 'fas fa-clock', label: 'Timetable', count: 0 },
+                    { id: 'event', icon: 'fas fa-calendar', label: 'Events', count: 0 },
+                    { id: 'urgent', icon: 'fas fa-exclamation-triangle', label: 'Urgent', count: 0, urgent: true }
+                ];
+            }
+
+            getQuickActions() {
+                return [
+                    { type: 'announcement', icon: 'fas fa-bullhorn', label: 'Announcement' },
+                    { type: 'assignment', icon: 'fas fa-tasks', label: 'Assignment' },
+                    { type: 'urgent', icon: 'fas fa-exclamation-triangle', label: 'Urgent' },
+                    { type: 'event', icon: 'fas fa-calendar', label: 'Event' },
+                    { type: 'result', icon: 'fas fa-chart-line', label: 'Result' },
+                    { type: 'timetable', icon: 'fas fa-clock', label: 'Timetable' }
+                ];
+            }
+
+            loadSampleData() {
+                this.messages = [
+                    {
+                        id: 1, category: 'announcement', subject: 'Welcome to New Academic Year 2025-26',
+                        content: 'We are excited to welcome all students back for the new academic year...',
+                        sender: 'Principal', date: new Date('2025-09-28'), priority: 'high',
+                        audience: 'all', classes: ['all'], read: false
+                    },
+                    {
+                        id: 2, category: 'urgent', subject: 'School Closure Due to Weather',
+                        content: 'Due to severe weather conditions, the school will remain closed tomorrow...',
+                        sender: 'Admin Office', date: new Date('2025-09-27'), priority: 'urgent',
+                        audience: 'all', classes: ['all'], read: false
+                    },
+                    {
+                        id: 3, category: 'assignment', subject: 'Mathematics Assignment - Chapter 5',
+                        content: 'Please complete exercises 5.1 to 5.5 from your Mathematics textbook...',
+                        sender: 'Ms. Sarah Johnson', date: new Date('2025-09-26'), priority: 'normal',
+                        audience: 'students', classes: ['10A', '10B'], read: true
+                    },
+                    {
+                        id: 4, category: 'result', subject: 'Class 12 Physics Results Published',
+                        content: 'The results for the monthly physics test have been published...',
+                        sender: 'Mr. David Wilson', date: new Date('2025-09-25'), priority: 'normal',
+                        audience: 'students', classes: ['12A', '12B'], read: true
+                    },
+                    {
+                        id: 5, category: 'timetable', subject: 'Updated Time Table for Science Lab',
+                        content: 'The science laboratory schedule has been updated...',
+                        sender: 'Lab Coordinator', date: new Date('2025-09-24'), priority: 'normal',
+                        audience: 'students', classes: ['11A', '11B', '12A'], read: false
+                    },
+                    {
+                        id: 6, category: 'event', subject: 'Annual Sports Day - March 15th',
+                        content: 'We are pleased to announce our Annual Sports Day on March 15th...',
+                        sender: 'Sports Department', date: new Date('2025-09-23'), priority: 'normal',
+                        audience: 'all', classes: ['all'], read: true
+                    }
+                ];
+                this.updateCategoryCounts();
+            }
+
+            renderDynamicElements() {
+                this.renderQuickActions();
+                this.renderCategories();
+                this.renderClassFilters();
+                this.renderModalCategories();
+                this.renderInlineCategories();
+            }
+            
+            renderRecentMessages() {
+                const container = document.getElementById('recentMessagesList');
+                if (!container) return;
+                
+                // Get the 3 most recent messages (fewer messages for cleaner display)
+                const recentMessages = [...this.messages]
+                    .sort((a, b) => new Date(b.date) - new Date(a.date))
+                    .slice(0, 3);
+                
+                if (recentMessages.length === 0) {
+                    container.innerHTML = `
+                        <div class="no-messages">
+                            <p>No recent messages</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                container.innerHTML = recentMessages.map(msg => `
+                    <div class="recent-message-item" data-message-id="${msg.id}" onclick="feedManager.showMessageDetail(${msg.id})">
+                        <div class="recent-message-icon ${msg.category}">
+                            <i class="${this.getCategoryIcon(msg.category)}" aria-hidden="true"></i>
+                        </div>
+                        <div class="recent-message-content">
+                            <div class="recent-message-header">
+                                <h4 class="recent-message-subject">${msg.subject}</h4>
+                                <span class="recent-message-time">${this.formatDate(msg.date)}</span>
+                            </div>
+                            <p class="recent-message-preview">${msg.content.substring(0, 60)}${msg.content.length > 60 ? '...' : ''}</p>
+                        </div>
+                    </div>
+                `).join('');
+                
+                // Set up the view all button event handler
+                document.getElementById('viewAllRecentBtn').addEventListener('click', () => {
+                    // Reset all filters to show all messages
+                    this.filters = {
+                        category: 'all',
+                        audience: 'all',
+                        class: 'all',
+                        priority: 'all',
+                        date: 'all',
+                        search: ''
+                    };
+                    
+                    // Apply filters to show all messages
+                    this.applyFilters();
+                    
+                    // Scroll to the message list
+                    document.querySelector('.message-list-area').scrollIntoView({ behavior: 'smooth' });
+                });
+            }
+
+            renderQuickActions() {
+                const container = document.getElementById('quickActionsContainer');
+                if (!container) return;
+
+                container.innerHTML = this.quickActions.map(action => `
+                    <button class="quick-btn ${action.type}" data-action="quickMessage" data-type="${action.type}">
+                        <i class="${action.icon}" aria-hidden="true"></i>
+                        ${action.label}
+                    </button>
+                `).join('');
+            }
+
+            renderCategories() {
+                const container = document.getElementById('categoryList');
+                if (!container) return;
+
+                container.innerHTML = this.categories.map(category => `
+                    <button class="category-item ${category.id === this.filters.category ? 'active' : ''} ${category.urgent ? 'urgent' : ''}" 
+                            data-category="${category.id}">
+                        <i class="${category.icon}" aria-hidden="true"></i>
+                        <span>${category.label}</span>
+                        <span class="count" id="count-${category.id}">${category.count}</span>
+                    </button>
+                `).join('');
+            }
+
+            renderClassFilters() {
+                const container = document.getElementById('classFilters');
+                if (!container) return;
+
+                const classes = ['9A', '9B', '10A', '10B', '11A', '11B', '12A', '12B'];
+                const classButtons = classes.map(cls => `
+                    <button class="filter-btn" data-class="${cls}">Class ${cls}</button>
+                `).join('');
+
+                container.innerHTML = `
+                    <button class="filter-btn active" data-class="all">All Classes</button>
+                    ${classButtons}
+                `;
+            }
+
+            renderModalCategories() {
+                const container = document.getElementById('modalCategoryBtns');
+                if (!container) return;
+
+                container.innerHTML = this.categories.filter(cat => cat.id !== 'all').map(category => `
+                    <button type="button" class="category-btn ${category.id}" data-category="${category.id}">
+                        <i class="${category.icon}" aria-hidden="true"></i>
+                        ${category.label}
+                    </button>
+                `).join('');
+            }
+
+            renderInlineCategories() {
+                const container = document.getElementById('inlineCategoryBtns');
+                const hiddenInput = document.getElementById('inlineMessageCategory');
+                if (!container || !hiddenInput) return;
+
+                const selectableCategories = this.categories.filter(cat => cat.id !== 'all');
+                if (!hiddenInput.value && selectableCategories.length) {
+                    hiddenInput.value = selectableCategories[0].id;
+                }
+
+                container.innerHTML = selectableCategories.map(category => `
+                    <button type="button" class="inline-category-btn ${category.id}" data-category="${category.id}">
+                        <i class="${category.icon}" aria-hidden="true"></i>
+                        ${category.label}
+                    </button>
+                `).join('');
+
+                this.updateInlineCategorySelection(hiddenInput.value);
+            }
+
+            updateCategoryCounts() {
+                this.categories.forEach(category => {
+                    if (category.id === 'all') {
+                        category.count = this.messages.length;
+                    } else {
+                        category.count = this.messages.filter(msg => msg.category === category.id).length;
+                    }
+                });
+            }
+
+            updateSummaryMetrics(filteredMessages = []) {
+                const workingSet = Array.isArray(filteredMessages) ? filteredMessages : (this.filteredMessages || []);
+
+                const totalEl = document.getElementById('metricTotalMessages');
+                if (totalEl) {
+                    totalEl.textContent = this.messages.length.toString();
+                }
+
+                const trendEl = document.getElementById('metricTotalTrend');
+                if (trendEl) {
+                    if (!this.messages.length) {
+                        trendEl.textContent = 'No messages yet';
+                    } else {
+                        const sevenDaysAgo = new Date();
+                        sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+                        const recentCount = this.messages.filter(msg => new Date(msg.date) >= sevenDaysAgo).length;
+                        trendEl.textContent = `${recentCount} in last 7 days`;
+                    }
+                }
+
+                const unreadEl = document.getElementById('metricUnread');
+                if (unreadEl) {
+                    const unreadCount = workingSet.filter(msg => !msg.read).length;
+                    unreadEl.textContent = unreadCount.toString();
+                }
+
+                const highCount = workingSet.filter(msg => msg.priority === 'high').length;
+                const urgentCount = workingSet.filter(msg => msg.priority === 'urgent').length;
+                const priorityHighlightCount = highCount + urgentCount;
+
+                const priorityEl = document.getElementById('metricPriority');
+                if (priorityEl) {
+                    priorityEl.textContent = priorityHighlightCount.toString();
+                }
+
+                const breakdownEl = document.getElementById('metricPriorityBreakdown');
+                if (breakdownEl) {
+                    if (!priorityHighlightCount) {
+                        breakdownEl.textContent = 'No escalations';
+                    } else {
+                        const segments = [];
+                        if (highCount) segments.push(`${highCount} high`);
+                        if (urgentCount) segments.push(`${urgentCount} urgent`);
+                        breakdownEl.textContent = segments.join(' • ');
+                    }
+                }
+
+                const audienceEl = document.getElementById('metricAudience');
+                if (audienceEl) {
+                    audienceEl.textContent = this.getAudienceSummaryLabel();
+                }
+            }
+
+            updateHeroMeta({ refreshTimestamp = false } = {}) {
+                const filterLabelEl = document.getElementById('metricActiveFilterLabel');
+                if (filterLabelEl) {
+                    filterLabelEl.textContent = this.getActiveFilterLabel();
+                }
+
+                const lastUpdatedEl = document.getElementById('metricLastUpdated');
+                if (lastUpdatedEl) {
+                    if (refreshTimestamp || !this.lastUpdated) {
+                        this.lastUpdated = new Date();
+                    }
+                    lastUpdatedEl.textContent = this.lastUpdated.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+                }
+            }
+
+            getActiveFilterLabel() {
+                const descriptors = [];
+
+                if (this.filters.category !== 'all') {
+                    descriptors.push(this.getCategoryLabel(this.filters.category));
+                }
+
+                if (this.filters.priority !== 'all') {
+                    descriptors.push(`${this.titleCase(this.filters.priority)} priority`);
+                }
+
+                if (this.filters.date !== 'all') {
+                    descriptors.push(this.getDateFilterLabel(this.filters.date));
+                }
+
+                const audienceLabel = this.getAudienceSummaryLabel();
+                if (audienceLabel !== 'All recipients') {
+                    descriptors.push(audienceLabel);
+                }
+
+                if (this.filters.search) {
+                    descriptors.push(`Search "${this.filters.search}"`);
+                }
+
+                return descriptors.length ? descriptors.join(' • ') : 'All messages';
+            }
+
+            getDateFilterLabel(value) {
+                const map = {
+                    today: 'Today',
+                    week: 'This week',
+                    month: 'This month'
+                };
+                return map[value] || this.titleCase(value || '');
+            }
+
+            getAudienceSummaryLabel() {
+                if (this.filters.class && this.filters.class !== 'all') {
+                    return `Class ${this.filters.class}`;
+                }
+
+                const audienceMap = {
+                    all: 'All recipients',
+                    students: 'Students',
+                    teachers: 'Teachers',
+                    parents: 'Parents',
+                    staff: 'Staff'
+                };
+
+                return audienceMap[this.filters.audience] || this.titleCase(this.filters.audience || 'All recipients');
+            }
+
+            titleCase(value = '') {
+                return value
+                    .toString()
+                    .split(/[\s_-]+/)
+                    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                    .join(' ')
+                    .trim() || '';
+            }
+
+            applyFilters() {
+                let filtered = [...this.messages];
+
+                // Category filter
+                if (this.filters.category !== 'all') {
+                    filtered = filtered.filter(msg => msg.category === this.filters.category);
+                }
+
+                // Audience filter
+                if (this.filters.audience !== 'all') {
+                    filtered = filtered.filter(msg => 
+                        msg.audience === this.filters.audience || msg.audience === 'all'
+                    );
+                }
+
+                // Class filter
+                if (this.filters.class !== 'all') {
+                    filtered = filtered.filter(msg => 
+                        msg.classes.includes('all') || msg.classes.includes(this.filters.class)
+                    );
+                }
+
+                // Priority filter
+                if (this.filters.priority !== 'all') {
+                    filtered = filtered.filter(msg => msg.priority === this.filters.priority);
+                }
+
+                // Date filter
+                if (this.filters.date !== 'all') {
+                    const now = new Date();
+                    filtered = filtered.filter(msg => {
+                        const msgDate = new Date(msg.date);
+                        switch (this.filters.date) {
+                            case 'today':
+                                return msgDate.toDateString() === now.toDateString();
+                            case 'week':
+                                const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+                                return msgDate >= weekAgo;
+                            case 'month':
+                                const monthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+                                return msgDate >= monthAgo;
+                            default:
+                                return true;
+                        }
+                    });
+                }
+
+                // Search filter
+                if (this.filters.search) {
+                    const searchTerm = this.filters.search.toLowerCase();
+                    filtered = filtered.filter(msg =>
+                        msg.subject.toLowerCase().includes(searchTerm) ||
+                        msg.content.toLowerCase().includes(searchTerm) ||
+                        msg.sender.toLowerCase().includes(searchTerm)
+                    );
+                }
+
+                // Sort messages
+                this.sortMessages(filtered);
+
+                this.filteredMessages = filtered;
+                this.renderMessageList();
+                this.renderPagination();
+                this.updateSummaryMetrics(filtered);
+                this.updateHeroMeta({ refreshTimestamp: true });
+            }
+
+            sortMessages(messages) {
+                messages.sort((a, b) => {
+                    switch (this.sortBy) {
+                        case 'date-desc':
+                            return new Date(b.date) - new Date(a.date);
+                        case 'date-asc':
+                            return new Date(a.date) - new Date(b.date);
+                        case 'priority':
+                            const priorityOrder = { urgent: 0, high: 1, normal: 2, low: 3 };
+                            return priorityOrder[a.priority] - priorityOrder[b.priority];
+                        case 'sender':
+                            return a.sender.localeCompare(b.sender);
+                        case 'category':
+                            return a.category.localeCompare(b.category);
+                        default:
+                            return 0;
+                    }
+                });
+            }
+
+            renderMessageList() {
+                const container = document.getElementById('messageList');
+                if (!container) return;
+
+                const startIndex = (this.currentPage - 1) * this.messagesPerPage;
+                const endIndex = startIndex + this.messagesPerPage;
+                const pageMessages = this.filteredMessages.slice(startIndex, endIndex);
+
+                if (pageMessages.length === 0) {
+                    container.innerHTML = `
+                        <div class="no-messages">
+                            <i class="fas fa-inbox" aria-hidden="true"></i>
+                            <p>No messages found matching your filters</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                container.innerHTML = pageMessages.map(msg => `
+                    <div class="message-item ${msg.read ? 'read' : 'unread'} ${msg.priority}" 
+                         data-message-id="${msg.id}" onclick="feedManager.showMessageDetail(${msg.id})">
+                        <div class="message-header">
+                            <div class="message-meta">
+                                <span class="message-category ${msg.category}">
+                                    <i class="${this.getCategoryIcon(msg.category)}" aria-hidden="true"></i>
+                                    ${this.getCategoryLabel(msg.category)}
+                                </span>
+                                <span class="message-priority ${msg.priority}">${msg.priority}</span>
+                            </div>
+                            <span class="message-date">${this.formatDate(msg.date)}</span>
+                        </div>
+                        <h3 class="message-subject">${msg.subject}</h3>
+                        <p class="message-preview">${this.truncateText(msg.content, 120)}</p>
+                        <div class="message-sender">
+                            <i class="fas fa-user" aria-hidden="true"></i>
+                            ${msg.sender}
+                        </div>
+                        ${!msg.read ? '<div class="unread-indicator"></div>' : ''}
+                    </div>
+                `).join('');
+            }
+
+            showMessageDetail(messageId) {
+                const message = this.messages.find(msg => msg.id === messageId);
+                if (!message) return;
+
+                // Mark as read
+                message.read = true;
+                this.renderMessageList();
+                this.updateSummaryMetrics(this.filteredMessages);
+                this.updateHeroMeta({ refreshTimestamp: false });
+
+                const detailContent = document.getElementById('messageDetailContent');
+                if (detailContent) {
+                    detailContent.innerHTML = `
+                        <div class="message-detail">
+                            <div class="detail-header">
+                                <div class="detail-meta">
+                                    <span class="detail-category ${message.category}">
+                                        <i class="${this.getCategoryIcon(message.category)}" aria-hidden="true"></i>
+                                        ${this.getCategoryLabel(message.category)}
+                                    </span>
+                                    <span class="detail-priority ${message.priority}">${message.priority}</span>
+                                    <span class="detail-date">${this.formatDate(message.date)}</span>
+                                </div>
+                            </div>
+                            <h2 class="detail-subject">${message.subject}</h2>
+                            <div class="detail-content">${message.content}</div>
+                            
+                            <div class="message-metadata">
+                                <div class="detail-sender">
+                                    <strong>From:</strong> ${message.sender}
+                                </div>
+                                <div class="detail-audience">
+                                    <strong>Audience:</strong> ${message.audience}
+                                </div>
+                                ${message.classes.length > 0 && !message.classes.includes('all') ? 
+                                    `<div class="detail-classes"><strong>Classes:</strong> ${message.classes.join(', ')}</div>` : ''}
+                            </div>
+
+                            <div class="message-stats">
+                                <h4>Message Statistics</h4>
+                                <div class="stats-grid">
+                                    <div class="stat-item">
+                                        <span class="stat-label">Delivered</span>
+                                        <span class="stat-value">95%</span>
+                                    </div>
+                                    <div class="stat-item">
+                                        <span class="stat-label">Read</span>
+                                        <span class="stat-value">78%</span>
+                                    </div>
+                                    <div class="stat-item">
+                                        <span class="stat-label">Replied</span>
+                                        <span class="stat-value">23%</span>
+                                    </div>
+                                    <div class="stat-item">
+                                        <span class="stat-label">Priority</span>
+                                        <span class="stat-value priority-${message.priority}">${message.priority}</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="message-actions">
+                                <h4>Quick Actions</h4>
+                                <div class="action-buttons">
+                                    <button class="action-btn reply">
+                                        <i class="fas fa-reply"></i>
+                                        Reply
+                                    </button>
+                                    <button class="action-btn forward">
+                                        <i class="fas fa-share"></i>
+                                        Forward
+                                    </button>
+                                    <button class="action-btn edit">
+                                        <i class="fas fa-edit"></i>
+                                        Edit
+                                    </button>
+                                    <button class="action-btn delete">
+                                        <i class="fas fa-trash"></i>
+                                        Delete
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="recent-activity">
+                                <h4>Recent Activity</h4>
+                                <div class="activity-list">
+                                    <div class="activity-item">
+                                        <i class="fas fa-paper-plane activity-icon sent"></i>
+                                        <span class="activity-text">Message sent to ${message.audience}</span>
+                                        <span class="activity-time">${this.formatDate(message.date)}</span>
+                                    </div>
+                                    <div class="activity-item">
+                                        <i class="fas fa-eye activity-icon read"></i>
+                                        <span class="activity-text">Viewed by 45 recipients</span>
+                                        <span class="activity-time">2 hours ago</span>
+                                    </div>
+                                    <div class="activity-item">
+                                        <i class="fas fa-reply activity-icon reply"></i>
+                                        <span class="activity-text">3 replies received</span>
+                                        <span class="activity-time">1 hour ago</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }
+            }
+
+            getCategoryIcon(category) {
+                const categoryObj = this.categories.find(cat => cat.id === category);
+                return categoryObj ? categoryObj.icon : 'fas fa-envelope';
+            }
+
+            getCategoryLabel(category) {
+                const categoryObj = this.categories.find(cat => cat.id === category);
+                return categoryObj ? categoryObj.label.replace(/s$/, '') : category;
+            }
+
+            formatDate(date) {
+                return new Date(date).toLocaleDateString('en-US', { 
+                    month: 'short', day: 'numeric', year: 'numeric' 
+                });
+            }
+
+            truncateText(text, maxLength) {
+                return text.length > maxLength ? text.substring(0, maxLength) + '...' : text;
+            }
+
+            renderPagination() {
+                const container = document.getElementById('pagination');
+                if (!container) return;
+
+                const totalPages = Math.ceil(this.filteredMessages.length / this.messagesPerPage);
+                if (totalPages <= 1) {
+                    container.innerHTML = '';
+                    return;
+                }
+
+                let pagination = '<div class="pagination-controls">';
+                
+                // Previous button
+                pagination += `<button class="page-btn ${this.currentPage === 1 ? 'disabled' : ''}" 
+                              onclick="feedManager.changePage(${this.currentPage - 1})" 
+                              ${this.currentPage === 1 ? 'disabled' : ''}>
+                              <i class="fas fa-chevron-left"></i>
+                            </button>`;
+
+                // Page numbers
+                for (let i = 1; i <= totalPages; i++) {
+                    if (i === 1 || i === totalPages || (i >= this.currentPage - 2 && i <= this.currentPage + 2)) {
+                        pagination += `<button class="page-btn ${i === this.currentPage ? 'active' : ''}" 
+                                      onclick="feedManager.changePage(${i})">${i}</button>`;
+                    } else if (i === this.currentPage - 3 || i === this.currentPage + 3) {
+                        pagination += '<span class="page-ellipsis">...</span>';
+                    }
+                }
+
+                // Next button
+                pagination += `<button class="page-btn ${this.currentPage === totalPages ? 'disabled' : ''}" 
+                              onclick="feedManager.changePage(${this.currentPage + 1})" 
+                              ${this.currentPage === totalPages ? 'disabled' : ''}>
+                              <i class="fas fa-chevron-right"></i>
+                            </button>`;
+
+                pagination += '</div>';
+                container.innerHTML = pagination;
+            }
+
+            changePage(page) {
+                const totalPages = Math.ceil(this.filteredMessages.length / this.messagesPerPage);
+                if (page < 1 || page > totalPages) return;
+                
+                this.currentPage = page;
+                this.renderMessageList();
+                this.renderPagination();
+            }
+
+            bindEventListeners() {
+                // Quick actions
+                document.getElementById('quickActionsContainer')?.addEventListener('click', (e) => {
+                    const button = e.target.closest('button[data-action="quickMessage"]');
+                    if (button) this.quickMessage(button.dataset.type);
+                });
+
+                // Category filters
+                document.getElementById('categoryList')?.addEventListener('click', (e) => {
+                    const button = e.target.closest('button[data-category]');
+                    if (button) this.filterByCategory(button.dataset.category);
+                });
+
+                // Audience filters
+                document.getElementById('audienceFilters')?.addEventListener('click', (e) => {
+                    const button = e.target.closest('button[data-audience]');
+                    if (button) this.filterByAudience(button.dataset.audience);
+                });
+
+                // Class filters
+                document.getElementById('classFilters')?.addEventListener('click', (e) => {
+                    const button = e.target.closest('button[data-class]');
+                    if (button) this.filterByClass(button.dataset.class);
+                });
+
+                // Priority filters
+                document.getElementById('priorityFilterBtns')?.addEventListener('click', (e) => {
+                    const button = e.target.closest('button[data-priority]');
+                    if (button) this.filterByPriority(button.dataset.priority);
+                });
+
+                // Date filters
+                document.getElementById('dateFilterBtns')?.addEventListener('click', (e) => {
+                    const button = e.target.closest('button[data-date]');
+                    if (button) this.filterByDate(button.dataset.date);
+                });
+
+                // Search
+                document.getElementById('searchInput')?.addEventListener('input', (e) => {
+                    this.filters.search = e.target.value;
+                    this.currentPage = 1;
+                    this.applyFilters();
+                });
+
+                // Clear search
+                document.getElementById('clearSearchBtn')?.addEventListener('click', () => {
+                    document.getElementById('searchInput').value = '';
+                    this.filters.search = '';
+                    this.currentPage = 1;
+                    this.applyFilters();
+                });
+
+                // Sort
+                document.getElementById('sortSelect')?.addEventListener('change', (e) => {
+                    this.sortBy = e.target.value;
+                    this.applyFilters();
+                });
+                
+                // Refresh messages
+                document.getElementById('refreshMessagesBtn')?.addEventListener('click', () => {
+                    this.applyFilters();
+                    this.renderRecentMessages();
+                    this.updateHeroMeta({ refreshTimestamp: true });
+                    this.showNotification('Messages refreshed', 'info');
+                });
+
+                // Modal events
+                this.bindModalEvents();
+            }
+
+            bindModalEvents() {
+                // Compose modal
+                document.getElementById('composeMessageBtn')?.addEventListener('click', () => this.openComposeModal());
+                document.getElementById('newMessageBtn')?.addEventListener('click', () => this.openComposeModal());
+                document.getElementById('closeComposeBtn')?.addEventListener('click', () => this.closeComposeModal());
+                document.getElementById('cancelComposeBtn')?.addEventListener('click', () => this.closeComposeModal());
+
+                // Modal category selection
+                document.getElementById('modalCategoryBtns')?.addEventListener('click', (e) => {
+                    const button = e.target.closest('button[data-category]');
+                    if (button) {
+                        document.getElementById('messageCategory').value = button.dataset.category;
+                        document.querySelectorAll('#modalCategoryBtns .category-btn').forEach(btn => btn.classList.remove('active'));
+                        button.classList.add('active');
+                    }
+                });
+
+                // Inline compose category selection
+                document.getElementById('inlineCategoryBtns')?.addEventListener('click', (e) => {
+                    const button = e.target.closest('button[data-category]');
+                    if (button) {
+                        document.getElementById('inlineMessageCategory').value = button.dataset.category;
+                        this.updateInlineCategorySelection(button.dataset.category);
+                    }
+                });
+
+                // Audience selection
+                document.getElementById('messageAudience')?.addEventListener('change', (e) => {
+                    const customSection = document.getElementById('customTargetSection');
+                    if (customSection) {
+                        customSection.style.display = e.target.value === 'custom' ? 'block' : 'none';
+                    }
+                });
+
+                // Schedule message
+                document.getElementById('scheduleMessage')?.addEventListener('change', (e) => {
+                    const scheduleSection = document.getElementById('scheduleSection');
+                    if (scheduleSection) {
+                        scheduleSection.style.display = e.target.checked ? 'block' : 'none';
+                    }
+                });
+
+                // Form submission
+                document.getElementById('composeForm')?.addEventListener('submit', (e) => this.sendMessage(e));
+                
+                // Note: quickComposeForm is bound separately in bindQuickComposeForm()
+            }
+            
+            bindQuickComposeForm() {
+                const quickComposeForm = document.getElementById('quickComposeForm');
+                const messageSendStatus = document.getElementById('messageSendStatus');
+                
+                if (!quickComposeForm) {
+                    console.warn('Quick compose form not found');
+                    return;
+                }
+                
+                quickComposeForm.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    
+                    const subject = document.getElementById('inlineSubject')?.value;
+                    const content = document.getElementById('inlineContent')?.value;
+                    
+                    if (!subject || !content) {
+                        this.showNotification('Please fill in both subject and message', 'warning');
+                        return;
+                    }
+                    
+                    // Create new message object
+                    const newMessage = {
+                        id: this.messages.length + 1,
+                        category: 'announcement',
+                        subject: subject,
+                        content: content,
+                        sender: this.getCurrentUserName(),
+                        date: new Date(),
+                        priority: 'normal',
+                        audience: 'all',
+                        classes: ['all'],
+                        read: false
+                    };
+                    
+                    // Add to messages array
+                    this.messages.unshift(newMessage);
+                    
+                    // Show success message
+                    if (messageSendStatus) {
+                        messageSendStatus.style.display = 'block';
+                        
+                        // Hide after 3 seconds
+                        setTimeout(() => {
+                            messageSendStatus.style.display = 'none';
+                        }, 3000);
+                    }
+                    
+                    // Clear the form
+                    quickComposeForm.reset();
+                    
+                    // Refresh displays
+                    this.applyFilters();
+                    this.renderRecentMessages();
+                    this.updateCategoryCounts();
+                    
+                    // Show notification
+                    this.showNotification('Message sent successfully!', 'success');
+                    
+                    console.log('Quick message sent:', newMessage);
+                });
+            }
+            
+            getCurrentUserName() {
+                try {
+                    const session = localStorage.getItem('Tophill Portal_session');
+                    if (session) {
+                        const sessionData = JSON.parse(session);
+                        return sessionData.user?.username || 'Admin';
+                    }
+                } catch (error) {
+                    console.error('Error getting user name:', error);
+                }
+                return 'Admin';
+            }
+
+            updateInlineCategorySelection(selectedCategory) {
+                document.querySelectorAll('#inlineCategoryBtns .inline-category-btn').forEach(btn => {
+                    btn.classList.toggle('active', btn.dataset.category === selectedCategory);
+                });
+            }
+
+            filterByCategory(category) {
+                this.filters.category = category;
+                this.currentPage = 1;
+                this.updateActiveFilter('#categoryList .category-item', `[data-category="${category}"]`);
+                this.applyFilters();
+            }
+
+            filterByAudience(audience) {
+                this.filters.audience = audience;
+                this.currentPage = 1;
+                this.updateActiveFilter('#audienceFilters .filter-btn', `[data-audience="${audience}"]`);
+                this.applyFilters();
+            }
+
+            filterByClass(classFilter) {
+                this.filters.class = classFilter;
+                this.currentPage = 1;
+                this.updateActiveFilter('#classFilters .filter-btn', `[data-class="${classFilter}"]`);
+                this.applyFilters();
+            }
+
+            filterByPriority(priority) {
+                this.filters.priority = priority;
+                this.currentPage = 1;
+                this.updateActiveFilter('#priorityFilterBtns .filter-btn', `[data-priority="${priority}"]`);
+                this.applyFilters();
+            }
+
+            filterByDate(date) {
+                this.filters.date = date;
+                this.currentPage = 1;
+                this.updateActiveFilter('#dateFilterBtns .filter-btn', `[data-date="${date}"]`);
+                this.applyFilters();
+            }
+
+            updateActiveFilter(containerSelector, activeSelector) {
+                document.querySelectorAll(`${containerSelector}`).forEach(btn => btn.classList.remove('active'));
+                document.querySelector(`${containerSelector}${activeSelector}`)?.classList.add('active');
+            }
+
+            quickMessage(type) {
+                this.openComposeModal();
+                const categoryInput = document.getElementById('messageCategory');
+                const categoryButton = document.querySelector(`#modalCategoryBtns .category-btn[data-category="${type}"]`);
+                if (categoryInput) categoryInput.value = type;
+                if (categoryButton) {
+                    document.querySelectorAll('#modalCategoryBtns .category-btn').forEach(btn => btn.classList.remove('active'));
+                    categoryButton.classList.add('active');
+                }
+            }
+
+            openComposeModal() {
+                const modal = document.getElementById('composeModal');
+                if (modal) modal.style.display = 'block';
+            }
+
+            closeComposeModal() {
+                const modal = document.getElementById('composeModal');
+                if (modal) modal.style.display = 'none';
+                document.getElementById('composeForm')?.reset();
+                document.querySelectorAll('#modalCategoryBtns .category-btn').forEach(btn => btn.classList.remove('active'));
+            }
+
+            sendMessage(event) {
+                event.preventDefault();
+                const form = event.target;
+                const formData = new FormData(form);
+                
+                const newMessage = {
+                    id: this.messages.length + 1,
+                    category: formData.get('category') || 'announcement',
+                    subject: formData.get('subject') || 'Untitled message',
+                    content: formData.get('content') || '',
+                    sender: 'Admin',
+                    date: new Date(),
+                    priority: formData.get('priority') || 'normal',
+                    audience: formData.get('audience') || 'all',
+                    classes: formData.get('audience') === 'students' ? ['10A', '10B'] : ['all'],
+                    read: false
+                };
+
+                this.messages.unshift(newMessage);
+                this.updateCategoryCounts();
+                this.renderCategories();
+                this.applyFilters();
+                this.renderRecentMessages();
+
+                if (form.id === 'composeForm') {
+                    this.closeComposeModal();
+                } else if (form.id === 'inlineComposeForm') {
+                    this.resetInlineCompose();
+                }
+                
+                this.showNotification('Message sent successfully!', 'success');
+            }
+
+            resetInlineCompose() {
+                const form = document.getElementById('inlineComposeForm');
+                const hiddenCategory = document.getElementById('inlineMessageCategory');
+                if (!form || !hiddenCategory) return;
+
+                form.reset();
+                const defaultCategory = hiddenCategory.value || document.querySelector('#inlineCategoryBtns .inline-category-btn')?.dataset.category || 'announcement';
+                hiddenCategory.value = defaultCategory;
+                this.updateInlineCategorySelection(defaultCategory);
+            }
+
+            showNotification(message, type = 'info') {
+                const notification = document.createElement('div');
+                notification.className = `notification notification-${type}`;
+                notification.innerHTML = `
+                    <div class="notification-content">
+                        <span>${message}</span>
+                        <button class="notification-close">&times;</button>
+                    </div>
+                `;
+
+                document.body.appendChild(notification);
+
+                notification.querySelector('.notification-close').addEventListener('click', () => {
+                    notification.classList.add('notification-hiding');
+                    setTimeout(() => notification.remove(), 300);
+                });
+
+                setTimeout(() => {
+                    notification.classList.add('notification-hiding');
+                    setTimeout(() => notification.remove(), 300);
+                }, 5000);
+            }
+        }
+
+        // Initialize the feed manager when DOM is loaded
+        let feedManager;
+        document.addEventListener('DOMContentLoaded', () => {
+            feedManager = new OptimizedFeedManager();
+            // Robustly connect all main UI buttons to the right logic
+            // Refresh
+            document.getElementById('refreshMessagesBtn')?.addEventListener('click', () => feedManager.applyFilters());
+            // New Message
+            document.getElementById('newMessageBtn')?.addEventListener('click', () => feedManager.openComposeModal());
+            // Compose (main hero)
+            document.getElementById('composeMessageBtn')?.addEventListener('click', () => feedManager.openComposeModal());
+            // Logout
+            document.getElementById('logoutBtn')?.addEventListener('click', () => feedManager.logout());
+            // Quick Compose (right panel)
+            feedManager.bindQuickComposeForm();
+            // Filters, search, sort, etc. are handled in bindEventListeners/init
+        });
+    </script>
+</body>
+</html>

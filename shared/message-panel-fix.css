@@ -1,0 +1,8 @@
+/* Clean styling for the message panel */
+.message-detail-panel {
+    transform: none !important;
+    opacity: 1 !important;
+    display: flex !important;
+}
+
+/* No additional styling needed for messages panel */

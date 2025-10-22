@@ -1,0 +1,31 @@
+id,name,email,class,guardian,phone,address,dateOfBirth,enrollmentDate,status
+STD0001,Amelia Hart,amelia.hart1@example.com,JSS1A,Lucas Hart,08030000001,"12 Palm Street, Lagos",2012-02-14,2024-09-02,active
+STD0002,Benjamin Cole,ben.cole2@example.com,JSS1A,Marian Cole,08030000002,"8 Cedar Close, Lagos",2012-06-21,2024-09-02,active
+STD0003,Chloe Nwosu,chloe.nwosu3@example.com,JSS1A,Angela Nwosu,08030000003,"22 Market Road, Lagos",2011-11-08,2024-09-02,active
+STD0004,Daniel Mensah,daniel.mensah4@example.com,JSS1B,Francis Mensah,08030000004,"15 Unity Avenue, Abuja",2011-04-30,2024-09-03,active
+STD0005,Eden Adebayo,eden.adebayo5@example.com,JSS1B,Yemi Adebayo,08030000005,"9 Palmcrest Estate, Abuja",2011-09-17,2024-09-03,active
+STD0006,Felix Gomez,felix.gomez6@example.com,JSS1B,Sandra Gomez,08030000006,"3 Sunrise Drive, Abuja",2011-12-05,2024-09-03,active
+STD0007,Grace Ikenna,grace.ikenna7@example.com,JSS2A,Oluchi Ikenna,08030000007,"45 Admiralty Way, Lagos",2010-08-12,2023-09-04,active
+STD0008,Henry Lawson,henry.lawson8@example.com,JSS2A,Thomas Lawson,08030000008,"18 Greenfield Lane, Lagos",2010-01-26,2023-09-04,active
+STD0009,Isla Chen,isla.chen9@example.com,JSS2A,Wei Chen,08030000009,"6 Harbour View, Lagos",2010-10-03,2023-09-04,active
+STD0010,Jacob Adeyemi,jacob.adeyemi10@example.com,JSS2B,Grace Adeyemi,08030000010,"2 Freedom Close, Ibadan",2010-05-11,2023-09-04,active
+STD0011,Kemi Richards,kemi.richards11@example.com,JSS2B,Funmi Richards,08030000011,"14 Blossom Street, Ibadan",2010-03-18,2023-09-04,active
+STD0012,Leo Fernandez,leo.fernandez12@example.com,JSS2B,Carlos Fernandez,08030000012,"27 Coral Crescent, Ibadan",2010-07-25,2023-09-04,active
+STD0013,Maya Onyekachi,maya.onyekachi13@example.com,JSS3A,Chinelo Onyekachi,08030000013,"31 Garden Estate, Enugu",2009-09-01,2022-09-05,active
+STD0014,Noah Bassey,noah.bassey14@example.com,JSS3A,Samuel Bassey,08030000014,"19 Pioneer Drive, Enugu",2009-02-07,2022-09-05,active
+STD0015,Olivia Hassan,olivia.hassan15@example.com,JSS3A,Farida Hassan,08030000015,"5 Crystal Court, Enugu",2009-12-19,2022-09-05,active
+STD0016,Parker Sule,parker.sule16@example.com,JSS3B,Rahman Sule,08030000016,"28 Silver Lane, Kaduna",2009-05-28,2022-09-05,active
+STD0017,Queen Ezigbo,queen.ezigbo17@example.com,JSS3B,Amaka Ezigbo,08030000017,"11 Unity Crescent, Kaduna",2009-07-09,2022-09-05,active
+STD0018,Ryan Musa,ryan.musa18@example.com,JSS3B,Halima Musa,08030000018,"7 Rainbow Street, Kaduna",2009-01-14,2022-09-05,active
+STD0019,Sophia Ahmed,sophia.ahmed19@example.com,SS1A,Nasir Ahmed,08030000019,"16 Kingsway Road, Kano",2008-06-02,2021-09-06,active
+STD0020,Tobi Martins,tobi.martins20@example.com,SS1A,Abigail Martins,08030000020,"10 Maple Ridge, Kano",2008-03-27,2021-09-06,active
+STD0021,Ugochi Bello,ugochi.bello21@example.com,SS1A,Chidera Bello,08030000021,"4 Sunrise Terrace, Kano",2008-09-30,2021-09-06,active
+STD0022,Victor Daniels,victor.daniels22@example.com,SS1B,Martin Daniels,08030000022,"38 Clover Avenue, Port Harcourt",2008-04-05,2021-09-06,active
+STD0023,Wendy Okafor,wendy.okafor23@example.com,SS1B,Joseph Okafor,08030000023,"21 Lagoon View, Port Harcourt",2008-11-16,2021-09-06,active
+STD0024,Xavier Okon,xavier.okon24@example.com,SS1B,Emeka Okon,08030000024,"13 Atlantic Road, Port Harcourt",2008-02-01,2021-09-06,inactive
+STD0025,Yvonne Igwe,yvonne.igwe25@example.com,SS2A,Obinna Igwe,08030000025,"29 Green Gate, Benin City",2007-10-22,2020-09-07,active
+STD0026,Zion Atanda,zion.atanda26@example.com,SS2A,Remi Atanda,08030000026,"18 Hibiscus Lane, Benin City",2007-05-13,2020-09-07,active
+STD0027,Adeola Shittu,adeola.shittu27@example.com,SS2B,Moji Shittu,08030000027,"9 Heritage Close, Benin City",2007-07-01,2020-09-07,active
+STD0028,Bola Kareem,bola.kareem28@example.com,SS2B,Kenny Kareem,08030000028,"24 Amber Drive, Benin City",2007-01-19,2020-09-07,active
+STD0029,Chioma Peters,chioma.peters29@example.com,SS3A,Ebuka Peters,08030000029,"6 Willow Grove, Ibadan",2006-08-08,2019-09-09,graduated
+STD0030,Damilola Ogunleye,damilola.ogunleye30@example.com,SS3B,Busola Ogunleye,08030000030,"33 Harmony Estate, Ibadan",2006-03-03,2019-09-09,active

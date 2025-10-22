@@ -1,0 +1,1323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tophill Portal - User Management</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../shared/styles.css">
+    <!-- Enhanced Backend Scripts -->
+    <script src="../shared/app.js"></script>
+    <script src="../shared/auth-manager.js"></script>
+    <script src="../shared/script.js"></script>
+
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <button class="toggle-btn" id="sidebar-toggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h3>Tophill Portal</h3>
+            </div>
+            <div class="sidebar-menu">
+                <a href="admin-dashboard.html" class="menu-item"><i class="fas fa-home"></i><span>Dashboard</span></a>
+                <a href="students.html" class="menu-item"><i class="fas fa-users"></i><span>Students</span></a>
+                <a href="teachers.html" class="menu-item"><i class="fas fa-chalkboard-teacher"></i><span>Teachers</span></a>
+                <a href="subjects.html" class="menu-item"><i class="fas fa-book"></i><span>Subjects</span></a>
+                <a href="results.html" class="menu-item"><i class="fas fa-clipboard-list"></i><span>Results</span></a>
+                <a href="payments.html" class="menu-item"><i class="fas fa-credit-card"></i><span>Payments</span></a>
+                <a href="user-management.html" class="menu-item active"><i class="fas fa-user-cog"></i><span>User Management</span></a>
+                <a href="feed.html" class="menu-item"><i class="fas fa-bullhorn"></i><span>Feed</span></a>
+                <a href="settings.html" class="menu-item"><i class="fas fa-cog"></i><span>Settings</span></a>
+                <a href="../student/student-login.html" class="menu-item" style="color:inherit;text-decoration:none;"><i class="fas fa-user-graduate"></i><span>Student Portal</span></a>
+                <a href="../teacher/teacher-login.html" class="menu-item" style="color:inherit;text-decoration:none;"><i class="fas fa-chalkboard-teacher"></i><span>Teacher Portal</span></a>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Header -->
+            <div class="header">
+                <div>
+                    <button class="menu-toggle" id="mobile-menu-toggle">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <span class="header-title">User Management</span>
+                </div>
+                <div class="user-info">
+                    <button class="btn btn-primary" onclick="exportUserCredentials()" style="margin-right: 10px;">
+                        <i class="fas fa-download"></i> Export Credentials
+                    </button>
+                    <button class="btn btn-primary" onclick="downloadPDF('user-management')" style="margin-right: 15px;">
+                        <i class="fas fa-file-pdf"></i> Download PDF
+                    </button>
+                    <img src="https://ui-avatars.com/api/?name=Admin+User&background=random" alt="User">
+                    <span>Admin User</span>
+                </div>
+            </div>
+
+            <!-- User Management Content -->
+            <div class="page-content active" id="user-management">
+                <!-- Page Hero -->
+                <div class="page-hero">
+                    <div class="hero-content">
+                        <div class="hero-text">
+                            <h1 class="hero-title">
+                                <i class="fas fa-user-cog"></i>
+                                User Management
+                            </h1>
+                            <p class="hero-subtitle">
+                                Manage user accounts, set permissions, generate credentials, and oversee access control for students, teachers, and administrators.
+                            </p>
+                        </div>
+                        <div class="hero-actions">
+                            <button class="btn btn-primary" onclick="showAddUserModal()">
+                                <i class="fas fa-user-plus"></i> Add User
+                            </button>
+                            <button class="btn btn-secondary" onclick="exportUserCredentials()">
+                                <i class="fas fa-download"></i> Export
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Quick Stats -->
+                <div class="dashboard-cards">
+                    <div class="card">
+                        <div class="card-icon" style="background-color: rgba(67, 97, 238, 0.1); color: var(--primary);">
+                            <i class="fas fa-users-cog"></i>
+                        </div>
+                        <div class="card-title">Total Users</div>
+                        <div class="card-value" id="totalUsersCount">0</div>
+                        <div class="card-desc">Active system users</div>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon" style="background-color: rgba(76, 201, 240, 0.1); color: var(--success);">
+                            <i class="fas fa-user-graduate"></i>
+                        </div>
+                        <div class="card-title">Student Accounts</div>
+                        <div class="card-value" id="studentUsersCount">0</div>
+                        <div class="card-desc">Student login accounts</div>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon" style="background-color: rgba(247, 37, 133, 0.1); color: var(--warning);">
+                            <i class="fas fa-chalkboard-teacher"></i>
+                        </div>
+                        <div class="card-title">Teacher Accounts</div>
+                        <div class="card-value" id="teacherUsersCount">0</div>
+                        <div class="card-desc">Teacher login accounts</div>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon" style="background-color: rgba(34, 197, 94, 0.1); color: var(--info);">
+                            <i class="fas fa-user-shield"></i>
+                        </div>
+                        <div class="card-title">Admin Accounts</div>
+                        <div class="card-value" id="adminUsersCount">0</div>
+                        <div class="card-desc">Administrator accounts</div>
+                    </div>
+                </div>
+
+                <!-- User Creation Forms -->
+                <div class="content-section">
+                    <div class="section-header">
+                        <h3 class="section-title">Create New User Accounts</h3>
+                        <div class="section-actions">
+                            <button class="btn btn-primary" onclick="showBulkCreateModal()">
+                                <i class="fas fa-plus-circle"></i> Bulk Create
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="tabs">
+                        <div class="tab active" data-tab="create-student">
+                            <i class="fas fa-user-graduate"></i> Create Student Account
+                        </div>
+                        <div class="tab" data-tab="create-teacher">
+                            <i class="fas fa-chalkboard-teacher"></i> Create Teacher Account
+                        </div>
+                        <div class="tab" data-tab="create-admin">
+                            <i class="fas fa-user-shield"></i> Create Admin Account
+                        </div>
+                    </div>
+
+                    <!-- Create Student Account -->
+                    <div class="tab-content active" id="create-student">
+                        <form class="data-form" data-type="create-student" onsubmit="createStudentAccount(event)">
+                            <div class="form-row">
+                                <div class="form-col">
+                                    <label class="form-label">Select Student</label>
+                                    <select id="studentSelect" class="form-control" required>
+                                        <option value="">Select a student...</option>
+                                    </select>
+                                </div>
+                                <div class="form-col">
+                                    <label class="form-label">Auto-Generated Username</label>
+                                    <input type="text" id="studentUsername" class="form-control" readonly>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-col">
+                                    <label class="form-label">Auto-Generated Password</label>
+                                    <div class="input-group">
+                                        <input type="text" id="studentPassword" class="form-control" readonly>
+                                        <button type="button" class="btn btn-secondary" onclick="generatePassword('student')">
+                                            <i class="fas fa-sync"></i> Regenerate
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="form-col">
+                                    <label class="form-label">Account Status</label>
+                                    <select id="studentStatus" class="form-control">
+                                        <option value="active">Active</option>
+                                        <option value="inactive">Inactive</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-actions">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-user-plus"></i> Create Student Account
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Create Teacher Account -->
+                    <div class="tab-content" id="create-teacher">
+                        <form class="data-form" data-type="create-teacher" onsubmit="createTeacherAccount(event)">
+                            <div class="form-row">
+                                <div class="form-col">
+                                    <label class="form-label">Select Teacher</label>
+                                    <select id="teacherSelect" class="form-control" required>
+                                        <option value="">Select a teacher...</option>
+                                    </select>
+                                </div>
+                                <div class="form-col">
+                                    <label class="form-label">Auto-Generated Username</label>
+                                    <input type="text" id="teacherUsername" class="form-control" readonly>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-col">
+                                    <label class="form-label">Auto-Generated Password</label>
+                                    <div class="input-group">
+                                        <input type="text" id="teacherPassword" class="form-control" readonly>
+                                        <button type="button" class="btn btn-secondary" onclick="generatePassword('teacher')">
+                                            <i class="fas fa-sync"></i> Regenerate
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="form-col">
+                                    <label class="form-label">Access Level</label>
+                                    <select id="teacherRole" class="form-control">
+                                        <option value="teacher">Teacher</option>
+                                        <option value="admin2">Admin2 (Enhanced Access)</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-actions">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-user-plus"></i> Create Teacher Account
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Create Admin Account -->
+                    <div class="tab-content" id="create-admin">
+                        <form class="data-form" data-type="create-admin" onsubmit="createAdminAccount(event)">
+                            <div class="form-row">
+                                <div class="form-col">
+                                    <label class="form-label">Full Name</label>
+                                    <input type="text" id="adminName" class="form-control" required>
+                                </div>
+                                <div class="form-col">
+                                    <label class="form-label">Email Address</label>
+                                    <input type="email" id="adminEmail" class="form-control" required>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-col">
+                                    <label class="form-label">Auto-Generated Username</label>
+                                    <input type="text" id="adminUsername" class="form-control" readonly>
+                                </div>
+                                <div class="form-col">
+                                    <label class="form-label">Auto-Generated Password</label>
+                                    <div class="input-group">
+                                        <input type="text" id="adminPassword" class="form-control" readonly>
+                                        <button type="button" class="btn btn-secondary" onclick="generatePassword('admin')">
+                                            <i class="fas fa-sync"></i> Regenerate
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-col">
+                                    <label class="form-label">Admin Level</label>
+                                    <select id="adminRole" class="form-control">
+                                        <option value="admin">Full Admin</option>
+                                        <option value="admin2">Admin2 (Limited Access)</option>
+                                    </select>
+                                </div>
+                                <div class="form-col">
+                                    <label class="form-label">Department</label>
+                                    <input type="text" id="adminDepartment" class="form-control" placeholder="e.g., Administration, IT">
+                                </div>
+                            </div>
+                            <div class="form-actions">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-user-plus"></i> Create Admin Account
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Existing Users Management -->
+                <div class="content-section">
+                    <div class="section-header">
+                        <h3 class="section-title">Manage Existing Users</h3>
+                        <div class="section-actions">
+                            <div class="input-group" style="width: 300px;">
+                                <span class="input-group-addon">
+                                    <i class="fas fa-search"></i>
+                                </span>
+                                <input type="text" class="form-control search-input" placeholder="Search users..." onkeyup="searchUsers(this.value)">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="table-container">
+                        <div class="table-responsive">
+                            <table class="data-table" id="usersTable">
+                                <thead>
+                                    <tr>
+                                        <th>User ID</th>
+                                        <th>Name</th>
+                                        <th>Username</th>
+                                        <th>Email</th>
+                                        <th>Role</th>
+                                        <th>Status</th>
+                                        <th>Last Login</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="usersTableBody">
+                                    <!-- Users will be populated here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bulk Create Modal -->
+    <div class="modal" id="bulkCreateModal">
+        <div class="modal-overlay"></div>
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-header">
+                <h3>Bulk Create User Accounts</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">Account Type</label>
+                    <select id="bulkAccountType" class="form-control">
+                        <option value="students">All Students Without Accounts</option>
+                        <option value="teachers">All Teachers Without Accounts</option>
+                    </select>
+                </div>
+                <div class="alert alert-info">
+                    <h4>Bulk Creation Rules:</h4>
+                    <ul>
+                        <li>Usernames will be auto-generated based on names</li>
+                        <li>Passwords will be auto-generated (8 characters)</li>
+                        <li>All accounts will be created as "Active" status</li>
+                        <li>You can download credentials after creation</li>
+                    </ul>
+                </div>
+                <div id="bulkPreview"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeBulkCreateModal()">Cancel</button>
+                <button class="btn btn-primary" onclick="previewBulkCreate()">Preview</button>
+                <button class="btn btn-success" onclick="executeBulkCreate()" style="display: none;" id="executeBulkBtn">
+                    Create All Accounts
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- User Details Modal -->
+    <div class="modal" id="userDetailsModal">
+        <div class="modal-overlay"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>User Account Details</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body" id="userDetailsContent">
+                <!-- User details will be populated here -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeUserDetailsModal()">Close</button>
+                <button class="btn btn-primary" onclick="resetUserPassword()" id="resetPasswordBtn">Reset Password</button>
+                <button class="btn btn-warning" onclick="toggleUserStatus()" id="toggleStatusBtn">Toggle Status</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // User Management specific functionality
+        let currentUser = null;
+        let allUsers = [];
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Wait for app to initialize
+            setTimeout(() => {
+                if (typeof app !== 'undefined') {
+                    initializeUserManagement();
+                } else {
+                    console.error('App not initialized');
+                }
+            }, 500);
+        });
+
+        function initializeUserManagement() {
+            populateDropdowns();
+            loadUsers();
+            updateUserStats();
+            generateInitialPasswords();
+            
+            // Initialize tabs
+            initializeTabs();
+            
+            // Set up form listeners
+            setupFormListeners();
+        }
+
+        function populateDropdowns() {
+            // Populate student dropdown
+            const studentSelect = document.getElementById('studentSelect');
+            const students = app.read('students');
+            const existingStudentUsers = app.data.users.filter(u => u.role === 'student');
+            const studentsWithoutAccounts = students.filter(s => 
+                !existingStudentUsers.some(u => u.studentId === s.id)
+            );
+
+            studentSelect.innerHTML = '<option value="">Select a student...</option>';
+            studentsWithoutAccounts.forEach(student => {
+                const option = document.createElement('option');
+                option.value = student.id;
+                option.textContent = `${student.name} (${student.id}) - ${student.class}`;
+                studentSelect.appendChild(option);
+            });
+
+            // Populate teacher dropdown
+            const teacherSelect = document.getElementById('teacherSelect');
+            const teachers = app.read('teachers');
+            const existingTeacherUsers = app.data.users.filter(u => u.role === 'teacher' || u.role === 'admin2');
+            const teachersWithoutAccounts = teachers.filter(t => 
+                !existingTeacherUsers.some(u => u.teacherId === t.id)
+            );
+
+            teacherSelect.innerHTML = '<option value="">Select a teacher...</option>';
+            teachersWithoutAccounts.forEach(teacher => {
+                const option = document.createElement('option');
+                option.value = teacher.id;
+                option.textContent = `${teacher.name} (${teacher.id})`;
+                teacherSelect.appendChild(option);
+            });
+        }
+
+        function generateInitialPasswords() {
+            generatePassword('student');
+            generatePassword('teacher');
+            generatePassword('admin');
+        }
+
+        function generatePassword(type) {
+            const password = generateSecurePassword();
+            document.getElementById(`${type}Password`).value = password;
+        }
+
+        function generateSecurePassword() {
+            const chars = 'ABCDEFGHJKMNPQRSTUVWXYZabcdefghkmnpqrstuvwxyz23456789';
+            let password = '';
+            for (let i = 0; i < 8; i++) {
+                password += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return password;
+        }
+
+        function generateUsername(name, type) {
+            // Generate username based on name and type
+            const cleanName = name.toLowerCase().replace(/[^a-z\s]/g, '').trim();
+            const nameParts = cleanName.split(' ');
+            
+            let baseUsername = '';
+            if (nameParts.length >= 2) {
+                baseUsername = nameParts[0].substring(0, 3) + nameParts[1].substring(0, 3);
+            } else {
+                baseUsername = nameParts[0].substring(0, 6);
+            }
+            
+            // Add type prefix
+            const prefix = {
+                'student': 'std',
+                'teacher': 'tch',
+                'admin': 'adm',
+                'admin2': 'ad2'
+            };
+            
+            const username = prefix[type] + baseUsername;
+            
+            // Check if username exists and add number if needed
+            const existingUsers = app.data.users;
+            let finalUsername = username;
+            let counter = 1;
+            
+            while (existingUsers.some(u => u.username === finalUsername)) {
+                finalUsername = username + counter;
+                counter++;
+            }
+            
+            return finalUsername;
+        }
+
+        // Update username when student/teacher selection changes
+        document.getElementById('studentSelect')?.addEventListener('change', function() {
+            const studentId = this.value;
+            if (studentId) {
+                const student = app.data.students.find(s => s.id === studentId);
+                if (student) {
+                    const username = generateUsername(student.name, 'student');
+                    document.getElementById('studentUsername').value = username;
+                }
+            } else {
+                document.getElementById('studentUsername').value = '';
+            }
+        });
+
+        document.getElementById('teacherSelect')?.addEventListener('change', function() {
+            const teacherId = this.value;
+            if (teacherId) {
+                const teacher = app.data.teachers.find(t => t.id === teacherId);
+                if (teacher) {
+                    const role = document.getElementById('teacherRole').value;
+                    const username = generateUsername(teacher.name, role);
+                    document.getElementById('teacherUsername').value = username;
+                }
+            } else {
+                document.getElementById('teacherUsername').value = '';
+            }
+        });
+
+        document.getElementById('teacherRole')?.addEventListener('change', function() {
+            const teacherId = document.getElementById('teacherSelect').value;
+            if (teacherId) {
+                const teacher = app.data.teachers.find(t => t.id === teacherId);
+                if (teacher) {
+                    const username = generateUsername(teacher.name, this.value);
+                    document.getElementById('teacherUsername').value = username;
+                }
+            }
+        });
+
+        document.getElementById('adminName')?.addEventListener('input', function() {
+            if (this.value.trim()) {
+                const role = document.getElementById('adminRole').value;
+                const username = generateUsername(this.value, role);
+                document.getElementById('adminUsername').value = username;
+            } else {
+                document.getElementById('adminUsername').value = '';
+            }
+        });
+
+        document.getElementById('adminRole')?.addEventListener('change', function() {
+            const name = document.getElementById('adminName').value;
+            if (name.trim()) {
+                const username = generateUsername(name, this.value);
+                document.getElementById('adminUsername').value = username;
+            }
+        });
+
+        function createStudentAccount(event) {
+            event.preventDefault();
+            
+            const studentId = document.getElementById('studentSelect').value;
+            const username = document.getElementById('studentUsername').value;
+            const password = document.getElementById('studentPassword').value;
+            const status = document.getElementById('studentStatus').value;
+            
+            if (!studentId) {
+                app.showNotification('Please select a student', 'error');
+                return;
+            }
+            
+            const student = app.data.students.find(s => s.id === studentId);
+            if (!student) {
+                app.showNotification('Student not found', 'error');
+                return;
+            }
+            
+            const userData = {
+                username: username,
+                email: student.email,
+                password: password,
+                role: 'student',
+                name: student.name,
+                studentId: studentId,
+                status: status,
+                createdBy: 'admin',
+                accessLevel: 'student'
+            };
+            
+            const result = authManager.registerUser(userData);
+            if (result.success) {
+                // Show credentials
+                showCredentialsModal(username, password, 'Student');
+                
+                // Reset form
+                document.getElementById('studentSelect').value = '';
+                document.getElementById('studentUsername').value = '';
+                generatePassword('student');
+                
+                // Refresh data
+                populateDropdowns();
+                loadUsers();
+                updateUserStats();
+            }
+        }
+
+        function createTeacherAccount(event) {
+            event.preventDefault();
+            
+            const teacherId = document.getElementById('teacherSelect').value;
+            const username = document.getElementById('teacherUsername').value;
+            const password = document.getElementById('teacherPassword').value;
+            const role = document.getElementById('teacherRole').value;
+            
+            if (!teacherId) {
+                app.showNotification('Please select a teacher', 'error');
+                return;
+            }
+            
+            const teacher = app.data.teachers.find(t => t.id === teacherId);
+            if (!teacher) {
+                app.showNotification('Teacher not found', 'error');
+                return;
+            }
+            
+            const userData = {
+                username: username,
+                email: teacher.email,
+                password: password,
+                role: role,
+                name: teacher.name,
+                teacherId: teacherId,
+                status: 'active',
+                createdBy: 'admin',
+                accessLevel: role === 'admin2' ? 'enhanced' : 'teacher'
+            };
+            
+            const result = authManager.registerUser(userData);
+            if (result.success) {
+                // Show credentials
+                showCredentialsModal(username, password, role === 'admin2' ? 'Admin2 Teacher' : 'Teacher');
+                
+                // Reset form
+                document.getElementById('teacherSelect').value = '';
+                document.getElementById('teacherUsername').value = '';
+                generatePassword('teacher');
+                
+                // Refresh data
+                populateDropdowns();
+                loadUsers();
+                updateUserStats();
+            }
+        }
+
+        function createAdminAccount(event) {
+            event.preventDefault();
+            
+            const name = document.getElementById('adminName').value;
+            const email = document.getElementById('adminEmail').value;
+            const username = document.getElementById('adminUsername').value;
+            const password = document.getElementById('adminPassword').value;
+            const role = document.getElementById('adminRole').value;
+            const department = document.getElementById('adminDepartment').value;
+            
+            const userData = {
+                username: username,
+                email: email,
+                password: password,
+                role: role,
+                name: name,
+                status: 'active',
+                department: department,
+                createdBy: 'admin',
+                accessLevel: role === 'admin' ? 'full' : 'limited'
+            };
+            
+            const result = authManager.registerUser(userData);
+            if (result.success) {
+                // Show credentials
+                showCredentialsModal(username, password, role === 'admin' ? 'Full Admin' : 'Admin2');
+                
+                // Reset form
+                document.getElementById('adminName').value = '';
+                document.getElementById('adminEmail').value = '';
+                document.getElementById('adminUsername').value = '';
+                document.getElementById('adminDepartment').value = '';
+                generatePassword('admin');
+                
+                // Refresh data
+                loadUsers();
+                updateUserStats();
+            }
+        }
+
+        function showCredentialsModal(username, password, accountType) {
+            const modal = document.createElement('div');
+            modal.className = 'modal active';
+            modal.innerHTML = `
+                <div class="modal-overlay"></div>
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>Account Created Successfully</h3>
+                        <button class="modal-close">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="alert alert-success">
+                            <h4>${accountType} account has been created!</h4>
+                            <p>Please save these credentials securely:</p>
+                        </div>
+                        <div style="background: #f8fafc; padding: 20px; border-radius: 8px; margin: 15px 0; border: 1px solid #e2e8f0;">
+                            <div style="margin-bottom: 15px;">
+                                <strong>Username:</strong> 
+                                <span style="font-family: monospace; background: white; padding: 4px 8px; border-radius: 4px; border: 1px solid #ddd;">${username}</span>
+                                <button onclick="copyToClipboard('${username}')" class="btn btn-sm btn-secondary" style="margin-left: 10px;">
+                                    <i class="fas fa-copy"></i> Copy
+                                </button>
+                            </div>
+                            <div>
+                                <strong>Password:</strong> 
+                                <span style="font-family: monospace; background: white; padding: 4px 8px; border-radius: 4px; border: 1px solid #ddd;">${password}</span>
+                                <button onclick="copyToClipboard('${password}')" class="btn btn-sm btn-secondary" style="margin-left: 10px;">
+                                    <i class="fas fa-copy"></i> Copy
+                                </button>
+                            </div>
+                        </div>
+                        <div class="alert alert-warning">
+                            <strong>Important:</strong> Make sure to share these credentials securely with the user. They can change their password after first login.
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-primary" onclick="printCredentials('${username}', '${password}', '${accountType}')">
+                            <i class="fas fa-print"></i> Print Credentials
+                        </button>
+                        <button class="btn btn-secondary" onclick="this.closest('.modal').remove()">Close</button>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            
+            modal.addEventListener('click', (e) => {
+                if (e.target.classList.contains('modal-close') || e.target.classList.contains('modal-overlay')) {
+                    modal.remove();
+                }
+            });
+        }
+
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                app.showNotification('Copied to clipboard!', 'success');
+            }).catch(() => {
+                app.showNotification('Failed to copy to clipboard', 'error');
+            });
+        }
+
+        function printCredentials(username, password, accountType) {
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write(`
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <title>User Credentials</title>
+                    <style>
+                        body { font-family: Arial, sans-serif; padding: 40px; }
+                        .header { text-align: center; margin-bottom: 40px; border-bottom: 2px solid #6366f1; padding-bottom: 20px; }
+                        .credentials { background: #f8fafc; padding: 30px; border-radius: 8px; border: 2px solid #e2e8f0; }
+                        .credential-item { margin: 20px 0; font-size: 18px; }
+                        .credential-value { font-family: monospace; background: white; padding: 8px 12px; border-radius: 4px; border: 1px solid #ddd; }
+                        .footer { margin-top: 40px; text-align: center; color: #666; }
+                    </style>
+                </head>
+                <body>
+                    <div class="header">
+                        <h1>Tophill Portal School System</h1>
+                        <h2>User Account Credentials</h2>
+                        <p>Account Type: ${accountType}</p>
+                    </div>
+                    <div class="credentials">
+                        <div class="credential-item">
+                            <strong>Username:</strong><br>
+                            <span class="credential-value">${username}</span>
+                        </div>
+                        <div class="credential-item">
+                            <strong>Password:</strong><br>
+                            <span class="credential-value">${password}</span>
+                        </div>
+                        <div class="credential-item">
+                            <strong>Login URL:</strong><br>
+                            <span class="credential-value">student-login.html</span>
+                        </div>
+                    </div>
+                    <div class="footer">
+                        <p>Generated on: ${new Date().toLocaleDateString()} at ${new Date().toLocaleTimeString()}</p>
+                        <p><strong>Important:</strong> Keep these credentials secure and change password after first login.</p>
+                    </div>
+                </body>
+                </html>
+            `);
+            printWindow.document.close();
+            setTimeout(() => printWindow.print(), 500);
+        }
+
+        function loadUsers() {
+            const users = app.data.users;
+            allUsers = users;
+            renderUsersTable(users);
+        }
+
+        function renderUsersTable(users) {
+            const tbody = document.getElementById('usersTableBody');
+            tbody.innerHTML = '';
+            
+            users.forEach(user => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td data-label="User ID">${user.id}</td>
+                    <td data-label="Name">${user.name}</td>
+                    <td data-label="Username">${user.username}</td>
+                    <td data-label="Email">${user.email}</td>
+                    <td data-label="Role">
+                        <span class="badge badge-${getRoleBadgeClass(user.role)}">${user.role.toUpperCase()}</span>
+                    </td>
+                    <td data-label="Status">
+                        <span class="badge badge-${user.status === 'active' ? 'success' : 'secondary'}">${user.status}</span>
+                    </td>
+                    <td data-label="Last Login">${user.lastLogin ? new Date(user.lastLogin).toLocaleDateString() : 'Never'}</td>
+                    <td data-label="Actions" class="actions">
+                        <button class="btn btn-sm btn-primary" onclick="viewUserDetails('${user.id}')" title="View Details">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <button class="btn btn-sm btn-warning" onclick="resetPassword('${user.id}')" title="Reset Password">
+                            <i class="fas fa-key"></i>
+                        </button>
+                        <button class="btn btn-sm btn-${user.status === 'active' ? 'secondary' : 'success'}" onclick="toggleStatus('${user.id}')" title="Toggle Status">
+                            <i class="fas fa-${user.status === 'active' ? 'pause' : 'play'}"></i>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function getRoleBadgeClass(role) {
+            switch (role) {
+                case 'admin': return 'danger';
+                case 'admin2': return 'warning';
+                case 'teacher': return 'info';
+                case 'student': return 'success';
+                default: return 'secondary';
+            }
+        }
+
+        function updateUserStats() {
+            const users = app.data.users;
+            document.getElementById('totalUsersCount').textContent = users.length;
+            document.getElementById('studentUsersCount').textContent = users.filter(u => u.role === 'student').length;
+            document.getElementById('teacherUsersCount').textContent = users.filter(u => u.role === 'teacher' || u.role === 'admin2').length;
+            document.getElementById('adminUsersCount').textContent = users.filter(u => u.role === 'admin').length;
+        }
+
+        function searchUsers(searchTerm) {
+            const filtered = allUsers.filter(user => 
+                user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                user.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                user.role.toLowerCase().includes(searchTerm.toLowerCase())
+            );
+            renderUsersTable(filtered);
+        }
+
+        function viewUserDetails(userId) {
+            const user = app.data.users.find(u => u.id === userId);
+            if (!user) return;
+            
+            currentUser = user;
+            
+            const modal = document.getElementById('userDetailsModal');
+            const content = document.getElementById('userDetailsContent');
+            
+            content.innerHTML = `
+                <div class="form-row">
+                    <div class="form-col">
+                        <strong>User ID:</strong> ${user.id}
+                    </div>
+                    <div class="form-col">
+                        <strong>Name:</strong> ${user.name}
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-col">
+                        <strong>Username:</strong> ${user.username}
+                    </div>
+                    <div class="form-col">
+                        <strong>Email:</strong> ${user.email}
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-col">
+                        <strong>Role:</strong> <span class="badge badge-${getRoleBadgeClass(user.role)}">${user.role.toUpperCase()}</span>
+                    </div>
+                    <div class="form-col">
+                        <strong>Status:</strong> <span class="badge badge-${user.status === 'active' ? 'success' : 'secondary'}">${user.status}</span>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-col">
+                        <strong>Created:</strong> ${user.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'N/A'}
+                    </div>
+                    <div class="form-col">
+                        <strong>Last Login:</strong> ${user.lastLogin ? new Date(user.lastLogin).toLocaleDateString() : 'Never'}
+                    </div>
+                </div>
+                ${user.studentId ? `
+                    <div class="form-row">
+                        <div class="form-col">
+                            <strong>Student ID:</strong> ${user.studentId}
+                        </div>
+                    </div>
+                ` : ''}
+                ${user.teacherId ? `
+                    <div class="form-row">
+                        <div class="form-col">
+                            <strong>Teacher ID:</strong> ${user.teacherId}
+                        </div>
+                    </div>
+                ` : ''}
+                ${user.department ? `
+                    <div class="form-row">
+                        <div class="form-col">
+                            <strong>Department:</strong> ${user.department}
+                        </div>
+                    </div>
+                ` : ''}
+            `;
+            
+            modal.classList.add('active');
+        }
+
+        function closeUserDetailsModal() {
+            document.getElementById('userDetailsModal').classList.remove('active');
+            currentUser = null;
+        }
+
+        function resetPassword(userId) {
+            const user = app.data.users.find(u => u.id === userId);
+            if (!user) return;
+            
+            const newPassword = generateSecurePassword();
+            user.password = authManager.hashPassword(newPassword);
+            user.passwordReset = true;
+            user.updatedAt = new Date().toISOString();
+            
+            app.saveData();
+            
+            // Show new password
+            showCredentialsModal(user.username, newPassword, `${user.role.toUpperCase()} (Password Reset)`);
+            
+            app.showNotification(`Password reset for ${user.name}`, 'success');
+            loadUsers();
+        }
+
+        function resetUserPassword() {
+            if (currentUser) {
+                resetPassword(currentUser.id);
+                closeUserDetailsModal();
+            }
+        }
+
+        function toggleStatus(userId) {
+            const user = app.data.users.find(u => u.id === userId);
+            if (!user) return;
+            
+            user.status = user.status === 'active' ? 'inactive' : 'active';
+            user.updatedAt = new Date().toISOString();
+            
+            app.saveData();
+            app.showNotification(`User status updated to ${user.status}`, 'success');
+            loadUsers();
+        }
+
+        function toggleUserStatus() {
+            if (currentUser) {
+                toggleStatus(currentUser.id);
+                closeUserDetailsModal();
+            }
+        }
+
+        function showBulkCreateModal() {
+            document.getElementById('bulkCreateModal').classList.add('active');
+        }
+
+        function closeBulkCreateModal() {
+            document.getElementById('bulkCreateModal').classList.remove('active');
+        }
+
+        function previewBulkCreate() {
+            const accountType = document.getElementById('bulkAccountType').value;
+            const preview = document.getElementById('bulkPreview');
+            
+            let candidates = [];
+            
+            if (accountType === 'students') {
+                const students = app.data.students;
+                const existingStudentUsers = app.data.users.filter(u => u.role === 'student');
+                candidates = students.filter(s => 
+                    !existingStudentUsers.some(u => u.studentId === s.id)
+                );
+            } else if (accountType === 'teachers') {
+                const teachers = app.data.teachers;
+                const existingTeacherUsers = app.data.users.filter(u => u.role === 'teacher' || u.role === 'admin2');
+                candidates = teachers.filter(t => 
+                    !existingTeacherUsers.some(u => u.teacherId === t.id)
+                );
+            }
+            
+            if (candidates.length === 0) {
+                preview.innerHTML = `
+                    <div class="alert alert-info">
+                        No ${accountType} found without existing accounts.
+                    </div>
+                `;
+                document.getElementById('executeBulkBtn').style.display = 'none';
+                return;
+            }
+            
+            preview.innerHTML = `
+                <div class="alert alert-success">
+                    Found ${candidates.length} ${accountType} without accounts:
+                </div>
+                <div style="max-height: 300px; overflow-y: auto; border: 1px solid #e2e8f0; border-radius: 4px; padding: 10px;">
+                    ${candidates.map(candidate => `
+                        <div style="padding: 5px 0; border-bottom: 1px solid #f1f5f9;">
+                            <strong>${candidate.name}</strong> (${candidate.id})
+                            ${candidate.email ? ` - ${candidate.email}` : ''}
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+            
+            document.getElementById('executeBulkBtn').style.display = 'inline-block';
+        }
+
+        function executeBulkCreate() {
+            const accountType = document.getElementById('bulkAccountType').value;
+            let created = 0;
+            let credentialsList = [];
+            
+            if (accountType === 'students') {
+                const students = app.data.students;
+                const existingStudentUsers = app.data.users.filter(u => u.role === 'student');
+                const candidates = students.filter(s => 
+                    !existingStudentUsers.some(u => u.studentId === s.id)
+                );
+                
+                candidates.forEach(student => {
+                    const username = generateUsername(student.name, 'student');
+                    const password = generateSecurePassword();
+                    
+                    const userData = {
+                        username: username,
+                        email: student.email,
+                        password: password,
+                        role: 'student',
+                        name: student.name,
+                        studentId: student.id,
+                        status: 'active',
+                        createdBy: 'admin-bulk'
+                    };
+                    
+                    const result = authManager.registerUser(userData);
+                    if (result.success) {
+                        created++;
+                        credentialsList.push({
+                            name: student.name,
+                            username: username,
+                            password: password,
+                            type: 'Student'
+                        });
+                    }
+                });
+            } else if (accountType === 'teachers') {
+                const teachers = app.data.teachers;
+                const existingTeacherUsers = app.data.users.filter(u => u.role === 'teacher' || u.role === 'admin2');
+                const candidates = teachers.filter(t => 
+                    !existingTeacherUsers.some(u => u.teacherId === t.id)
+                );
+                
+                candidates.forEach(teacher => {
+                    const username = generateUsername(teacher.name, 'teacher');
+                    const password = generateSecurePassword();
+                    
+                    const userData = {
+                        username: username,
+                        email: teacher.email,
+                        password: password,
+                        role: 'teacher',
+                        name: teacher.name,
+                        teacherId: teacher.id,
+                        status: 'active',
+                        createdBy: 'admin-bulk'
+                    };
+                    
+                    const result = authManager.registerUser(userData);
+                    if (result.success) {
+                        created++;
+                        credentialsList.push({
+                            name: teacher.name,
+                            username: username,
+                            password: password,
+                            type: 'Teacher'
+                        });
+                    }
+                });
+            }
+            
+            if (created > 0) {
+                app.showNotification(`Successfully created ${created} accounts!`, 'success');
+                showBulkCredentialsModal(credentialsList);
+                
+                // Refresh data
+                populateDropdowns();
+                loadUsers();
+                updateUserStats();
+                closeBulkCreateModal();
+            } else {
+                app.showNotification('No accounts were created', 'error');
+            }
+        }
+
+        function showBulkCredentialsModal(credentialsList) {
+            const modal = document.createElement('div');
+            modal.className = 'modal active';
+            modal.innerHTML = `
+                <div class="modal-overlay"></div>
+                <div class="modal-content" style="max-width: 800px;">
+                    <div class="modal-header">
+                        <h3>Bulk Account Creation - Credentials</h3>
+                        <button class="modal-close">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="alert alert-success">
+                            <h4>Successfully created ${credentialsList.length} accounts!</h4>
+                            <p>Please save these credentials securely:</p>
+                        </div>
+                        <div style="max-height: 400px; overflow-y: auto;">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Type</th>
+                                        <th>Username</th>
+                                        <th>Password</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${credentialsList.map(cred => `
+                                        <tr>
+                                            <td>${cred.name}</td>
+                                            <td><span class="badge badge-info">${cred.type}</span></td>
+                                            <td style="font-family: monospace;">${cred.username}</td>
+                                            <td style="font-family: monospace;">${cred.password}</td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-primary" onclick="printBulkCredentials(${JSON.stringify(credentialsList).replace(/"/g, '&quot;')})">
+                            <i class="fas fa-print"></i> Print All Credentials
+                        </button>
+                        <button class="btn btn-success" onclick="downloadBulkCredentialsCSV(${JSON.stringify(credentialsList).replace(/"/g, '&quot;')})">
+                            <i class="fas fa-download"></i> Download CSV
+                        </button>
+                        <button class="btn btn-secondary" onclick="this.closest('.modal').remove()">Close</button>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            
+            modal.addEventListener('click', (e) => {
+                if (e.target.classList.contains('modal-close') || e.target.classList.contains('modal-overlay')) {
+                    modal.remove();
+                }
+            });
+        }
+
+        function printBulkCredentials(credentialsList) {
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write(`
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <title>Bulk User Credentials</title>
+                    <style>
+                        body { font-family: Arial, sans-serif; padding: 20px; }
+                        .header { text-align: center; margin-bottom: 30px; border-bottom: 2px solid #6366f1; padding-bottom: 15px; }
+                        table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+                        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+                        th { background-color: #f8f9fa; font-weight: bold; }
+                        .credential { font-family: monospace; background: #f8fafc; padding: 2px 4px; }
+                        .footer { margin-top: 30px; text-align: center; color: #666; }
+                        @media print { 
+                            body { margin: 0; }
+                            .no-print { display: none; }
+                        }
+                    </style>
+                </head>
+                <body>
+                    <div class="header">
+                        <h1>Tophill Portal School System</h1>
+                        <h2>Bulk User Account Credentials</h2>
+                        <p>Generated on: ${new Date().toLocaleDateString()} at ${new Date().toLocaleTimeString()}</p>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Account Type</th>
+                                <th>Username</th>
+                                <th>Password</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${credentialsList.map(cred => `
+                                <tr>
+                                    <td>${cred.name}</td>
+                                    <td>${cred.type}</td>
+                                    <td class="credential">${cred.username}</td>
+                                    <td class="credential">${cred.password}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                    <div class="footer">
+                        <p><strong>Important:</strong> Distribute these credentials securely and ask users to change passwords after first login.</p>
+                        <p>Login URL: student-login.html</p>
+                    </div>
+                </body>
+                </html>
+            `);
+            printWindow.document.close();
+            setTimeout(() => printWindow.print(), 500);
+        }
+
+        function downloadBulkCredentialsCSV(credentialsList) {
+            const headers = ['Name', 'Account Type', 'Username', 'Password'];
+            const csvContent = [
+                headers.join(','),
+                ...credentialsList.map(cred => 
+                    [cred.name, cred.type, cred.username, cred.password].join(',')
+                )
+            ].join('\n');
+            
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            
+            if (link.download !== undefined) {
+                const url = URL.createObjectURL(blob);
+                link.setAttribute('href', url);
+                link.setAttribute('download', `user_credentials_${new Date().toISOString().split('T')[0]}.csv`);
+                link.style.visibility = 'hidden';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
+        }
+
+        function exportUserCredentials() {
+            const users = app.data.users;
+            const csvContent = [
+                'Name,Username,Email,Role,Status,Created Date,Last Login',
+                ...users.map(user => [
+                    user.name,
+                    user.username,
+                    user.email,
+                    user.role,
+                    user.status,
+                    user.createdAt ? new Date(user.createdAt).toLocaleDateString() : '',
+                    user.lastLogin ? new Date(user.lastLogin).toLocaleDateString() : 'Never'
+                ].join(','))
+            ].join('\n');
+            
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            
+            if (link.download !== undefined) {
+                const url = URL.createObjectURL(blob);
+                link.setAttribute('href', url);
+                link.setAttribute('download', `all_users_${new Date().toISOString().split('T')[0]}.csv`);
+                link.style.visibility = 'hidden';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
+            
+            app.showNotification('User data exported successfully', 'success');
+        }
+
+        function setupFormListeners() {
+            // Add any additional form listeners here
+        }
+
+        // Initialize tabs functionality
+        function initializeTabs() {
+            const tabs = document.querySelectorAll('.tab');
+            const tabContents = document.querySelectorAll('.tab-content');
+
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    // Remove active class from all tabs and contents
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tabContents.forEach(c => c.classList.remove('active'));
+                    
+                    // Add active class to clicked tab
+                    tab.classList.add('active');
+                    
+                    // Show corresponding content
+                    const tabId = tab.getAttribute('data-tab');
+                    const tabElement = document.getElementById(tabId);
+                    if (tabElement) {
+                        tabElement.classList.add('active');
+                    }
+                });
+            });
+        }
+    </script>
+</body>
+</html>

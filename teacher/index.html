@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tophill Portal - School Management System</title>
+    <link rel="stylesheet" href="shared/styles.css">
+    <!-- Load only the auth layer needed for redirect logic; defer to run before DOMContentLoaded -->
+    <script src="shared/auth-manager.js" defer></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .login-container {
+            max-width: 500px;
+            margin: 80px auto;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            padding: 32px 24px;
+            text-align: center;
+        }
+        .school-logo {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .school-logo img {
+            max-width: 120px;
+        }
+        .login-title {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            color: var(--primary);
+        }
+        .login-subtitle {
+            font-size: 1rem;
+            margin-bottom: 30px;
+            color: #6c757d;
+        }
+        .role-cards {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 40px;
+            gap: 20px;
+            flex-direction: row;
+            flex-wrap: nowrap;
+        }
+        .role-card {
+            flex: 0 0 auto;
+            width: 140px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px 10px;
+            border: 1px solid #e0e0e0;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .role-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .role-card.admin:hover {
+            border-color: #4361ee;
+        }
+        .role-card.teacher:hover {
+            border-color: #28a745;
+        }
+        .role-card.student:hover {
+            border-color: #4361ee;
+        }
+        .role-icon {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+        }
+        .role-card.admin .role-icon {
+            color: #4361ee;
+        }
+        .role-card.teacher .role-icon {
+            color: #28a745;
+        }
+        .role-card.student .role-icon {
+            color: #4361ee;
+        }
+        .role-title {
+            font-weight: bold;
+            margin-bottom: 3px;
+            font-size: 0.9rem;
+        }
+        .role-desc {
+            font-size: 0.75rem;
+            color: #6c757d;
+            text-align: center;
+            line-height: 1.2;
+        }
+        .login-footer {
+            text-align: center;
+            margin-top: 40px;
+            font-size: 0.85rem;
+            color: #6c757d;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container" id="login-content">
+        <div class="school-logo">
+            <img src="https://ui-avatars.com/api/?name=Edu+Manage&background=0D8ABC&color=fff&size=128&font-size=0.5" alt="Tophill Portal Logo">
+        </div>
+        
+        <div class="login-title">Welcome to Tophill Portal</div>
+        <div class="login-subtitle">Please select your role to continue</div>
+        
+        <div class="role-cards">
+            <div class="role-card admin" onclick="window.location.href='admin/admin-login.html'">
+                <div class="role-icon">
+                    <i class="fas fa-user-shield"></i>
+                </div>
+                <div class="role-title">Administrator</div>
+                <div class="role-desc">School management and oversight</div>
+            </div>
+            
+            <div class="role-card teacher" onclick="window.location.href='teacher/teacher-login.html'">
+                <div class="role-icon">
+                    <i class="fas fa-chalkboard-teacher"></i>
+                </div>
+                <div class="role-title">Teacher</div>
+                <div class="role-desc">Class management and grading</div>
+            </div>
+            
+            <div class="role-card student" onclick="window.location.href='student/student-login.html'">
+                <div class="role-icon">
+                    <i class="fas fa-user-graduate"></i>
+                </div>
+                <div class="role-title">Student</div>
+                <div class="role-desc">Assignments and progress tracking</div>
+            </div>
+        </div>
+        
+        <div class="login-footer">
+            &copy; 2025 Tophill Portal. All rights reserved.
+        </div>
+    </div>
+    
+    <script>
+        // Enhanced authentication script with proper redirection handling
+        window.addEventListener('DOMContentLoaded', function() {
+            // Check if user is already authenticated and redirect appropriately
+            try {
+                if (typeof authManager !== 'undefined' && authManager && authManager.currentUser) {
+                    const user = authManager.currentUser;
+                    const role = user.role;
+                    
+                    console.log('User already logged in:', user.name, 'Role:', role);
+                    
+                    // Redirect based on user role to their respective dashboards
+                    switch (role) {
+                        case 'admin':
+                        case 'admin2':
+                            window.location.replace('#');
+                            break;
+                        case 'teacher':
+                            window.location.replace('#');
+                            break;
+                        case 'student':
+                            window.location.replace('student/student-portal.html');
+                            break;
+                        default:
+                            console.log('Unknown role:', role);
+                            // Clear invalid session
+                            if (authManager.logout) {
+                                authManager.logout();
+                            }
+                    }
+                }
+            } catch (error) {
+                console.log('Auth check failed or user not logged in:', error.message);
+                // Continue to show the role selection page
+            }
+        });
+
+        // Add click handlers with enhanced feedback
+        document.addEventListener('DOMContentLoaded', function() {
+            const roleCards = document.querySelectorAll('.role-card');
+            
+            roleCards.forEach(card => {
+                card.addEventListener('click', function(e) {
+                    // Add a slight delay to show the click effect
+                    this.style.transform = 'translateY(-8px) scale(0.98)';
+                    this.style.opacity = '0.8';
+                    
+                    setTimeout(() => {
+                        // Navigation is handled by the onclick attribute
+                    }, 150);
+                });
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Tophill Portal Assignment Management System">
+    <title>Assignments - Tophill Portal</title>
+    <!-- Preload critical fonts and styles -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"></noscript>
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></noscript>
+    <link rel="stylesheet" href="../shared/styles.css">
+    <!-- Add page loading indicator -->
+    <script>
+        // Show loading indicator on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            const loadingIndicator = document.getElementById('loading-indicator');
+            if (loadingIndicator) {
+                setTimeout(() => {
+                    loadingIndicator.style.display = 'none';
+                }, 500);
+            }
+        });
+    </script>
+
+    <style>
+        .assignment-card {
+            background: var(--light);
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            box-shadow: var(--shadow);
+            border: 1px solid #e2e8f0;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .assignment-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--light-sea);
+        }
+
+        .assignment-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+        }
+
+        .assignment-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .assignment-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .assignment-meta {
+            display: flex;
+            gap: 1rem;
+            font-size: 0.875rem;
+            color: rgb(100 116 139);
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .assignment-meta span {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .assignment-description {
+            color: var(--dark);
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+
+        .assignment-status {
+            padding: 0.375rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .status-active {
+            background: rgba(34, 197, 94, 0.1);
+            color: #15803d;
+            border: 1px solid rgba(34, 197, 94, 0.3);
+        }
+
+        .status-completed {
+            background: rgba(59, 130, 246, 0.1);
+            color: #1d4ed8;
+            border: 1px solid rgba(59, 130, 246, 0.3);
+        }
+
+        .status-overdue {
+            background: rgba(239, 68, 68, 0.1);
+            color: #dc2626;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        .status-draft {
+            background: rgba(156, 163, 175, 0.1);
+            color: #6b7280;
+            border: 1px solid rgba(156, 163, 175, 0.3);
+        }
+
+        .assignment-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            backdrop-filter: blur(4px);
+        }
+
+        .modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: var(--light);
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow-xl);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--light-sea);
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: rgb(156, 163, 175);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .close-btn:hover {
+            color: var(--primary);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #e2e8f0;
+            border-radius: var(--border-radius);
+            font-size: 0.875rem;
+            transition: var(--transition);
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(31, 51, 90, 0.1);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .file-upload {
+            border: 2px dashed #cbd5e1;
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            text-align: center;
+            transition: var(--transition);
+            cursor: pointer;
+        }
+
+        .file-upload:hover {
+            border-color: var(--primary);
+            background: rgba(31, 51, 90, 0.05);
+        }
+
+        .file-upload.dragover {
+            border-color: var(--primary);
+            background: rgba(31, 51, 90, 0.1);
+        }
+
+        .file-upload input {
+            display: none;
+        }
+
+        .file-upload-text {
+            color: rgb(100 116 139);
+            font-size: 0.875rem;
+        }
+
+        .file-upload-icon {
+            font-size: 2rem;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .uploaded-files {
+            margin-top: 1rem;
+        }
+
+        .file-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem;
+            background: var(--background);
+            border-radius: var(--border-radius);
+            margin-bottom: 0.5rem;
+        }
+
+        .file-info {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .submission-status {
+            padding: 0.25rem 0.5rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .submitted {
+            background: rgba(34, 197, 94, 0.1);
+            color: #15803d;
+        }
+
+        .pending {
+            background: rgba(245, 158, 11, 0.1);
+            color: #d97706;
+        }
+
+        .graded {
+            background: rgba(59, 130, 246, 0.1);
+            color: #1d4ed8;
+        }
+
+        .tabs {
+            display: flex;
+            border-bottom: 2px solid var(--light-sea);
+            margin-bottom: 2rem;
+        }
+
+        .tab {
+            padding: 1rem 2rem;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: var(--transition);
+            font-weight: 500;
+            color: rgb(100 116 139);
+        }
+
+        .tab.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+            background: rgba(31, 51, 90, 0.05);
+        }
+
+        .tab:hover:not(.active) {
+            color: var(--primary);
+            background: rgba(31, 51, 90, 0.03);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            .assignment-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .assignment-meta {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            .modal-content {
+                padding: 1rem;
+                margin: 1rem;
+                width: calc(100% - 2rem);
+            }
+
+            .tabs {
+                flex-wrap: wrap;
+            }
+
+            .tab {
+                padding: 0.75rem 1rem;
+                min-width: 0;
+                flex: 1;
+                text-align: center;
+            }
+        }
+    </style>
+    <style>
+        /* Loading indicator styles */
+        #loading-indicator {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.8);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+        
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(31, 51, 90, 0.1);
+            border-radius: 50%;
+            border-top-color: var(--primary);
+            animation: spinner 1s ease-in-out infinite;
+        }
+        
+        @keyframes spinner {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Performance optimizations */
+        .assignment-card {
+            will-change: transform;
+            contain: content;
+        }
+        
+        .tab-content {
+            contain: content;
+        }
+        
+        /* Improve loading appearance */
+        .section-content {
+            min-height: 100px;
+            position: relative;
+        }
+        
+        .section-loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+        }
+    </style>
+    
+    <!-- Defer non-critical scripts -->
+    <script src="../shared/app.js" defer></script>
+    <script src="../shared/csv-manager.js" defer></script>
+    <script src="../shared/auth-manager.js"></script>
+    <script src="../shared/script.js" defer></script>
+    <script src="../shared/assignments.js" defer></script>
+</head>
+<body>
+    <!-- Loading indicator -->
+    <div id="loading-indicator">
+        <div class="spinner"></div>
+        <p>Loading assignments...</p>
+    </div>
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <button class="toggle-btn" id="sidebar-toggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h3>Tophill Portal</h3>
+            </div>
+            <div class="sidebar-menu">
+                <div class="menu-item" onclick="goToDashboard()">
+                    <i class="fas fa-home"></i>
+                    <span>Dashboard</span>
+                </div>
+                <div class="menu-item active">
+                    <i class="fas fa-tasks"></i>
+                    <span>Assignments</span>
+                </div>
+                <div class="menu-item" onclick="authManager.logout()">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Header -->
+            <div class="header">
+                <div>
+                    <button class="menu-toggle" id="mobile-menu-toggle">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <span class="header-title">Assignment Management</span>
+                </div>
+                <div class="user-info">
+                    <img src="https://ui-avatars.com/api/?name=User&background=1F335A&color=fff" alt="User" id="user-avatar">
+                    <span id="user-name">User</span>
+                </div>
+            </div>
+
+            <!-- Role-based Content -->
+            <div id="teacher-view" class="role-view">
+                <!-- Teacher Tabs -->
+                <div class="tabs">
+                    <div class="tab active" data-tab="all-assignments">
+                        <i class="fas fa-list"></i> All Assignments
+                    </div>
+                    <div class="tab" data-tab="create-assignment">
+                        <i class="fas fa-plus"></i> Create Assignment
+                    </div>
+                    <div class="tab" data-tab="submissions">
+                        <i class="fas fa-upload"></i> Submissions
+                    </div>
+                </div>
+
+                <!-- All Assignments Tab -->
+                <div class="tab-content active" id="all-assignments">
+                    <div class="content-section">
+                        <div class="section-header">
+                            <div class="section-title">My Assignments</div>
+                            <button class="btn btn-primary" id="create-assignment-btn">
+                                <i class="fas fa-plus"></i> Create Assignment
+                            </button>
+                        </div>
+                        <div class="section-content" id="teacher-assignments-list">
+                            <div class="section-loading">
+                                <div class="spinner"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Create Assignment Tab -->
+                <div class="tab-content" id="create-assignment">
+                    <div class="content-section">
+                        <div class="section-header">
+                            <div class="section-title">Create New Assignment</div>
+                        </div>
+                        <div class="section-content">
+                            <form id="assignment-form">
+                                <div class="form-group">
+                                    <label for="assignment-title">Assignment Title *</label>
+                                    <input type="text" id="assignment-title" name="title" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="assignment-description">Description *</label>
+                                    <textarea id="assignment-description" name="description" rows="4" required></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label for="assignment-subject">Subject *</label>
+                                    <select id="assignment-subject" name="subject" required>
+                                        <option value="">Select Subject</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="assignment-class">Class *</label>
+                                    <select id="assignment-class" name="class" required>
+                                        <option value="">Select Class</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="assignment-due-date">Due Date *</label>
+                                    <input type="datetime-local" id="assignment-due-date" name="dueDate" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="assignment-total-marks">Total Marks</label>
+                                    <input type="number" id="assignment-total-marks" name="totalMarks" min="1" value="100">
+                                </div>
+                                <div class="form-group">
+                                    <label for="assignment-instructions">Instructions</label>
+                                    <textarea id="assignment-instructions" name="instructions" rows="3" placeholder="Additional instructions for students..."></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label>Attachment (Optional)</label>
+                                    <div class="file-upload" onclick="document.getElementById('assignment-file').click()">
+                                        <div class="file-upload-icon">
+                                            <i class="fas fa-cloud-upload-alt"></i>
+                                        </div>
+                                        <div class="file-upload-text">
+                                            Click to upload assignment file<br>
+                                            <small>PDF, DOC, DOCX, TXT (Max 10MB)</small>
+                                        </div>
+                                        <input type="file" id="assignment-file" name="file" accept=".pdf,.doc,.docx,.txt">
+                                    </div>
+                                    <div class="uploaded-files" id="assignment-uploaded-files"></div>
+                                </div>
+                                <div class="assignment-actions">
+                                    <button type="button" class="btn btn-secondary" onclick="saveDraft()">
+                                        <i class="fas fa-save"></i> Save as Draft
+                                    </button>
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-paper-plane"></i> Publish Assignment
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Submissions Tab -->
+                <div class="tab-content" id="submissions">
+                    <div class="content-section">
+                        <div class="section-header">
+                            <div class="section-title">Assignment Submissions</div>
+                        </div>
+                        <div class="section-content" id="submissions-list">
+                            <!-- Submissions will be populated here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Student View -->
+            <div id="student-view" class="role-view" style="display: none;">
+                <!-- Student Tabs -->
+                <div class="tabs">
+                    <div class="tab active" data-tab="active-assignments">
+                        <i class="fas fa-tasks"></i> Active Assignments
+                    </div>
+                    <div class="tab" data-tab="submitted-assignments">
+                        <i class="fas fa-check-circle"></i> Submitted
+                    </div>
+                    <div class="tab" data-tab="graded-assignments">
+                        <i class="fas fa-star"></i> Graded
+                    </div>
+                </div>
+
+                <!-- Active Assignments Tab -->
+                <div class="tab-content active" id="active-assignments">
+                    <div class="content-section">
+                        <div class="section-header">
+                            <div class="section-title">Active Assignments</div>
+                            <div class="section-subtitle">Assignments you need to complete</div>
+                        </div>
+                        <div class="section-content" id="student-active-assignments">
+                            <!-- Active assignments will be populated here -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Submitted Assignments Tab -->
+                <div class="tab-content" id="submitted-assignments">
+                    <div class="content-section">
+                        <div class="section-header">
+                            <div class="section-title">Submitted Assignments</div>
+                            <div class="section-subtitle">Assignments awaiting grading</div>
+                        </div>
+                        <div class="section-content" id="student-submitted-assignments">
+                            <!-- Submitted assignments will be populated here -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Graded Assignments Tab -->
+                <div class="tab-content" id="graded-assignments">
+                    <div class="content-section">
+                        <div class="section-header">
+                            <div class="section-title">Graded Assignments</div>
+                            <div class="section-subtitle">Your completed assignments with grades</div>
+                        </div>
+                        <div class="section-content" id="student-graded-assignments">
+                            <!-- Graded assignments will be populated here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Assignment Submission Modal -->
+    <div class="modal" id="submission-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Submit Assignment</h3>
+                <button class="close-btn" onclick="closeSubmissionModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="submission-form">
+                    <input type="hidden" id="submission-assignment-id">
+                    <div class="form-group">
+                        <label>Assignment</label>
+                        <div id="submission-assignment-title" class="assignment-title"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="submission-notes">Submission Notes (Optional)</label>
+                        <textarea id="submission-notes" name="notes" rows="3" placeholder="Add any notes about your submission..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Upload File *</label>
+                        <div class="file-upload" onclick="document.getElementById('submission-file').click()">
+                            <div class="file-upload-icon">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                            </div>
+                            <div class="file-upload-text">
+                                Click to upload your assignment<br>
+                                <small>PDF, DOC, DOCX, TXT (Max 10MB)</small>
+                            </div>
+                            <input type="file" id="submission-file" name="file" accept=".pdf,.doc,.docx,.txt" required>
+                        </div>
+                        <div class="uploaded-files" id="submission-uploaded-files"></div>
+                    </div>
+                    <div class="assignment-actions">
+                        <button type="button" class="btn btn-secondary" onclick="closeSubmissionModal()">
+                            Cancel
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-upload"></i> Submit Assignment
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Grade Assignment Modal -->
+    <div class="modal" id="grade-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Grade Assignment</h3>
+                <button class="close-btn" onclick="closeGradeModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="grade-form">
+                    <input type="hidden" id="grade-submission-id">
+                    <div class="form-group">
+                        <label>Student</label>
+                        <div id="grade-student-name"></div>
+                    </div>
+                    <div class="form-group">
+                        <label>Assignment</label>
+                        <div id="grade-assignment-title"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="grade-marks">Marks Obtained *</label>
+                        <input type="number" id="grade-marks" name="marks" min="0" required>
+                        <small>Out of <span id="grade-total-marks"></span> marks</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="grade-feedback">Feedback</label>
+                        <textarea id="grade-feedback" name="feedback" rows="4" placeholder="Provide feedback to the student..."></textarea>
+                    </div>
+                    <div class="assignment-actions">
+                        <button type="button" class="btn btn-secondary" onclick="closeGradeModal()">
+                            Cancel
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-check"></i> Save Grade
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

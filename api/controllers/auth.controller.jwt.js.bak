@@ -1,0 +1,287 @@
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcrypt');
+const UserModel = require('../models/User');
+const { createError } = require('../utils/errors');
+const logger = require('../utils/logger');
+
+class AuthController {
+  // User login
+  login = async (req, res, next) => {
+    try {
+      const { email, password } = req.body;
+      console.log('Login attempt:', { email, password: password ? '***' : 'MISSING' });
+      console.log('UserModel type:', typeof UserModel);
+      console.log('UserModel.findByEmail type:', typeof UserModel.findByEmail);
+
+      // Find user by email
+      const user = await UserModel.findByEmail(email);
+      console.log('User found:', user ? `Yes (id: ${user.id}, status: ${user.status})` : 'No');
+      
+      if (!user) {
+        return next(createError('UNAUTHORIZED', 'Invalid email or password'));
+      }
+
+      // Check if account is active
+      if (user.status !== 'active') {
+        console.log('Account not active:', user.status);
+        return next(createError('UNAUTHORIZED', 'Account is disabled. Please contact administrator.'));
+      }
+
+      // Compare passwords
+      console.log('Comparing passwords...');
+      const isPasswordValid = await bcrypt.compare(password, user.password);
+      console.log('Password valid:', isPasswordValid);
+      
+      if (!isPasswordValid) {
+        return next(createError('UNAUTHORIZED', 'Invalid email or password'));
+      }
+
+      // Generate access token
+      const accessToken = this.generateAccessToken(user);
+      
+      // Generate refresh token
+      const refreshToken = this.generateRefreshToken(user);
+
+      // Remove sensitive information
+      delete user.password;
+
+      // Update last login timestamp
+      await UserModel.update(user.id, { last_login: new Date() });
+
+      res.status(200).json({
+        success: true,
+        message: 'Login successful',
+        data: {
+          user,
+          accessToken,
+          refreshToken
+        }
+      });
+    } catch (error) {
+      logger.error('Error in login:', error);
+      next(error);
+    }
+  };
+
+  // User registration
+  register = async (req, res, next) => {
+    try {
+      const { email, password, firstName, lastName, role = 'student' } = req.body;
+
+      // Check if user already exists
+      const existingUser = await UserModel.findByEmail(email);
+      
+      if (existingUser) {
+        return next(createError('CONFLICT', 'User with this email already exists'));
+      }
+
+      // Hash password
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash(password, salt);
+
+      // Create new user
+      const newUser = await UserModel.create({
+        email,
+        password: hashedPassword,
+        firstName,
+        lastName,
+        role,
+        isActive: true,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      });
+
+      // Remove sensitive information
+      delete newUser.password;
+
+      res.status(201).json({
+        success: true,
+        message: 'User registered successfully',
+        data: newUser
+      });
+    } catch (error) {
+      logger.error('Error in register:', error);
+      next(error);
+    }
+  };
+
+  // Refresh token
+  refreshToken = async (req, res, next) => {
+    try {
+      const { refreshToken } = req.body;
+
+      if (!refreshToken) {
+        return next(createError('UNAUTHORIZED', 'Refresh token is required'));
+      }
+
+      // Verify refresh token
+      jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET, async (err, decoded) => {
+        if (err) {
+          return next(createError('UNAUTHORIZED', 'Invalid refresh token'));
+        }
+
+        // Get user
+        const user = await UserModel.findById(decoded.id);
+
+        if (!user) {
+          return next(createError('UNAUTHORIZED', 'User not found'));
+        }
+
+        if (!user.isActive) {
+          return next(createError('UNAUTHORIZED', 'Account is disabled'));
+        }
+
+        // Generate new access token
+        const accessToken = this.generateAccessToken(user);
+
+        res.status(200).json({
+          success: true,
+          message: 'Token refreshed successfully',
+          data: {
+            accessToken
+          }
+        });
+      });
+    } catch (error) {
+      logger.error('Error in refreshToken:', error);
+      next(error);
+    }
+  };
+
+  // Forgot password
+  forgotPassword = async (req, res, next) => {
+    try {
+      const { email } = req.body;
+
+      if (!email) {
+        return next(createError('VALIDATION_ERROR', 'Email is required'));
+      }
+
+      // Find user by email
+      const user = await UserModel.findByEmail(email);
+
+      if (!user) {
+        // Don't reveal that the user doesn't exist
+        return res.status(200).json({
+          success: true,
+          message: 'If your email exists in our system, you will receive a password reset link'
+        });
+      }
+
+      // Generate reset token
+      const resetToken = jwt.sign(
+        { id: user.id },
+        process.env.JWT_RESET_SECRET,
+        { expiresIn: '1h' }
+      );
+
+      // Store reset token in database
+      await UserModel.update(user.id, { 
+        resetToken, 
+        resetTokenExpiry: new Date(Date.now() + 3600000) // 1 hour from now
+      });
+
+      // In a real application, send email with reset link
+      // For now, just return the token in the response
+      
+      res.status(200).json({
+        success: true,
+        message: 'If your email exists in our system, you will receive a password reset link',
+        // Only include this in development
+        ...(process.env.NODE_ENV !== 'production' && { resetToken })
+      });
+    } catch (error) {
+      logger.error('Error in forgotPassword:', error);
+      next(error);
+    }
+  };
+
+  // Reset password
+  resetPassword = async (req, res, next) => {
+    try {
+      const { token, newPassword } = req.body;
+
+      if (!token || !newPassword) {
+        return next(createError('VALIDATION_ERROR', 'Token and new password are required'));
+      }
+
+      // Verify reset token
+      jwt.verify(token, process.env.JWT_RESET_SECRET, async (err, decoded) => {
+        if (err) {
+          return next(createError('UNAUTHORIZED', 'Invalid or expired token'));
+        }
+
+        // Find user
+        const user = await UserModel.findById(decoded.id);
+
+        if (!user) {
+          return next(createError('NOT_FOUND', 'User not found'));
+        }
+
+        // Check if token matches stored token and is not expired
+        if (user.resetToken !== token || new Date() > new Date(user.resetTokenExpiry)) {
+          return next(createError('UNAUTHORIZED', 'Invalid or expired token'));
+        }
+
+        // Hash new password
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+        // Update password and clear reset token
+        await UserModel.update(user.id, {
+          password: hashedPassword,
+          resetToken: null,
+          resetTokenExpiry: null,
+          updatedAt: new Date()
+        });
+
+        res.status(200).json({
+          success: true,
+          message: 'Password reset successful'
+        });
+      });
+    } catch (error) {
+      logger.error('Error in resetPassword:', error);
+      next(error);
+    }
+  };
+
+  // Logout
+  logout = async (req, res, next) => {
+    try {
+      // In a real application, you might invalidate tokens in a blacklist
+      // For JWT, client-side logout is usually enough
+      res.status(200).json({
+        success: true,
+        message: 'Logout successful'
+      });
+    } catch (error) {
+      logger.error('Error in logout:', error);
+      next(error);
+    }
+  };
+
+  // Generate access token
+  generateAccessToken = (user) => {
+    return jwt.sign(
+      { 
+        id: user.id, 
+        email: user.email, 
+        role: user.role 
+      },
+      process.env.JWT_SECRET,
+      { expiresIn: process.env.JWT_EXPIRES_IN || '1h' }
+    );
+  };
+
+  // Generate refresh token
+  generateRefreshToken = (user) => {
+    return jwt.sign(
+      { id: user.id },
+      process.env.JWT_REFRESH_SECRET,
+      { expiresIn: process.env.JWT_REFRESH_EXPIRES_IN || '7d' }
+    );
+  };
+}
+
+module.exports = new AuthController();

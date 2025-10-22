@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tophill Portal - Teacher Management</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../shared/styles.css">
+
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <button class="toggle-btn" id="sidebar-toggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h3>Tophill Portal</h3>
+            </div>
+            <div class="sidebar-menu">
+                <div class="menu-item" data-page="dashboard">
+                    <i class="fas fa-home"></i>
+                    <span>Dashboard</span>
+                </div>
+                <div class="menu-item" data-page="students">
+                    <i class="fas fa-users"></i>
+                    <span>Students</span>
+                </div>
+                <div class="menu-item active" data-page="teachers">
+                    <i class="fas fa-chalkboard-teacher"></i>
+                    <span>Teachers</span>
+                </div>
+                <div class="menu-item" data-page="subjects">
+                    <i class="fas fa-book"></i>
+                    <span>Subjects</span>
+                </div>
+                <div class="menu-item" data-page="results">
+                    <i class="fas fa-clipboard-list"></i>
+                    <span>Results</span>
+                </div>
+                <div class="menu-item" data-page="settings">
+                    <i class="fas fa-cog"></i>
+                    <span>Settings</span>
+                </div>
+                <a href="../student/student-login.html" class="menu-item" style="color:inherit;text-decoration:none;">
+                    <i class="fas fa-user-graduate"></i>
+                    <span>Student Portal</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Header -->
+            <div class="header">
+                <div>
+                    <button class="menu-toggle" id="mobile-menu-toggle">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <span class="header-title">Teacher Management</span>
+                </div>
+                <div class="user-info">
+                    <button class="btn btn-primary" onclick="uploadCSV()" style="margin-right: 10px;">
+                        <i class="fas fa-upload"></i> Upload CSV
+                    </button>
+                    <button class="btn btn-primary" onclick="downloadPDF('teachers')" style="margin-right: 15px;">
+                        <i class="fas fa-download"></i> Download PDF
+                    </button>
+                    <img src="https://ui-avatars.com/api/?name=Admin+User&background=random" alt="User">
+                    <span>Admin User</span>
+                    <input type="file" id="csvFileInput" accept=".csv" style="display: none;">
+                </div>
+            </div>
+
+            <!-- Teachers Page -->
+            <div class="page-content active" id="teachers">
+                <div class="content-section">
+                    <div class="section-header">
+                        <div class="section-title">Teacher Management</div>
+                        <button class="btn btn-primary" onclick="openAddTeacherModal()">Add New Teacher</button>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Subjects</th>
+                                <th>Classes</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="teachersTableBody">
+                            <!-- Dynamic content will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Teacher Modal -->
+    <div id="addTeacherModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Add New Teacher</h3>
+                <span class="close" onclick="closeModal('addTeacherModal')">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="addTeacherForm">
+                    <div class="form-group">
+                        <label for="teacherName">Full Name:</label>
+                        <input type="text" id="teacherName" name="teacherName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="teacherEmail">Email:</label>
+                        <input type="email" id="teacherEmail" name="teacherEmail" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="teacherPhone">Phone:</label>
+                        <input type="tel" id="teacherPhone" name="teacherPhone" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="teacherSubjects">Subjects (comma-separated):</label>
+                        <input type="text" id="teacherSubjects" name="teacherSubjects" placeholder="e.g., Mathematics, Physics" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="teacherClasses">Classes (comma-separated):</label>
+                        <input type="text" id="teacherClasses" name="teacherClasses" placeholder="e.g., 10-A, 11-B" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="teacherQualification">Qualification:</label>
+                        <input type="text" id="teacherQualification" name="teacherQualification" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="teacherExperience">Experience:</label>
+                        <input type="text" id="teacherExperience" name="teacherExperience" placeholder="e.g., 5 years" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeModal('addTeacherModal')">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="addTeacher()">Add Teacher</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Teacher Modal -->
+    <div id="editTeacherModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Edit Teacher</h3>
+                <span class="close" onclick="closeModal('editTeacherModal')">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="editTeacherForm">
+                    <input type="hidden" id="editTeacherId" name="editTeacherId">
+                    <div class="form-group">
+                        <label for="editTeacherName">Full Name:</label>
+                        <input type="text" id="editTeacherName" name="editTeacherName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editTeacherEmail">Email:</label>
+                        <input type="email" id="editTeacherEmail" name="editTeacherEmail" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editTeacherPhone">Phone:</label>
+                        <input type="tel" id="editTeacherPhone" name="editTeacherPhone" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editTeacherSubjects">Subjects (comma-separated):</label>
+                        <input type="text" id="editTeacherSubjects" name="editTeacherSubjects" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editTeacherClasses">Classes (comma-separated):</label>
+                        <input type="text" id="editTeacherClasses" name="editTeacherClasses" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editTeacherQualification">Qualification:</label>
+                        <input type="text" id="editTeacherQualification" name="editTeacherQualification" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editTeacherExperience">Experience:</label>
+                        <input type="text" id="editTeacherExperience" name="editTeacherExperience" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editTeacherStatus">Status:</label>
+                        <select id="editTeacherStatus" name="editTeacherStatus" required>
+                            <option value="active">Active</option>
+                            <option value="inactive">Inactive</option>
+                            <option value="suspended">Suspended</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeModal('editTeacherModal')">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="updateTeacher()">Update Teacher</button>
+                <button type="button" class="btn btn-warning" onclick="regeneratePassword()">Regenerate Password</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Password Reset Modal -->
+    <div id="passwordResetModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Password Reset</h3>
+                <span class="close" onclick="closeModal('passwordResetModal')">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="password-reset-info">
+                    <p><strong>New Password Generated:</strong></p>
+                    <div class="password-display">
+                        <input type="text" id="newPassword" readonly>
+                        <button type="button" class="btn btn-info" onclick="copyPassword()">
+                            <i class="fas fa-copy"></i> Copy
+                        </button>
+                    </div>
+                    <p class="note">Please save this password and share it with the teacher. They can change it after first login.</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" onclick="closeModal('passwordResetModal')">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../shared/app.js"></script>
+    <script src="../shared/auth-manager.js"></script>
+    <script src="../shared/csv-manager.js"></script>
+    <script src="../shared/script.js"></script>
+    <script>
+        // Teacher Management Functions
+        let currentEditingTeacher = null;
+
+        function openAddTeacherModal() {
+            document.getElementById('addTeacherModal').style.display = 'block';
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        function addTeacher() {
+            const form = document.getElementById('addTeacherForm');
+            const formData = new FormData(form);
+            
+            const newTeacher = {
+                name: formData.get('teacherName'),
+                email: formData.get('teacherEmail'),
+                phone: formData.get('teacherPhone'),
+                subjects: formData.get('teacherSubjects').split(',').map(s => s.trim()),
+                classes: formData.get('teacherClasses').split(',').map(c => c.trim()),
+                qualification: formData.get('teacherQualification'),
+                experience: formData.get('teacherExperience'),
+                joinDate: new Date().toISOString().split('T')[0],
+                status: 'active'
+            };
+
+            try {
+                const result = app.createTeacher(newTeacher);
+                if (result.success) {
+                    app.showNotification('Teacher added successfully!', 'success');
+                    closeModal('addTeacherModal');
+                    form.reset();
+                    loadTeachers();
+                } else {
+                    app.showNotification(result.message, 'error');
+                }
+            } catch (error) {
+                app.showNotification('Error adding teacher: ' + error.message, 'error');
+            }
+        }
+
+        function editTeacher(teacherId) {
+            const teacher = app.getTeacher(teacherId);
+            if (teacher) {
+                currentEditingTeacher = teacher;
+                
+                document.getElementById('editTeacherId').value = teacher.id;
+                document.getElementById('editTeacherName').value = teacher.name;
+                document.getElementById('editTeacherEmail').value = teacher.email;
+                document.getElementById('editTeacherPhone').value = teacher.phone;
+                document.getElementById('editTeacherSubjects').value = teacher.subjects.join(', ');
+                document.getElementById('editTeacherClasses').value = teacher.classes.join(', ');
+                document.getElementById('editTeacherQualification').value = teacher.qualification;
+                document.getElementById('editTeacherExperience').value = teacher.experience;
+                document.getElementById('editTeacherStatus').value = teacher.status;
+                
+                document.getElementById('editTeacherModal').style.display = 'block';
+            }
+        }
+
+        function updateTeacher() {
+            const form = document.getElementById('editTeacherForm');
+            const formData = new FormData(form);
+            
+            const updatedTeacher = {
+                id: formData.get('editTeacherId'),
+                name: formData.get('editTeacherName'),
+                email: formData.get('editTeacherEmail'),
+                phone: formData.get('editTeacherPhone'),
+                subjects: formData.get('editTeacherSubjects').split(',').map(s => s.trim()),
+                classes: formData.get('editTeacherClasses').split(',').map(c => c.trim()),
+                qualification: formData.get('editTeacherQualification'),
+                experience: formData.get('editTeacherExperience'),
+                status: formData.get('editTeacherStatus')
+            };
+
+            try {
+                const result = app.updateTeacher(updatedTeacher.id, updatedTeacher);
+                if (result.success) {
+                    app.showNotification('Teacher updated successfully!', 'success');
+                    closeModal('editTeacherModal');
+                    loadTeachers();
+                } else {
+                    app.showNotification(result.message, 'error');
+                }
+            } catch (error) {
+                app.showNotification('Error updating teacher: ' + error.message, 'error');
+            }
+        }
+
+        function deleteTeacher(teacherId) {
+            if (confirm('Are you sure you want to delete this teacher? This action cannot be undone.')) {
+                try {
+                    const result = app.deleteTeacher(teacherId);
+                    if (result.success) {
+                        app.showNotification('Teacher deleted successfully!', 'success');
+                        loadTeachers();
+                    } else {
+                        app.showNotification(result.message, 'error');
+                    }
+                } catch (error) {
+                    app.showNotification('Error deleting teacher: ' + error.message, 'error');
+                }
+            }
+        }
+
+        function regeneratePassword() {
+            if (currentEditingTeacher) {
+                const newPassword = generateRandomPassword();
+                
+                // Update teacher with new password (in real app, this would be hashed)
+                const teacherUpdate = {
+                    ...currentEditingTeacher,
+                    password: newPassword,
+                    passwordReset: true
+                };
+                
+                try {
+                    const result = app.updateTeacher(currentEditingTeacher.id, teacherUpdate);
+                    if (result.success) {
+                        document.getElementById('newPassword').value = newPassword;
+                        closeModal('editTeacherModal');
+                        document.getElementById('passwordResetModal').style.display = 'block';
+                        app.showNotification('Password regenerated successfully!', 'success');
+                    } else {
+                        app.showNotification(result.message, 'error');
+                    }
+                } catch (error) {
+                    app.showNotification('Error regenerating password: ' + error.message, 'error');
+                }
+            }
+        }
+
+        function generateRandomPassword() {
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*';
+            let password = '';
+            for (let i = 0; i < 12; i++) {
+                password += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return password;
+        }
+
+        function copyPassword() {
+            const passwordField = document.getElementById('newPassword');
+            passwordField.select();
+            document.execCommand('copy');
+            app.showNotification('Password copied to clipboard!', 'success');
+        }
+
+        function loadTeachers() {
+            const teachers = app.getAllTeachers();
+            const tbody = document.getElementById('teachersTableBody');
+            
+            tbody.innerHTML = '';
+            
+            teachers.forEach(teacher => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${teacher.id}</td>
+                    <td>${teacher.name}</td>
+                    <td>${teacher.email}</td>
+                    <td>${Array.isArray(teacher.subjects) ? teacher.subjects.join(', ') : teacher.subjects}</td>
+                    <td>${Array.isArray(teacher.classes) ? teacher.classes.join(', ') : teacher.classes}</td>
+                    <td><span class="status ${teacher.status}">${teacher.status.charAt(0).toUpperCase() + teacher.status.slice(1)}</span></td>
+                    <td>
+                        <button class="btn-icon btn-edit" onclick="editTeacher('${teacher.id}')" title="Edit Teacher">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn-icon btn-delete" onclick="deleteTeacher('${teacher.id}')" title="Delete Teacher">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // Load teachers when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            loadTeachers();
+        });
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modals = document.querySelectorAll('.modal');
+            modals.forEach(modal => {
+                if (event.target === modal) {
+                    modal.style.display = 'none';
+                }
+            });
+        }
+    </script>
+</body>
+</html>

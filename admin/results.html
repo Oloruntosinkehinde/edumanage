@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tophill Portal • Result Management</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../shared/styles.css">
+    <link rel="stylesheet" href="../shared/feed.css">
+    <link rel="stylesheet" href="../shared/results.css">
+</head>
+<body>
+    <div class="app-shell">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <button class="toggle-btn" id="sidebar-toggle"><i class="fas fa-bars"></i></button>
+                <h3>Tophill Portal</h3>
+            </div>
+            <nav class="sidebar-menu">
+                <a href="admin-dashboard.html" class="menu-item"><i class="fas fa-home"></i><span>Dashboard</span></a>
+                <a href="students.html" class="menu-item"><i class="fas fa-users"></i><span>Students</span></a>
+                <a href="teachers.html" class="menu-item"><i class="fas fa-chalkboard-teacher"></i><span>Teachers</span></a>
+                <a href="subjects.html" class="menu-item"><i class="fas fa-book"></i><span>Subjects</span></a>
+                <a href="results.html" class="menu-item active"><i class="fas fa-clipboard-list"></i><span>Results</span></a>
+                <a href="payments.html" class="menu-item"><i class="fas fa-credit-card"></i><span>Payments</span></a>
+                <a href="user-management.html" class="menu-item"><i class="fas fa-user-cog"></i><span>User Management</span></a>
+                <a href="feed.html" class="menu-item"><i class="fas fa-bullhorn"></i><span>Feed</span></a>
+                <a href="settings.html" class="menu-item"><i class="fas fa-cog"></i><span>Settings</span></a>
+                <a href="../student/student-login.html" class="menu-item"><i class="fas fa-user-graduate"></i><span>Student Portal</span></a>
+                <a href="../teacher/teacher-login.html" class="menu-item"><i class="fas fa-chalkboard"></i><span>Teacher Portal</span></a>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <header class="header">
+                <div class="header-left">
+                    <button class="menu-toggle" id="mobile-menu-toggle"><i class="fas fa-bars"></i></button>
+                    <span class="header-title">Result Management</span>
+                </div>
+                <div class="user-info">
+                    <button class="btn btn-secondary" id="scoringConfigBtn" data-action="open-scoring-config"><i class="fas fa-sliders-h"></i> Scoring Config</button>
+                    <img src="https://ui-avatars.com/api/?name=Admin+User&background=random" alt="Admin" />
+                    <span>Admin User</span>
+                </div>
+            </header>
+
+            <section class="page-content results-layout">
+                <section class="page-hero">
+                    <div class="hero-content">
+                        <div class="hero-text">
+                            <h1 class="hero-title"><i class="fas fa-clipboard-list"></i> Result Management</h1>
+                            <p class="hero-subtitle">Orchestrate grading, track class performance, and generate report cards — all in one tidy workspace.</p>
+                        </div>
+                        <div class="hero-actions">
+                            <button class="btn btn-primary" id="bulkEntryBtn" data-action="open-bulk-entry"><i class="fas fa-layer-group"></i> Bulk Entry</button>
+                            <button class="btn btn-outline" id="subjectConfigBtn" data-action="open-subject-config"><i class="fas fa-book-open"></i> Configure Subjects</button>
+                            <button class="btn btn-outline" id="uploadCSVBtn" data-action="trigger-csv-upload"><i class="fas fa-upload"></i> Upload CSV</button>
+                            <button class="btn btn-info" id="downloadPDFBtn" data-action="download-class-report"><i class="fas fa-download"></i> Download PDF</button>
+                        </div>
+                    </div>
+                    <div class="results-meta">
+                        <span class="meta-pill"><i class="fas fa-calendar"></i> Session <strong id="heroSession">--</strong></span>
+                        <span class="meta-pill"><i class="fas fa-chart-line"></i> Term <strong id="heroTerm">--</strong></span>
+                        <span class="meta-pill"><i class="fas fa-clock"></i> Updated <strong id="heroLastUpdated">--</strong></span>
+                    </div>
+                </section>
+
+                <section class="results-summary-grid">
+                    <article class="summary-card">
+                        <div class="summary-icon"><i class="fas fa-users"></i></div>
+                        <div class="summary-content">
+                            <span class="summary-label">Students</span>
+                            <span class="summary-value" id="summaryTotalStudents">0</span>
+                            <span class="summary-footnote">Enrolled across selected session</span>
+                        </div>
+                    </article>
+                    <article class="summary-card">
+                        <div class="summary-icon"><i class="fas fa-file-circle-check"></i></div>
+                        <div class="summary-content">
+                            <span class="summary-label">Results Submitted</span>
+                            <span class="summary-value" id="summaryResultsSubmitted">0</span>
+                            <span class="summary-footnote">Captures synced with the system</span>
+                        </div>
+                    </article>
+                    <article class="summary-card">
+                        <div class="summary-icon"><i class="fas fa-hourglass-half"></i></div>
+                        <div class="summary-content">
+                            <span class="summary-label">Outstanding</span>
+                            <span class="summary-value" id="summaryOutstanding">0</span>
+                            <span class="summary-footnote">Awaiting teacher submission</span>
+                        </div>
+                    </article>
+                    <article class="summary-card">
+                        <div class="summary-icon"><i class="fas fa-star"></i></div>
+                        <div class="summary-content">
+                            <span class="summary-label">Average Score</span>
+                            <span class="summary-value" id="summaryAverageScore">0%</span>
+                            <span class="summary-footnote">Across all computed subjects</span>
+                        </div>
+                    </article>
+                </section>
+
+                <section class="results-filters">
+                    <div class="form-group">
+                        <label for="sessionSelect">Academic Session</label>
+                        <select id="sessionSelect" class="form-control session-select auto-populate"></select>
+                    </div>
+                    <div class="form-group">
+                        <label for="termSelect">Term</label>
+                        <select id="termSelect" class="form-control term-select auto-populate"></select>
+                    </div>
+                    <div class="form-group">
+                        <label for="studentSearch">Quick Search</label>
+                        <div class="input-with-icon">
+                            <i class="fas fa-search"></i>
+                            <input type="search" id="studentSearch" placeholder="Search by name or ID" />
+                        </div>
+                    </div>
+                    <div class="filter-actions">
+                        <button class="btn btn-outline" id="refreshResultsBtn" data-action="refresh-results"><i class="fas fa-rotate"></i> Refresh</button>
+                        <button class="btn btn-success" id="reportCardsBtn" data-action="generate-report-cards"><i class="fas fa-file-alt"></i> Report Cards</button>
+                    </div>
+                </section>
+
+                <section class="class-navigation">
+                    <div class="class-navigation-header">
+                        <div>
+                            <h2>Class Overview</h2>
+                            <p>Select a class to inspect student performance in detail.</p>
+                        </div>
+                        <div class="class-navigation-actions">
+                            <button class="btn btn-outline" id="scoringConfigBtnSecondary" data-action="open-scoring-config"><i class="fas fa-sliders-h"></i> Scoring</button>
+                            <button class="btn btn-outline" id="subjectConfigBtnSecondary" data-action="open-subject-config"><i class="fas fa-book-open"></i> Subjects</button>
+                        </div>
+                    </div>
+                    <div class="class-tabs" id="classTabsContainer"></div>
+                </section>
+
+                <section class="results-table-card" id="resultsTableContainer">
+                    <div class="empty-state">
+                        <div class="icon"><i class="fas fa-clipboard-list"></i></div>
+                        <h3>Select a class to begin</h3>
+                        <p>The table will populate with performance insights once you choose a class.</p>
+                    </div>
+                </section>
+            </section>
+        </main>
+    </div>
+
+    <input type="file" id="csvUploadInput" accept=".csv" class="sr-only" />
+
+    <!-- Scoring Configuration Modal -->
+    <div class="modal" id="scoringConfigModal">
+        <div class="modal-content modal-lg">
+            <header class="modal-header">
+                <h3>Scoring Configuration</h3>
+                <button type="button" class="modal-close" data-close-modal="scoringConfigModal"><i class="fas fa-times"></i></button>
+            </header>
+            <form id="scoringConfigForm" class="modal-body">
+                <div class="config-tabs">
+                    <button type="button" class="active" data-config-tab="scoring">Scoring System</button>
+                    <button type="button" data-config-tab="grading">Grading Scale</button>
+                </div>
+
+                <div class="tab-content active" data-tab-content="scoring">
+                    <h4>Assessment Weighting</h4>
+                    <p class="table-subtitle">Distribute scores for continuous assessment and examination.</p>
+                    <div class="setup-row">
+                        <div class="form-group">
+                            <label for="caWeight">Continuous Assessment (%)</label>
+                            <input type="number" id="caWeight" name="caWeight" min="0" max="100" required />
+                        </div>
+                        <div class="form-group">
+                            <label for="examWeight">Examination (%)</label>
+                            <input type="number" id="examWeight" name="examWeight" min="0" max="100" required />
+                        </div>
+                        <div class="form-group">
+                            <label for="passMark">Pass Mark (%)</label>
+                            <input type="number" id="passMark" name="passMark" min="0" max="100" required />
+                        </div>
+                    </div>
+                    <div class="alert alert-info" role="alert">
+                        Ensure the total weighting equals 100% for accurate score computation.
+                    </div>
+                </div>
+
+                <div class="tab-content" data-tab-content="grading">
+                    <h4>Grading Scale</h4>
+                    <p class="table-subtitle">Define grade boundaries and remarks for report cards.</p>
+                    <div class="table-scroll mt-3">
+                        <table class="student-result-table">
+                            <thead>
+                                <tr>
+                                    <th>Grade</th>
+                                    <th>Minimum</th>
+                                    <th>Maximum</th>
+                                    <th>Remark</th>
+                                </tr>
+                            </thead>
+                            <tbody id="gradingScaleBody"></tbody>
+                        </table>
+                    </div>
+                    <div class="mt-3 d-flex justify-content-end">
+                        <button type="button" class="btn btn-outline" id="addGradingRowBtn"><i class="fas fa-plus"></i> Add Row</button>
+                    </div>
+                </div>
+
+                <footer class="modal-footer">
+                    <button type="button" class="btn btn-light" data-close-modal="scoringConfigModal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Configuration</button>
+                </footer>
+            </form>
+        </div>
+    </div>
+
+    <!-- Subject Configuration Modal -->
+    <div class="modal" id="subjectConfigModal">
+        <div class="modal-content modal-lg">
+            <header class="modal-header">
+                <h3>Subject Configuration</h3>
+                <button type="button" class="modal-close" data-close-modal="subjectConfigModal"><i class="fas fa-times"></i></button>
+            </header>
+            <div class="modal-body subject-config-container">
+                <section class="class-subject-section">
+                    <h4>Assign Subjects to Classes</h4>
+                    <label for="subjectConfigClassSelect" class="form-label">Select Class</label>
+                    <select id="subjectConfigClassSelect" class="form-control class-select auto-populate"></select>
+                    <div class="class-subjects-container" id="assignedSubjectsContainer"></div>
+                </section>
+                <section class="available-subjects-section">
+                    <h4>Available Subjects</h4>
+                    <div class="subject-grid" id="availableSubjectsContainer"></div>
+                    <form id="newSubjectForm" class="add-subject-form">
+                        <h5>Add New Subject</h5>
+                        <div class="form-row">
+                            <input type="text" id="newSubjectCode" class="form-control" placeholder="Subject Code" required />
+                            <input type="text" id="newSubjectName" class="form-control" placeholder="Subject Name" required />
+                            <button type="submit" class="btn btn-primary"><i class="fas fa-plus"></i> Add Subject</button>
+                        </div>
+                    </form>
+                </section>
+            </div>
+            <footer class="modal-footer">
+                <button type="button" class="btn btn-primary" data-close-modal="subjectConfigModal">Done</button>
+            </footer>
+        </div>
+    </div>
+
+    <!-- Bulk Entry Modal -->
+    <div class="modal" id="bulkResultModal">
+        <div class="modal-content modal-lg">
+            <header class="modal-header">
+                <h3>Bulk Result Entry</h3>
+                <button type="button" class="modal-close" data-close-modal="bulkResultModal"><i class="fas fa-times"></i></button>
+            </header>
+            <form id="bulkResultForm" class="modal-body">
+                <div class="bulk-entry-header">
+                    <h4>Capture multiple scores at once</h4>
+                    <p>Select a class and subject, then update CA/Test/Exam scores. Grades and totals adjust automatically.</p>
+                </div>
+                <div class="setup-row">
+                    <div class="form-group">
+                        <label for="bulkEntryClassSelect">Class</label>
+                        <select id="bulkEntryClassSelect" class="form-control class-select auto-populate"></select>
+                    </div>
+                    <div class="form-group">
+                        <label for="bulkEntrySubjectSelect">Subject</label>
+                        <select id="bulkEntrySubjectSelect" class="form-control subject-select auto-populate"></select>
+                    </div>
+                </div>
+                <div class="table-scroll mt-3">
+                    <table class="bulk-entry-table">
+                        <thead>
+                            <tr id="bulkResultsHeaderRow"></tr>
+                        </thead>
+                        <tbody id="bulkResultsTableBody"></tbody>
+                    </table>
+                </div>
+                <footer class="modal-footer mt-3">
+                    <button type="button" class="btn btn-light" data-close-modal="bulkResultModal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Entries</button>
+                </footer>
+            </form>
+        </div>
+    </div>
+
+    <!-- Student Result Modal -->
+    <div class="modal" id="studentResultModal">
+        <div class="modal-content modal-lg">
+            <header class="modal-header">
+                <h3>Student Result Breakdown</h3>
+                <div class="d-flex gap-2">
+                    <button type="button" class="btn btn-outline" id="studentModalPrintBtn"><i class="fas fa-print"></i> Print</button>
+                    <button type="button" class="modal-close" data-close-modal="studentResultModal"><i class="fas fa-times"></i></button>
+                </div>
+            </header>
+            <div class="modal-body student-result-details" id="studentResultContent"></div>
+        </div>
+    </div>
+
+    <script src="../shared/script.js"></script>
+    <script src="../shared/result-manager.js"></script>
+    <script src="../shared/app.js"></script>
+    <script src="../shared/dropdown-manager.js"></script>
+    <script src="../shared/results-page.js"></script>
+</body>
+</html>

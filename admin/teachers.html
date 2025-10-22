@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tophill Portal - Teacher Management</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../shared/styles.css">
+    <link rel="stylesheet" href="../shared/feed.css">
+
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <button class="toggle-btn" id="sidebar-toggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h3>Tophill Portal</h3>
+            </div>
+            <div class="sidebar-menu">
+                <a href="admin-dashboard.html" class="menu-item"><i class="fas fa-home"></i><span>Dashboard</span></a>
+                <a href="students.html" class="menu-item"><i class="fas fa-users"></i><span>Students</span></a>
+                <a href="teachers.html" class="menu-item active"><i class="fas fa-chalkboard-teacher"></i><span>Teachers</span></a>
+                <a href="subjects.html" class="menu-item"><i class="fas fa-book"></i><span>Subjects</span></a>
+                <a href="results.html" class="menu-item"><i class="fas fa-clipboard-list"></i><span>Results</span></a>
+                <a href="payments.html" class="menu-item"><i class="fas fa-credit-card"></i><span>Payments</span></a>
+                <a href="user-management.html" class="menu-item"><i class="fas fa-user-cog"></i><span>User Management</span></a>
+                <a href="feed.html" class="menu-item"><i class="fas fa-bullhorn"></i><span>Feed</span></a>
+                <a href="settings.html" class="menu-item"><i class="fas fa-cog"></i><span>Settings</span></a>
+                <a href="../student/student-login.html" class="menu-item" style="color:inherit;text-decoration:none;"><i class="fas fa-user-graduate"></i><span>Student Portal</span></a>
+                <a href="../teacher/teacher-login.html" class="menu-item" style="color:inherit;text-decoration:none;"><i class="fas fa-chalkboard-teacher"></i><span>Teacher Portal</span></a>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="page-hero" aria-label="Teacher management overview">
+                <div class="hero-content">
+                    <div class="hero-text">
+                        <h1 class="hero-title"><i class="fas fa-chalkboard-teacher" aria-hidden="true"></i> Teacher Management</h1>
+                        <p class="hero-subtitle">Manage teacher profiles, assignments, schedules, and professional development in one unified workspace.</p>
+                    </div>
+                    <div class="hero-actions">
+                        <button class="btn btn-primary" onclick="uploadCSV()">
+                            <i class="fas fa-upload" aria-hidden="true"></i> Upload CSV
+                        </button>
+                        <button class="btn btn-success" onclick="downloadPDF('teachers')">
+                            <i class="fas fa-download" aria-hidden="true"></i> Download PDF
+                        </button>
+                    </div>
+                </div>
+                <div class="hero-meta">
+                    <span class="meta-pill">
+                        <i class="fas fa-user-tie" aria-hidden="true"></i>
+                        Total teachers: <span id="metricTotalTeachers">0</span>
+                    </span>
+                    <span class="meta-pill">
+                        <i class="fas fa-clock" aria-hidden="true"></i>
+                        Last updated: <span id="metricLastUpdated">just now</span>
+                    </span>
+                </div>
+                <input type="file" id="csvFileInput" accept=".csv" style="display: none;">
+            </header>
+
+            <!-- Teachers Page -->
+            <div class="page-content active" id="teachers">
+                <div class="content-section">
+                    <div class="section-header">
+                        <div class="section-title">Teacher Management</div>
+                        <button class="btn btn-primary" onclick="openAddTeacherModal()">Add New Teacher</button>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Subjects</th>
+                                <th>Classes</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="teachersTableBody">
+                            <!-- Dynamic content will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Add Teacher Modal -->
+    <div class="modal" id="addTeacherModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Add New Teacher</h2>
+                <span class="close" onclick="closeAddTeacherModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="addTeacherForm">
+                    <div class="form-group">
+                        <label for="teacherId">Teacher ID</label>
+                        <input type="text" id="teacherId" name="teacherId" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="teacherName">Full Name</label>
+                        <input type="text" id="teacherName" name="teacherName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="teacherEmail">Email</label>
+                        <input type="email" id="teacherEmail" name="teacherEmail" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="teacherPhone">Phone</label>
+                        <input type="tel" id="teacherPhone" name="teacherPhone" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="teacherSubjects">Subjects (comma-separated)</label>
+                        <input type="text" id="teacherSubjects" name="teacherSubjects" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="teacherClasses">Classes</label>
+                        <select id="teacherClasses" name="teacherClasses" class="form-control" multiple data-class-select data-placeholder="Select Classes" required>
+                            <option value="">Select Classes</option>
+                        </select>
+                        <small class="form-text">Hold Ctrl (Cmd on Mac) to select multiple classes</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="qualification">Qualification</label>
+                        <input type="text" id="qualification" name="qualification" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="joiningDate">Joining Date</label>
+                        <input type="date" id="joiningDate" name="joiningDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="address">Address</label>
+                        <textarea id="address" name="address" rows="3" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="status">Status</label>
+                        <select id="status" name="status" required>
+                            <option value="">Select Status</option>
+                            <option value="Active">Active</option>
+                            <option value="Inactive">Inactive</option>
+                            <option value="On Leave">On Leave</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeAddTeacherModal()">Cancel</button>
+                <button class="btn btn-primary" onclick="addTeacher()">Add Teacher</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Teacher Modal -->
+    <div class="modal" id="editTeacherModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Edit Teacher</h2>
+                <span class="close" onclick="closeEditTeacherModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="editTeacherForm">
+                    <input type="hidden" id="editTeacherIdHidden">
+                    <div class="form-group">
+                        <label for="editTeacherId">Teacher ID</label>
+                        <input type="text" id="editTeacherId" name="editTeacherId" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="editTeacherName">Full Name</label>
+                        <input type="text" id="editTeacherName" name="editTeacherName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editTeacherEmail">Email</label>
+                        <input type="email" id="editTeacherEmail" name="editTeacherEmail" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editTeacherPhone">Phone</label>
+                        <input type="tel" id="editTeacherPhone" name="editTeacherPhone" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editTeacherSubjects">Subjects (comma-separated)</label>
+                        <input type="text" id="editTeacherSubjects" name="editTeacherSubjects" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editTeacherClasses">Classes</label>
+                        <select id="editTeacherClasses" name="editTeacherClasses" class="form-control" multiple data-class-select data-placeholder="Select Classes" required>
+                            <option value="">Select Classes</option>
+                        </select>
+                        <small class="form-text">Hold Ctrl (Cmd on Mac) to select multiple classes</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="editQualification">Qualification</label>
+                        <input type="text" id="editQualification" name="editQualification" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editJoiningDate">Joining Date</label>
+                        <input type="date" id="editJoiningDate" name="editJoiningDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editAddress">Address</label>
+                        <textarea id="editAddress" name="editAddress" rows="3" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="editStatus">Status</label>
+                        <select id="editStatus" name="editStatus" required>
+                            <option value="">Select Status</option>
+                            <option value="Active">Active</option>
+                            <option value="Inactive">Inactive</option>
+                            <option value="On Leave">On Leave</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeEditTeacherModal()">Cancel</button>
+                <button class="btn btn-primary" onclick="updateTeacher()">Update Teacher</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Teacher Details Modal -->
+    <div class="modal" id="viewTeacherModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Teacher Details</h2>
+                <span class="close" onclick="closeViewTeacherModal()">&times;</span>
+            </div>
+            <div class="modal-body" id="teacherDetailsContent">
+                <!-- Teacher details will be displayed here -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeViewTeacherModal()">Close</button>
+                <button class="btn btn-primary" id="editTeacherBtn">Edit</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal" id="deleteConfirmationModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Confirm Delete</h2>
+                <span class="close" onclick="closeDeleteConfirmationModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete this teacher? This action cannot be undone.</p>
+                <input type="hidden" id="deleteTeacherId">
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeDeleteConfirmationModal()">Cancel</button>
+                <button class="btn btn-danger" onclick="deleteTeacherConfirmed()">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Import CSV Result Modal -->
+    <div class="modal" id="csvResultModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>CSV Import Results</h2>
+                <span class="close" onclick="closeCsvResultModal()">&times;</span>
+            </div>
+            <div class="modal-body" id="csvResultContent">
+                <!-- Results will be displayed here -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" onclick="closeCsvResultModal()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+    <script src="../shared/app.js" defer></script>
+    <script src="../shared/auth-manager.js" defer></script>
+    <script src="../shared/script.js" defer></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            loadTeachersTable();
+            setupNavigation();
+            window.populateGlobalClassSelects?.();
+        });
+
+        function loadTeachersTable() {
+            const tableBody = document.getElementById('teachersTableBody');
+            tableBody.innerHTML = ''; // Clear existing data
+
+            // Load teacher data from app
+            const teachers = app.data.teachers || [];
+
+            if (teachers.length === 0) {
+                // If no teachers, show placeholder row
+                const row = document.createElement('tr');
+                row.innerHTML = `<td colspan="7" class="text-center">No teachers found. Add new teachers or import from CSV.</td>`;
+                tableBody.appendChild(row);
+                return;
+            }
+
+            // Populate table with teacher data
+            teachers.forEach(teacher => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${teacher.id}</td>
+                    <td>${teacher.name}</td>
+                    <td>${teacher.email}</td>
+                    <td>${Array.isArray(teacher.subjects) ? teacher.subjects.join(', ') : (teacher.subjects || 'N/A')}</td>
+                    <td>${Array.isArray(teacher.classes) ? teacher.classes.join(', ') : (teacher.classes || 'N/A')}</td>
+                    <td><span class="status ${teacher.status.toLowerCase().replace(' ', '-')}">${teacher.status}</span></td>
+                    <td class="actions">
+                        <button onclick="viewTeacher('${teacher.id}')" title="View"><i class="fas fa-eye"></i></button>
+                        <button onclick="openEditTeacherModal('${teacher.id}')" title="Edit"><i class="fas fa-edit"></i></button>
+                        <button onclick="confirmDeleteTeacher('${teacher.id}')" title="Delete"><i class="fas fa-trash"></i></button>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        function openAddTeacherModal() {
+            window.populateGlobalClassSelects?.();
+            document.getElementById('addTeacherModal').style.display = 'block';
+        }
+
+        function closeAddTeacherModal() {
+            document.getElementById('addTeacherForm').reset();
+            document.getElementById('addTeacherModal').style.display = 'none';
+            window.populateGlobalClassSelects?.();
+        }
+
+        function getSelectedClassValues(selectId) {
+            const select = document.getElementById(selectId);
+            if (!select) return [];
+            return Array.from(select.selectedOptions)
+                .map(option => option.value)
+                .filter(value => value);
+        }
+
+        function addTeacher() {
+            const form = document.getElementById('addTeacherForm');
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+
+            const newTeacher = {
+                id: document.getElementById('teacherId').value,
+                name: document.getElementById('teacherName').value,
+                email: document.getElementById('teacherEmail').value,
+                phone: document.getElementById('teacherPhone').value,
+                subjects: document.getElementById('teacherSubjects').value
+                    .split(',')
+                    .map(subject => subject.trim())
+                    .filter(subject => subject),
+                classes: getSelectedClassValues('teacherClasses'),
+                qualification: document.getElementById('qualification').value,
+                joiningDate: document.getElementById('joiningDate').value,
+                joinDate: document.getElementById('joiningDate').value,
+                address: document.getElementById('address').value,
+                status: document.getElementById('status').value,
+                // Add any other fields as needed
+            };
+
+            // Check if ID already exists
+            if (app.data.teachers && app.data.teachers.some(t => t.id === newTeacher.id)) {
+                alert('Teacher ID already exists. Please use a different ID.');
+                return;
+            }
+
+            // Initialize teachers array if not exists
+            if (!app.data.teachers) {
+                app.data.teachers = [];
+            }
+
+            // Add to app data
+            app.data.teachers.push(newTeacher);
+            app.saveData();
+            window.populateGlobalClassSelects?.();
+
+            // Refresh table and close modal
+            loadTeachersTable();
+            closeAddTeacherModal();
+            app.showNotification('Teacher added successfully!', 'success');
+        }
+
+        function viewTeacher(teacherId) {
+            const teacher = app.data.teachers.find(t => t.id === teacherId);
+            if (!teacher) return;
+
+            // Populate teacher details in modal
+            const detailsContent = document.getElementById('teacherDetailsContent');
+            detailsContent.innerHTML = `
+                <div class="teacher-profile">
+                    <div class="profile-header">
+                        <div class="profile-image">
+                            <img src="https://ui-avatars.com/api/?name=${encodeURIComponent(teacher.name)}&background=random" alt="${teacher.name}">
+                        </div>
+                        <div class="profile-info">
+                            <h3>${teacher.name}</h3>
+                            <p><span class="status ${teacher.status.toLowerCase().replace(' ', '-')}">${teacher.status}</span> | ID: ${teacher.id}</p>
+                            <p class="teacher-qualification">${teacher.qualification || 'No qualification specified'}</p>
+                        </div>
+                    </div>
+                    <div class="profile-details">
+                        <div class="detail-item">
+                            <span class="detail-label">Email:</span>
+                            <span class="detail-value">${teacher.email}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Phone:</span>
+                            <span class="detail-value">${teacher.phone || 'Not specified'}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Subjects:</span>
+                            <span class="detail-value">${Array.isArray(teacher.subjects) ? teacher.subjects.join(', ') : (teacher.subjects || 'Not specified')}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Classes:</span>
+                            <span class="detail-value">${Array.isArray(teacher.classes) ? teacher.classes.join(', ') : (teacher.classes || 'Not specified')}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Joining Date:</span>
+                            <span class="detail-value">${teacher.joiningDate || teacher.joinDate || 'Not specified'}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Address:</span>
+                            <span class="detail-value">${teacher.address || 'Not specified'}</span>
+                        </div>
+                    </div>
+                    <div class="profile-academic">
+                        <h4>Teaching Overview</h4>
+                        <div class="academic-stats">
+                            <div class="stat-item">
+                                <div class="stat-value">${Array.isArray(teacher.subjects) ? teacher.subjects.length : (teacher.subjects ? teacher.subjects.split(',').length : 0)}</div>
+                                <div class="stat-label">Subjects</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value">${Array.isArray(teacher.classes) ? teacher.classes.length : (teacher.classes ? teacher.classes.split(',').length : 0)}</div>
+                                <div class="stat-label">Classes</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value">${calculateExperience(teacher.joiningDate || teacher.joinDate)}</div>
+                                <div class="stat-label">Years Exp.</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            // Set up the edit button to open edit modal with this teacher's data
+            document.getElementById('editTeacherBtn').onclick = function() {
+                closeViewTeacherModal();
+                openEditTeacherModal(teacherId);
+            };
+
+            // Show modal
+            document.getElementById('viewTeacherModal').style.display = 'block';
+        }
+
+        function calculateExperience(joiningDate) {
+            if (!joiningDate) return 'N/A';
+            
+            const joining = new Date(joiningDate);
+            const today = new Date();
+            const diffTime = Math.abs(today - joining);
+            const diffYears = Math.floor(diffTime / (1000 * 60 * 60 * 24 * 365));
+            
+            return diffYears;
+        }
+
+        function closeViewTeacherModal() {
+            document.getElementById('viewTeacherModal').style.display = 'none';
+        }
+
+        function openEditTeacherModal(teacherId) {
+            const teacher = app.data.teachers.find(t => t.id === teacherId);
+            if (!teacher) return;
+
+            window.populateGlobalClassSelects?.();
+
+            // Fill form with teacher data
+            document.getElementById('editTeacherIdHidden').value = teacher.id;
+            document.getElementById('editTeacherId').value = teacher.id;
+            document.getElementById('editTeacherName').value = teacher.name;
+            document.getElementById('editTeacherEmail').value = teacher.email;
+            document.getElementById('editTeacherPhone').value = teacher.phone || '';
+            document.getElementById('editTeacherSubjects').value = Array.isArray(teacher.subjects)
+                ? teacher.subjects.join(', ')
+                : (teacher.subjects || '');
+
+            const classSelect = document.getElementById('editTeacherClasses');
+            if (classSelect) {
+                Array.from(classSelect.options).forEach(option => {
+                    option.selected = Array.isArray(teacher.classes) && teacher.classes.includes(option.value);
+                });
+            }
+            document.getElementById('editQualification').value = teacher.qualification || '';
+            document.getElementById('editJoiningDate').value = (teacher.joiningDate || teacher.joinDate || '');
+            document.getElementById('editAddress').value = teacher.address || '';
+            document.getElementById('editStatus').value = teacher.status;
+
+            // Show modal
+            document.getElementById('editTeacherModal').style.display = 'block';
+        }
+
+        function closeEditTeacherModal() {
+            document.getElementById('editTeacherForm').reset();
+            document.getElementById('editTeacherModal').style.display = 'none';
+            window.populateGlobalClassSelects?.();
+        }
+
+        function updateTeacher() {
+            const form = document.getElementById('editTeacherForm');
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+
+            const teacherId = document.getElementById('editTeacherIdHidden').value;
+            const teacherIndex = app.data.teachers.findIndex(t => t.id === teacherId);
+            
+            if (teacherIndex !== -1) {
+                const updatedTeacher = {
+                    ...app.data.teachers[teacherIndex],
+                    id: document.getElementById('editTeacherId').value,
+                    name: document.getElementById('editTeacherName').value,
+                    email: document.getElementById('editTeacherEmail').value,
+                    phone: document.getElementById('editTeacherPhone').value,
+                    subjects: document.getElementById('editTeacherSubjects').value
+                        .split(',')
+                        .map(subject => subject.trim())
+                        .filter(subject => subject),
+                    classes: getSelectedClassValues('editTeacherClasses'),
+                    qualification: document.getElementById('editQualification').value,
+                    joiningDate: document.getElementById('editJoiningDate').value,
+                    joinDate: document.getElementById('editJoiningDate').value,
+                    address: document.getElementById('editAddress').value,
+                    status: document.getElementById('editStatus').value
+                };
+
+                // Update the teacher record
+                app.data.teachers[teacherIndex] = updatedTeacher;
+                app.saveData();
+                window.populateGlobalClassSelects?.();
+
+                // Refresh table and close modal
+                loadTeachersTable();
+                closeEditTeacherModal();
+                app.showNotification('Teacher updated successfully!', 'success');
+            }
+        }
+
+        function confirmDeleteTeacher(teacherId) {
+            document.getElementById('deleteTeacherId').value = teacherId;
+            document.getElementById('deleteConfirmationModal').style.display = 'block';
+        }
+
+        function closeDeleteConfirmationModal() {
+            document.getElementById('deleteConfirmationModal').style.display = 'none';
+        }
+
+        function deleteTeacherConfirmed() {
+            const teacherId = document.getElementById('deleteTeacherId').value;
+            const teacherIndex = app.data.teachers.findIndex(t => t.id === teacherId);
+            
+            if (teacherIndex !== -1) {
+                app.data.teachers.splice(teacherIndex, 1);
+                app.saveData();
+                loadTeachersTable();
+                closeDeleteConfirmationModal();
+                app.showNotification('Teacher deleted successfully!', 'success');
+            }
+        }
+
+        function uploadCSV() {
+            const fileInput = document.getElementById('csvFileInput');
+            fileInput.onchange = function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    // Process the CSV using csv-manager.js
+                    csvManager.parseCSV(file, 'teachers', function(success, message, count) {
+                        // Display results
+                        const resultContent = document.getElementById('csvResultContent');
+                        if (success) {
+                            resultContent.innerHTML = `
+                                <div class="alert alert-success">
+                                    <i class="fas fa-check-circle"></i> ${message}
+                                </div>
+                                <p>Total teachers imported: <strong>${count}</strong></p>
+                                <p>Click "Close" to view the updated teacher list.</p>
+                            `;
+                            // Refresh the teachers table
+                            loadTeachersTable();
+                        } else {
+                            resultContent.innerHTML = `
+                                <div class="alert alert-danger">
+                                    <i class="fas fa-times-circle"></i> ${message}
+                                </div>
+                                <p>Please check your CSV format and try again.</p>
+                            `;
+                        }
+                        document.getElementById('csvResultModal').style.display = 'block';
+                    });
+                }
+            };
+            fileInput.click();
+        }
+
+        function closeCsvResultModal() {
+            document.getElementById('csvResultModal').style.display = 'none';
+        }
+
+        function downloadPDF(type) {
+            // Basic PDF generation using jsPDF
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            if (type === 'teachers') {
+                // Add title
+                doc.setFontSize(18);
+                doc.text('Teacher List', 14, 22);
+                doc.setFontSize(11);
+                doc.text(`Generated on ${new Date().toLocaleDateString()}`, 14, 30);
+
+                // Create teacher table
+                const teachers = app.data.teachers || [];
+                const tableColumn = ["ID", "Name", "Email", "Subjects", "Classes", "Status"];
+                const tableRows = [];
+
+                teachers.forEach(teacher => {
+                    const teacherData = [
+                        teacher.id,
+                        teacher.name,
+                        teacher.email,
+                        teacher.subjects || 'N/A',
+                        teacher.classes || 'N/A',
+                        teacher.status
+                    ];
+                    tableRows.push(teacherData);
+                });
+
+                doc.autoTable({
+                    head: [tableColumn],
+                    body: tableRows,
+                    startY: 35,
+                    theme: 'grid',
+                    styles: {
+                        fontSize: 9
+                    },
+                    headStyles: {
+                        fillColor: [67, 97, 238]
+                    }
+                });
+
+                // Save PDF
+                doc.save('teachers_list.pdf');
+                app.showNotification('PDF downloaded successfully!', 'success');
+            }
+        }
+    </script>
+</body>
+</html>

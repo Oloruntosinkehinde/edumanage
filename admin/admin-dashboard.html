@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tophill Portal - Admin Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../shared/styles.css">
+
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <button class="toggle-btn" id="sidebar-toggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h3>Tophill Portal</h3>
+            </div>
+            <div class="sidebar-menu">
+                <a href="admin-dashboard.html" class="menu-item active"><i class="fas fa-home"></i><span>Dashboard</span></a>
+                <a href="students.html" class="menu-item"><i class="fas fa-users"></i><span>Students</span></a>
+                <a href="teachers.html" class="menu-item"><i class="fas fa-chalkboard-teacher"></i><span>Teachers</span></a>
+                <a href="subjects.html" class="menu-item"><i class="fas fa-book"></i><span>Subjects</span></a>
+                <a href="results.html" class="menu-item"><i class="fas fa-clipboard-list"></i><span>Results</span></a>
+                <a href="payments.html" class="menu-item"><i class="fas fa-credit-card"></i><span>Payments</span></a>
+                <a href="user-management.html" class="menu-item"><i class="fas fa-user-cog"></i><span>User Management</span></a>
+                <a href="feed.html" class="menu-item"><i class="fas fa-bullhorn"></i><span>Feed</span></a>
+                <a href="settings.html" class="menu-item"><i class="fas fa-cog"></i><span>Settings</span></a>
+                <a href="../student/student-login.html" class="menu-item" style="color:inherit;text-decoration:none;"><i class="fas fa-user-graduate"></i><span>Student Portal</span></a>
+                <a href="../teacher/teacher-login.html" class="menu-item" style="color:inherit;text-decoration:none;"><i class="fas fa-chalkboard-teacher"></i><span>Teacher Portal</span></a>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="header">
+                <div>
+                    <button class="menu-toggle" id="mobile-menu-toggle"><i class="fas fa-bars"></i></button>
+                    <span class="header-title">Admin Dashboard</span>
+                </div>
+                <div class="user-info">
+                    <img src="https://ui-avatars.com/api/?name=Admin+User&background=random" alt="User">
+                    <span>Admin User</span>
+                </div>
+            </div>
+
+            <div class="page-content active" id="dashboard">
+                <div class="dashboard-cards">
+                    <div class="card">
+                        <div class="card-icon"><i class="fas fa-user-graduate"></i></div>
+                        <div class="card-title">Total Students</div>
+                        <div class="card-value" id="dash-students">-</div>
+                        <div class="card-desc">All registered students</div>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon"><i class="fas fa-chalkboard-teacher"></i></div>
+                        <div class="card-title">Total Teachers</div>
+                        <div class="card-value" id="dash-teachers">-</div>
+                        <div class="card-desc">Active teaching staff</div>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon"><i class="fas fa-book"></i></div>
+                        <div class="card-title">Subjects</div>
+                        <div class="card-value" id="dash-subjects">-</div>
+                        <div class="card-desc">Available subjects</div>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon"><i class="fas fa-clipboard-list"></i></div>
+                        <div class="card-title">Results</div>
+                        <div class="card-value" id="dash-results">-</div>
+                        <div class="card-desc">Published result sets</div>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <div class="section-header">
+                        <div class="section-title">Quick Actions</div>
+                        <div class="section-actions"></div>
+                    </div>
+                    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;">
+                        <a class="btn btn-primary" href="students.html"><i class="fas fa-users"></i> Manage Students</a>
+                        <a class="btn btn-primary" href="teachers.html"><i class="fas fa-chalkboard-teacher"></i> Manage Teachers</a>
+                        <a class="btn btn-primary" href="subjects.html"><i class="fas fa-book"></i> Manage Subjects</a>
+                        <a class="btn btn-primary" href="results.html"><i class="fas fa-clipboard-list"></i> Manage Results</a>
+                        <a class="btn btn-primary" href="payments.html"><i class="fas fa-credit-card"></i> Payments</a>
+                        <a class="btn btn-primary" href="user-management.html"><i class="fas fa-user-cog"></i> User Management</a>
+                        <a class="btn btn-primary" href="feed.html"><i class="fas fa-bullhorn"></i> Feed</a>
+                        <a class="btn btn-primary" href="settings.html"><i class="fas fa-cog"></i> Settings</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../shared/app.js"></script>
+    <script src="../shared/auth-manager.js"></script>
+    <script src="../shared/script.js"></script>
+    <script>
+        // Optionally populate dashboard counts if app provides them
+        document.addEventListener('DOMContentLoaded', () => {
+            try {
+                const s = (window.Tophill PortalApp && window.Tophill PortalApp.read) ? window.Tophill PortalApp : null;
+                if (!s) return;
+                const setVal = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = (Array.isArray(v) ? v.length : (v ?? '-')); };
+                setVal('dash-students', s.read('students') || '-');
+                setVal('dash-teachers', s.read('teachers') || '-');
+                setVal('dash-subjects', s.read('subjects') || '-');
+                setVal('dash-results', s.read('results') || '-');
+            } catch {}
+        });
+    </script>
+</body>
+</html>

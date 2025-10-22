@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teacher Dashboard - Tophill Portal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../shared/styles.css">
+    <link rel="stylesheet" href="../shared/communication-styles.css">
+    <link rel="stylesheet" href="../shared/teacher-dashboard.css">
+    <!-- Enhanced Backend Scripts -->
+    <script src="../shared/app.js"></script>
+    <script src="../shared/auth-manager.js"></script>
+    <script src="../shared/communication-manager.js"></script>
+    <script src="../shared/assignments.js"></script>
+    <script src="../shared/dropdown-manager.js"></script>
+    <script src="../shared/script.js"></script>
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <button class="toggle-btn" id="sidebar-toggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h3>Tophill Portal Teacher</h3>
+            </div>
+            <div class="sidebar-menu">
+                <div class="menu-item active" data-page="dashboard">
+                    <i class="fas fa-home"></i>
+                    <span>Dashboard</span>
+                </div>
+                <div class="menu-item" data-page="my-students">
+                    <i class="fas fa-users"></i>
+                    <span>My Students</span>
+                </div>
+                <div class="menu-item" data-page="my-subjects">
+                    <i class="fas fa-book"></i>
+                    <span>My Subjects</span>
+                </div>
+                <div class="menu-item" data-page="results">
+                    <i class="fas fa-clipboard-list"></i>
+                    <span>Student Results</span>
+                </div>
+                <div class="menu-item" data-page="communication">
+                    <i class="fas fa-comments"></i>
+                    <span>Communication</span>
+                    <span class="notification-badge" id="communication-badge" style="display: none;">0</span>
+                </div>
+                <div class="menu-item" data-page="class-management">
+                    <i class="fas fa-chalkboard"></i>
+                    <span>Class Management</span>
+                </div>
+                <div class="menu-item" onclick="window.location.href='assignments.html'">
+                    <i class="fas fa-tasks"></i>
+                    <span>Assignments</span>
+                </div>
+                <div class="menu-item" data-page="fees">
+                    <i class="fas fa-dollar-sign"></i>
+                    <span>Fees & Payments</span>
+                </div>
+                <div class="menu-item" onclick="authManager.logout()">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Header -->
+            <div class="header">
+                <div>
+                    <button class="menu-toggle" id="mobile-menu-toggle">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <span class="header-title">Teacher Dashboard</span>
+                </div>
+                <div class="user-info">
+                    <div class="teacher-access-notice">
+                        <i class="fas fa-info-circle"></i>
+                        Teacher Access: Limited to your assigned classes and subjects
+                    </div>
+                    <img src="https://ui-avatars.com/api/?name=Teacher&background=1F335A&color=fff" alt="Teacher">
+                    <span id="teacher-name">Teacher</span>
+                </div>
+            </div>
+
+            <!-- Dashboard Page -->
+            <div class="page-content active" id="dashboard">
+                <!-- Page Hero -->
+                <div class="page-hero">
+                    <div class="hero-content">
+                        <div class="hero-text">
+                            <h1 class="hero-title">
+                                <i class="fas fa-chalkboard-teacher"></i>
+                                Teacher Dashboard
+                            </h1>
+                            <p class="hero-subtitle">
+                                Manage your classes, track student progress, enter grades, and stay organized with your teaching schedule.
+                            </p>
+                        </div>
+                        <div class="hero-actions">
+                            <button class="btn btn-primary" onclick="showQuickGradeEntry()">
+                                <i class="fas fa-clipboard-check"></i> Enter Grades
+                            </button>
+                            <button class="btn btn-secondary" onclick="viewMySchedule()">
+                                <i class="fas fa-calendar-alt"></i> My Schedule
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="content-section">
+
+                    <!-- Quick Stats -->
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <div class="stat-content">
+                                <div class="stat-number" id="teacher-student-count">0</div>
+                                <div class="stat-label">My Students</div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-book"></i>
+                            </div>
+                            <div class="stat-content">
+                                <div class="stat-number" id="teacher-subject-count">0</div>
+                                <div class="stat-label">Subjects Taught</div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-clipboard-check"></i>
+                            </div>
+                            <div class="stat-content">
+                                <div class="stat-number" id="teacher-pending-grades">0</div>
+                                <div class="stat-label">Pending Grades</div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-calendar-alt"></i>
+                            </div>
+                            <div class="stat-content">
+                                <div class="stat-number" id="teacher-classes-today">0</div>
+                                <div class="stat-label">Classes Today</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Communication Summary -->
+                    <div class="communication-summary-grid" style="margin-top: 2rem;">
+                        <div class="summary-card">
+                            <div class="summary-icon">
+                                <i class="fas fa-envelope"></i>
+                            </div>
+                            <div class="summary-content">
+                                <h3 id="teacher-dashboard-unread-messages">0</h3>
+                                <p>Unread Messages</p>
+                            </div>
+                        </div>
+                        <div class="summary-card">
+                            <div class="summary-icon">
+                                <i class="fas fa-bell"></i>
+                            </div>
+                            <div class="summary-content">
+                                <h3 id="teacher-dashboard-notifications">0</h3>
+                                <p>New Notifications</p>
+                            </div>
+                        </div>
+                        <div class="summary-card">
+                            <div class="summary-icon">
+                                <i class="fas fa-bullhorn"></i>
+                            </div>
+                            <div class="summary-content">
+                                <h3 id="teacher-dashboard-announcements">0</h3>
+                                <p>Active Announcements</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Communication Actions -->
+                    <div class="communication-widget" style="margin-top: 1.5rem;">
+                        <div class="widget-header">
+                            <h3><i class="fas fa-bolt"></i> Quick Communication</h3>
+                        </div>
+                        <div class="widget-content">
+                            <div class="quick-actions-grid">
+                                <button class="quick-action-btn" onclick="window.communicationManager?.openQuickMessage()">
+                                    <i class="fas fa-comment"></i>
+                                    <span>Quick Message</span>
+                                </button>
+                                <button class="quick-action-btn" onclick="window.communicationManager?.createAnnouncement()">
+                                    <i class="fas fa-bullhorn"></i>
+                                    <span>Create Announcement</span>
+                                </button>
+                                <button class="quick-action-btn" onclick="document.querySelector('[data-page=communication]').click()">
+                                    <i class="fas fa-comments"></i>
+                                    <span>Communication Center</span>
+                                </button>
+                                <button class="quick-action-btn" onclick="window.location.href='assignments.html'">
+                                    <i class="fas fa-tasks"></i>
+                                    <span>Assignments</span>
+                                </button>
+                                <button class="quick-action-btn" onclick="document.querySelector('[data-page=results]').click()">
+                                    <i class="fas fa-chart-line"></i>
+                                    <span>Student Results</span>
+                                </button>
+                                <button class="quick-action-btn" onclick="document.querySelector('[data-page=class-management]').click()">
+                                    <i class="fas fa-chalkboard"></i>
+                                    <span>Class Management</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recent Activities -->
+                    <div class="section-content">
+                        <h3>Recent Activities</h3>
+                        <div class="activities-list" id="teacher-activities">
+                            <!-- Teacher activities will be populated here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- My Students Page -->
+            <div class="page-content" id="my-students">
+                <div class="content-section">
+                    <div class="section-header">
+                        <div class="section-title">My Students</div>
+                        <div class="section-subtitle">Students in your assigned classes</div>
+                    </div>
+                    
+                    <div class="section-content">
+                        <div class="table-container">
+                            <table class="data-table" id="teacher-students-table">
+                                <thead>
+                                    <tr>
+                                        <th>Student ID</th>
+                                        <th>Name</th>
+                                        <th>Class</th>
+                                        <th>Subjects</th>
+                                        <th>Contact</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Students data will be populated here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- My Subjects Page -->
+            <div class="page-content" id="my-subjects">
+                <div class="content-section">
+                    <div class="section-header">
+                        <div class="section-title">My Subjects</div>
+                        <div class="section-subtitle">Subjects you are teaching</div>
+                    </div>
+                    
+                    <div class="section-content">
+                        <div class="table-container">
+                            <table class="data-table" id="teacher-subjects-table">
+                                <thead>
+                                    <tr>
+                                        <th>Subject Code</th>
+                                        <th>Subject Name</th>
+                                        <th>Class</th>
+                                        <th>Students Enrolled</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Subjects data will be populated here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Student Results Page -->
+            <div class="page-content" id="results">
+                <div class="content-section">
+                    <div class="section-header">
+                        <div class="section-title">Student Results</div>
+                        <div class="section-subtitle">Manage grades for your students</div>
+                        <button class="btn btn-primary" onclick="showAddResultForm()">
+                            <i class="fas fa-plus"></i> Add Result
+                        </button>
+                    </div>
+                    
+                    <div class="section-content">
+                        <div class="table-container">
+                            <table class="data-table" id="teacher-results-table">
+                                <thead>
+                                    <tr>
+                                        <th>Student</th>
+                                        <th>Subject</th>
+                                        <th>Assessment Type</th>
+                                        <th>Score</th>
+                                        <th>Grade</th>
+                                        <th>Date</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Results data will be populated here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Communication Page -->
+            <div class="page-content" id="communication">
+                <div class="content-section">
+                    <div class="section-header">
+                        <div class="section-title">
+                            <i class="fas fa-comments"></i> Communication Center
+                        </div>
+                        <div class="section-subtitle">Manage messages, announcements, and notifications</div>
+                        <div class="section-actions">
+                            <button class="btn btn-primary" id="teacher-quick-message-btn" onclick="window.communicationManager?.openQuickMessage()" 
+                                    style="background: #ffffff; color: #4A90E2; border: 1px solid #4A90E2;">
+                                <i class="fas fa-comment"></i> Quick Message
+                            </button>
+                            <button class="btn btn-primary" onclick="window.communicationManager?.refreshAll()">
+                                <i class="fas fa-sync-alt"></i> Refresh
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Communication Summary Grid -->
+                    <div class="communication-summary-grid">
+                        <div class="summary-card">
+                            <div class="summary-icon">
+                                <i class="fas fa-envelope"></i>
+                            </div>
+                            <div class="summary-content">
+                                <h3 id="teacher-unread-messages-count">0</h3>
+                                <p>Unread Messages</p>
+                            </div>
+                        </div>
+                        <div class="summary-card">
+                            <div class="summary-icon">
+                                <i class="fas fa-bell"></i>
+                            </div>
+                            <div class="summary-content">
+                                <h3 id="teacher-pending-notifications-count">0</h3>
+                                <p>Pending Notifications</p>
+                            </div>
+                        </div>
+                        <div class="summary-card">
+                            <div class="summary-icon">
+                                <i class="fas fa-bullhorn"></i>
+                            </div>
+                            <div class="summary-content">
+                                <h3 id="teacher-sent-announcements-count">0</h3>
+                                <p>Sent Announcements</p>
+                            </div>
+                        </div>
+                        <div class="summary-card">
+                            <div class="summary-icon">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <div class="summary-content">
+                                <h3 id="teacher-student-contacts-count">0</h3>
+                                <p>Student Contacts</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Communication Content Grid -->
+                    <div style="display: grid; grid-template-columns: 1fr 350px; gap: 1.5rem;">
+                        <!-- Main Communication Content -->
+                        <div>
+                            <!-- Student Messages -->
+                            <div class="communication-widget">
+                                <div class="widget-header">
+                                    <h3><i class="fas fa-envelope"></i> Student Messages</h3>
+                                    <div class="section-actions">
+                                        <select class="form-control" id="message-filter" style="width: auto;">
+                                            <option value="all">All Messages</option>
+                                            <option value="unread">Unread Only</option>
+                                            <option value="urgent">Urgent</option>
+                                            <option value="recent">Recent</option>
+                                        </select>
+                                        <button class="btn btn-sm btn-outline" onclick="window.communicationManager?.markAllAsRead('messages')">
+                                            Mark All Read
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="widget-content">
+                                    <div id="teacher-messages-container">
+                                        <div class="loading">Loading messages...</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Class Announcements -->
+                            <div class="communication-widget">
+                                <div class="widget-header">
+                                    <h3><i class="fas fa-bullhorn"></i> Class Announcements</h3>
+                                    <button class="btn btn-primary btn-sm" onclick="window.communicationManager?.createAnnouncement()">
+                                        <i class="fas fa-plus"></i> New Announcement
+                                    </button>
+                                </div>
+                                <div class="widget-content">
+                                    <div id="teacher-announcements-container">
+                                        <div class="loading">Loading announcements...</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Student Results Communication -->
+                            <div class="communication-widget">
+                                <div class="widget-header">
+                                    <h3><i class="fas fa-chart-line"></i> Results & Feedback</h3>
+                                    <div class="section-actions">
+                                        <select class="form-control" id="student-select" style="width: auto;">
+                                            <option value="">Select Student</option>
+                                        </select>
+                                        <button class="btn btn-primary btn-sm" onclick="window.communicationManager?.sendResultFeedback()">
+                                            <i class="fas fa-paper-plane"></i> Send Feedback
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="widget-content">
+                                    <div id="teacher-results-communication-container">
+                                        <div class="empty-state">
+                                            <i class="fas fa-chart-line"></i>
+                                            <h3>Results Communication</h3>
+                                            <p>Send personalized feedback to students about their academic performance.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Communication Sidebar -->
+                        <div>
+                            <!-- Quick Actions -->
+                            <div class="communication-widget">
+                                <div class="widget-header">
+                                    <h3><i class="fas fa-bolt"></i> Quick Actions</h3>
+                                </div>
+                                <div class="widget-content">
+                                    <div class="quick-actions-grid">
+                                        <button class="quick-action-btn" onclick="window.communicationManager?.openQuickMessage()">
+                                            <i class="fas fa-comment"></i>
+                                            <span>Quick Message</span>
+                                        </button>
+                                        <button class="quick-action-btn" onclick="window.communicationManager?.createAnnouncement()">
+                                            <i class="fas fa-bullhorn"></i>
+                                            <span>Announcement</span>
+                                        </button>
+                                        <button class="quick-action-btn" onclick="window.communicationManager?.openNotifications()">
+                                            <i class="fas fa-bell"></i>
+                                            <span>Notifications</span>
+                                        </button>
+                                        <button class="quick-action-btn" onclick="window.location.href='assignments.html'">
+                                            <i class="fas fa-tasks"></i>
+                                            <span>Assignments</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Notifications Panel -->
+                            <div class="communication-widget">
+                                <div class="widget-header">
+                                    <h3><i class="fas fa-bell"></i> Notifications</h3>
+                                    <span class="unread-count" id="teacher-notification-count" style="display: none;">0</span>
+                                </div>
+                                <div class="widget-content">
+                                    <div id="teacher-notifications-container">
+                                        <div class="loading">Loading notifications...</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Recent Activity -->
+                            <div class="communication-widget">
+                                <div class="widget-header">
+                                    <h3><i class="fas fa-history"></i> Recent Activity</h3>
+                                </div>
+                                <div class="widget-content">
+                                    <div id="teacher-recent-activity-container">
+                                        <div class="loading">Loading activity...</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Communication Stats -->
+                            <div class="communication-widget">
+                                <div class="widget-header">
+                                    <h3><i class="fas fa-chart-pie"></i> Communication Stats</h3>
+                                </div>
+                                <div class="widget-content">
+                                    <div class="recent-items">
+                                        <div class="recent-item">
+                                            <div class="recent-icon">
+                                                <i class="fas fa-envelope"></i>
+                                            </div>
+                                            <div class="recent-content">
+                                                <h5>Messages Sent</h5>
+                                                <p id="teacher-messages-sent">Loading...</p>
+                                            </div>
+                                        </div>
+                                        <div class="recent-item">
+                                            <div class="recent-icon">
+                                                <i class="fas fa-bullhorn"></i>
+                                            </div>
+                                            <div class="recent-content">
+                                                <h5>Announcements</h5>
+                                                <p id="teacher-announcements-sent">Loading...</p>
+                                            </div>
+                                        </div>
+                                        <div class="recent-item">
+                                            <div class="recent-icon">
+                                                <i class="fas fa-eye"></i>
+                                            </div>
+                                            <div class="recent-content">
+                                                <h5>Response Rate</h5>
+                                                <p id="teacher-response-rate">Loading...</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Class Management Page -->
+            <div class="page-content" id="class-management">
+                <div class="content-section">
+                    <div class="section-header">
+                        <div class="section-title">Attendance Management</div>
+                        <div class="section-subtitle">Track and manage student attendance</div>
+                    </div>
+                    
+                    <div class="section-content">
+                        <div class="tabs">
+                            <div class="tab active" data-tab="daily-attendance">Daily Attendance</div>
+                            <div class="tab" data-tab="attendance-reports">Reports</div>
+                            <div class="tab" data-tab="attendance-stats">Statistics</div>
+                            <div class="tab" data-tab="holidays">Holidays</div>
+                        </div>
+
+                        <!-- Daily Attendance Tab -->
+                        <div class="tab-content active" id="daily-attendance">
+                            <div class="attendance-section">
+                                <div class="attendance-controls">
+                                    <div class="control-group">
+                                        <label for="attendance-class">Class:</label>
+                                        <select id="attendance-class" class="form-control class-select auto-populate">
+                                            <!-- Populated by dropdown manager -->
+                                        </select>
+                                    </div>
+                                    <div class="control-group">
+                                        <label for="attendance-date">Date:</label>
+                                        <input type="date" id="attendance-date" class="form-control" value="">
+                                    </div>
+                                    <div class="control-group">
+                                        <button class="btn btn-primary" onclick="loadDailyAttendance()">
+                                            <i class="fas fa-search"></i> Load Attendance
+                                        </button>
+                                        <button class="btn btn-success" onclick="saveAttendance()">
+                                            <i class="fas fa-save"></i> Save Attendance
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Attendance Overview Cards -->
+                                <div class="attendance-overview" id="attendance-overview">
+                                    <div class="overview-card present">
+                                        <div class="overview-icon"><i class="fas fa-check-circle"></i></div>
+                                        <div class="overview-content">
+                                            <div class="overview-number" id="present-count">0</div>
+                                            <div class="overview-label">Present</div>
+                                        </div>
+                                    </div>
+                                    <div class="overview-card absent">
+                                        <div class="overview-icon"><i class="fas fa-times-circle"></i></div>
+                                        <div class="overview-content">
+                                            <div class="overview-number" id="absent-count">0</div>
+                                            <div class="overview-label">Absent</div>
+                                        </div>
+                                    </div>
+                                    <div class="overview-card late">
+                                        <div class="overview-icon"><i class="fas fa-clock"></i></div>
+                                        <div class="overview-content">
+                                            <div class="overview-number" id="late-count">0</div>
+                                            <div class="overview-label">Late</div>
+                                        </div>
+                                    </div>
+                                    <div class="overview-card total">
+                                        <div class="overview-icon"><i class="fas fa-users"></i></div>
+                                        <div class="overview-content">
+                                            <div class="overview-number" id="total-students">0</div>
+                                            <div class="overview-label">Total Students</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Attendance List -->
+                                <div class="attendance-list-container">
+                                    <div class="attendance-header">
+                                        <h3>Student Attendance</h3>
+                                        <div class="bulk-actions">
+                                            <button class="btn btn-sm btn-success" onclick="markAllPresent()">
+                                                <i class="fas fa-check-double"></i> Mark All Present
+                                            </button>
+                                            <button class="btn btn-sm btn-warning" onclick="markAllAbsent()">
+                                                <i class="fas fa-times"></i> Mark All Absent
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="attendance-list" id="attendance-list">
+                                        <!-- Attendance list will be populated here -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Attendance Reports Tab -->
+                        <div class="tab-content" id="attendance-reports">
+                            <div class="reports-section">
+                                <div class="report-controls">
+                                    <div class="control-group">
+                                        <label for="report-class">Class:</label>
+                                        <select id="report-class" class="form-control class-select auto-populate">
+                                            <!-- Populated by dropdown manager -->
+                                        </select>
+                                    </div>
+                                    <div class="control-group">
+                                        <label for="report-start-date">From:</label>
+                                        <input type="date" id="report-start-date" class="form-control">
+                                    </div>
+                                    <div class="control-group">
+                                        <label for="report-end-date">To:</label>
+                                        <input type="date" id="report-end-date" class="form-control">
+                                    </div>
+                                    <div class="control-group">
+                                        <button class="btn btn-primary" onclick="generateAttendanceReport()">
+                                            <i class="fas fa-chart-line"></i> Generate Report
+                                        </button>
+                                        <button class="btn btn-secondary" onclick="exportAttendanceReport()">
+                                            <i class="fas fa-download"></i> Export PDF
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <div class="report-summary" id="report-summary">
+                                    <!-- Report summary will be populated here -->
+                                </div>
+
+                                <div class="student-reports" id="student-reports">
+                                    <!-- Individual student reports will be populated here -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Attendance Statistics Tab -->
+                        <div class="tab-content" id="attendance-stats">
+                            <div class="stats-section">
+                                <div class="stats-controls">
+                                    <div class="control-group">
+                                        <label for="stats-class">Class:</label>
+                                        <select id="stats-class" class="form-control class-select auto-populate">
+                                            <!-- Populated by dropdown manager -->
+                                        </select>
+                                    </div>
+                                    <div class="control-group">
+                                        <label for="stats-period">Period:</label>
+                                        <select id="stats-period" class="form-control">
+                                            <option value="week">This Week</option>
+                                            <option value="month">This Month</option>
+                                            <option value="term">This Term</option>
+                                            <option value="year">This Year</option>
+                                            <option value="custom">Custom Range</option>
+                                        </select>
+                                    </div>
+                                    <div class="control-group">
+                                        <button class="btn btn-primary" onclick="loadAttendanceStats()">
+                                            <i class="fas fa-analytics"></i> Load Statistics
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div class="stats-dashboard" id="stats-dashboard">
+                                    <!-- Statistics dashboard will be populated here -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Holidays Tab -->
+                        <div class="tab-content" id="holidays">
+                            <div class="holidays-section">
+                                <div class="section-header">
+                                    <div class="section-title">Holiday Management</div>
+                                    <button class="btn btn-primary" onclick="showMarkHolidayModal()">
+                                        <i class="fas fa-plus"></i> Mark Holiday
+                                    </button>
+                                </div>
+                                
+                                <div class="holidays-list" id="holidays-list">
+                                    <!-- Holidays list will be populated here -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Fees Page -->
+            <div class="page-content" id="fees">
+                <div class="content-section">
+                    <div class="section-header">
+                        <div class="section-title">Student Fees & Payments</div>
+                        <div class="section-subtitle">View fee status for your students</div>
+                    </div>
+                    
+                    <div class="section-content">
+                        <div class="table-container">
+                            <table class="data-table" id="teacher-fees-table">
+                                <thead>
+                                    <tr>
+                                        <th>Student Name</th>
+                                        <th>Class</th>
+                                        <th>Total Fees</th>
+                                        <th>Paid Amount</th>
+                                        <th>Outstanding</th>
+                                        <th>Status</th>
+                                        <th>Last Payment</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Fees data will be populated here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../shared/teacher-dashboard.js"></script>
+</body>
+</html>

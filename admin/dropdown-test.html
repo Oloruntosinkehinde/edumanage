@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tophill Portal - Dropdown Manager Test</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../shared/styles.css">
+    <style>
+        .demo-section {
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .demo-section h3 {
+            color: #495057;
+            border-bottom: 1px solid #dee2e6;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+        .test-form {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+        }
+        .btn-test {
+            margin: 5px;
+        }
+        .result-display {
+            background: #e9ecef;
+            padding: 10px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-12">
+                <h1 class="text-center mb-4">Dropdown Manager Test Suite</h1>
+                <p class="text-center text-muted">Testing centralized dropdown population across Tophill Portal</p>
+            </div>
+        </div>
+
+        <!-- Session & Term Dropdowns -->
+        <div class="demo-section">
+            <h3>Academic Calendar Dropdowns</h3>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="test-form">
+                        <label for="test-session" class="form-label">Academic Session</label>
+                        <select id="test-session" class="form-control session-select auto-populate">
+                            <!-- Will be populated by dropdown manager -->
+                        </select>
+                        <button class="btn btn-primary btn-sm btn-test" onclick="testSessionSelection()">Test Selection</button>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="test-form">
+                        <label for="test-term" class="form-label">Academic Term</label>
+                        <select id="test-term" class="form-control term-select auto-populate">
+                            <!-- Will be populated by dropdown manager -->
+                        </select>
+                        <button class="btn btn-primary btn-sm btn-test" onclick="testTermSelection()">Test Selection</button>
+                    </div>
+                </div>
+            </div>
+            <div class="result-display" id="calendar-result">
+                Select dropdowns above to test academic calendar integration...
+            </div>
+        </div>
+
+        <!-- Class & Subject Dropdowns -->
+        <div class="demo-section">
+            <h3>Class & Subject Management</h3>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="test-form">
+                        <label for="test-class" class="form-label">Class Selection</label>
+                        <select id="test-class" class="form-control class-select auto-populate" onchange="updateSubjectOptions()">
+                            <!-- Will be populated by dropdown manager -->
+                        </select>
+                        <button class="btn btn-success btn-sm btn-test" onclick="testClassSelection()">Test Class</button>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="test-form">
+                        <label for="test-subject" class="form-label">Subject Selection</label>
+                        <select id="test-subject" class="form-control subject-select auto-populate">
+                            <!-- Will be populated by dropdown manager -->
+                        </select>
+                        <button class="btn btn-success btn-sm btn-test" onclick="testSubjectSelection()">Test Subject</button>
+                    </div>
+                </div>
+            </div>
+            <div class="result-display" id="class-subject-result">
+                Select class/subject dropdowns above to test dynamic population...
+            </div>
+        </div>
+
+        <!-- Status & Filter Dropdowns -->
+        <div class="demo-section">
+            <h3>Status & Filter Options</h3>
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="test-form">
+                        <label for="test-status" class="form-label">General Status</label>
+                        <select id="test-status" class="form-control status-select auto-populate">
+                            <!-- Will be populated by dropdown manager -->
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="test-form">
+                        <label for="test-result-status" class="form-label">Result Status</label>
+                        <select id="test-result-status" class="form-control result-status auto-populate">
+                            <!-- Will be populated by dropdown manager -->
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="test-form">
+                        <label for="test-grade" class="form-label">Grade Level</label>
+                        <select id="test-grade" class="form-control grade-select auto-populate">
+                            <!-- Will be populated by dropdown manager -->
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <button class="btn btn-warning btn-test" onclick="testStatusFilters()">Test All Status Filters</button>
+            <div class="result-display" id="status-result">
+                Test status dropdowns above to verify filter options...
+            </div>
+        </div>
+
+        <!-- Manual Testing Section -->
+        <div class="demo-section">
+            <h3>Manual Dropdown Management</h3>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="test-form">
+                        <label for="manual-test" class="form-label">Manual Dropdown (No Auto-populate)</label>
+                        <select id="manual-test" class="form-control">
+                            <option value="">-- Empty Dropdown --</option>
+                        </select>
+                        <div class="mt-2">
+                            <button class="btn btn-outline-primary btn-sm" onclick="manualPopulateClasses()">Populate Classes</button>
+                            <button class="btn btn-outline-success btn-sm" onclick="manualPopulateSubjects()">Populate Subjects</button>
+                            <button class="btn btn-outline-info btn-sm" onclick="manualPopulateSessions()">Populate Sessions</button>
+                            <button class="btn btn-outline-warning btn-sm" onclick="clearManualDropdown()">Clear</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="test-form">
+                        <label for="bulk-test" class="form-label">Bulk Initialization Test</label>
+                        <div id="bulk-dropdowns-container">
+                            <!-- Dropdowns will be created dynamically -->
+                        </div>
+                        <button class="btn btn-primary btn-sm" onclick="createBulkDropdowns()">Create Multiple Dropdowns</button>
+                        <button class="btn btn-secondary btn-sm" onclick="initializeAllDropdowns()">Initialize All</button>
+                    </div>
+                </div>
+            </div>
+            <div class="result-display" id="manual-result">
+                Use manual controls above to test dropdown manager API...
+            </div>
+        </div>
+
+        <!-- Performance Test Section -->
+        <div class="demo-section">
+            <h3>Performance & Cache Testing</h3>
+            <div class="row">
+                <div class="col-12">
+                    <div class="test-form">
+                        <button class="btn btn-info btn-test" onclick="performanceTest()">Run Performance Test</button>
+                        <button class="btn btn-secondary btn-test" onclick="clearCache()">Clear Cache</button>
+                        <button class="btn btn-dark btn-test" onclick="inspectCache()">Inspect Cache</button>
+                        <button class="btn btn-success btn-test" onclick="validateData()">Validate Data Sources</button>
+                    </div>
+                    <div class="result-display" id="performance-result">
+                        Performance metrics will appear here...
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../shared/app.js"></script>
+    <script src="../shared/dropdown-manager.js"></script>
+    
+    <script>
+        // Test functions for the dropdown manager
+        
+        function testSessionSelection() {
+            const select = document.getElementById('test-session');
+            const result = document.getElementById('calendar-result');
+            result.innerHTML = `Selected Session: ${select.value || 'None'}<br>Current Session: ${window.dropdownManager.getCurrentSession()}`;
+        }
+        
+        function testTermSelection() {
+            const select = document.getElementById('test-term');
+            const result = document.getElementById('calendar-result');
+            result.innerHTML = `Selected Term: ${select.value || 'None'}<br>Current Term: ${window.dropdownManager.getCurrentTerm()}`;
+        }
+        
+        function testClassSelection() {
+            const select = document.getElementById('test-class');
+            const result = document.getElementById('class-subject-result');
+            const classes = window.dropdownManager.getClasses();
+            result.innerHTML = `Selected Class: ${select.value || 'None'}<br>Available Classes: ${classes.length}<br>Classes: ${classes.slice(0, 5).join(', ')}${classes.length > 5 ? '...' : ''}`;
+        }
+        
+        function testSubjectSelection() {
+            const select = document.getElementById('test-subject');
+            const result = document.getElementById('class-subject-result');
+            const subjects = window.dropdownManager.getSubjects();
+            result.innerHTML = `Selected Subject: ${select.value || 'None'}<br>Available Subjects: ${subjects.length}<br>Subjects: ${subjects.slice(0, 5).map(s => s.name).join(', ')}${subjects.length > 5 ? '...' : ''}`;
+        }
+        
+        function updateSubjectOptions() {
+            const classSelect = document.getElementById('test-class');
+            const subjectSelect = document.getElementById('test-subject');
+            
+            if (classSelect.value) {
+                window.dropdownManager.populateSubjectDropdown(subjectSelect, '', classSelect.value);
+                testSubjectSelection();
+            }
+        }
+        
+        function testStatusFilters() {
+            const generalStatus = document.getElementById('test-status');
+            const resultStatus = document.getElementById('test-result-status');
+            const grade = document.getElementById('test-grade');
+            const result = document.getElementById('status-result');
+            
+            result.innerHTML = `
+                General Status: ${generalStatus.value || 'None'}<br>
+                Result Status: ${resultStatus.value || 'None'}<br>
+                Grade Level: ${grade.value || 'None'}
+            `;
+        }
+        
+        function manualPopulateClasses() {
+            const select = document.getElementById('manual-test');
+            window.dropdownManager.populateClassDropdown(select);
+            updateManualResult('Populated with classes');
+        }
+        
+        function manualPopulateSubjects() {
+            const select = document.getElementById('manual-test');
+            window.dropdownManager.populateSubjectDropdown(select);
+            updateManualResult('Populated with subjects');
+        }
+        
+        function manualPopulateSessions() {
+            const select = document.getElementById('manual-test');
+            window.dropdownManager.populateSessionDropdown(select);
+            updateManualResult('Populated with sessions');
+        }
+        
+        function clearManualDropdown() {
+            const select = document.getElementById('manual-test');
+            select.innerHTML = '<option value="">-- Empty Dropdown --</option>';
+            updateManualResult('Dropdown cleared');
+        }
+        
+        function updateManualResult(message) {
+            const result = document.getElementById('manual-result');
+            const select = document.getElementById('manual-test');
+            result.innerHTML = `${message}<br>Options count: ${select.options.length}`;
+        }
+        
+        function createBulkDropdowns() {
+            const container = document.getElementById('bulk-dropdowns-container');
+            container.innerHTML = `
+                <select id="bulk-1" class="form-control mb-2 session-select auto-populate"></select>
+                <select id="bulk-2" class="form-control mb-2 term-select auto-populate"></select>
+                <select id="bulk-3" class="form-control mb-2 class-select auto-populate"></select>
+                <select id="bulk-4" class="form-control mb-2 subject-select auto-populate"></select>
+            `;
+            updateManualResult('Created 4 bulk dropdowns');
+        }
+        
+        function initializeAllDropdowns() {
+            window.dropdownManager.initializeAllDropdowns();
+            updateManualResult('Initialized all dropdowns on page');
+        }
+        
+        function performanceTest() {
+            const result = document.getElementById('performance-result');
+            const startTime = performance.now();
+            
+            // Test multiple operations
+            for (let i = 0; i < 100; i++) {
+                window.dropdownManager.getClasses();
+                window.dropdownManager.getSubjects();
+                window.dropdownManager.getSessions();
+                window.dropdownManager.getTerms();
+            }
+            
+            const endTime = performance.now();
+            const duration = endTime - startTime;
+            
+            result.innerHTML = `
+                Performance Test Results:<br>
+                - 400 dropdown operations in ${duration.toFixed(2)}ms<br>
+                - Average: ${(duration/400).toFixed(3)}ms per operation<br>
+                - Cache entries: ${window.dropdownManager.cache.size}
+            `;
+        }
+        
+        function clearCache() {
+            window.dropdownManager.clearCache();
+            const result = document.getElementById('performance-result');
+            result.innerHTML = 'Cache cleared successfully';
+        }
+        
+        function inspectCache() {
+            const result = document.getElementById('performance-result');
+            const cache = window.dropdownManager.cache;
+            const entries = Array.from(cache.keys());
+            
+            result.innerHTML = `
+                Cache Inspection:<br>
+                - Total entries: ${cache.size}<br>
+                - Keys: ${entries.join(', ') || 'None'}<br>
+                - Timeout: ${window.dropdownManager.cacheTimeout}ms
+            `;
+        }
+        
+        function validateData() {
+            const result = document.getElementById('performance-result');
+            const sessions = window.dropdownManager.getSessions();
+            const terms = window.dropdownManager.getTerms();
+            const classes = window.dropdownManager.getClasses();
+            const subjects = window.dropdownManager.getSubjects();
+            
+            result.innerHTML = `
+                Data Source Validation:<br>
+                - Sessions: ${sessions.length} (${sessions.join(', ')})<br>
+                - Terms: ${terms.length} (${terms.join(', ')})<br>
+                - Classes: ${classes.length} (first 3: ${classes.slice(0, 3).join(', ')})<br>
+                - Subjects: ${subjects.length} (first 3: ${subjects.slice(0, 3).map(s => s.name).join(', ')})
+            `;
+        }
+        
+        // Initialize dropdowns when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            // Wait a bit for the dropdown manager to initialize
+            setTimeout(() => {
+                console.log('Dropdown Manager Test Page Loaded');
+                console.log('Available methods:', Object.getOwnPropertyNames(window.dropdownManager));
+                
+                // Test result status dropdown manual setup
+                const resultStatusSelect = document.getElementById('test-result-status');
+                window.dropdownManager.populateStatusDropdown(resultStatusSelect, '', 'result');
+            }, 100);
+        });
+    </script>
+</body>
+</html>
