@@ -1,5 +1,5 @@
 /**
- * Tophill Portal - Enhanced Backend System
+ * EduManage - Enhanced Backend System
  * Comprehensive data management and application logic
  */
 
@@ -67,7 +67,7 @@ function compareClassNames(a, b) {
     return classA.normalized.localeCompare(classB.normalized);
 }
 
-class Tophill PortalApp {
+class EduManageApp {
     constructor() {
         this.data = {
             students: [],
@@ -120,12 +120,12 @@ class Tophill PortalApp {
      */
     loadStoredData() {
         try {
-            const storedData = localStorage.getItem('Tophill Portal_data');
+            const storedData = localStorage.getItem('edumanage_data');
             if (storedData) {
                 this.data = { ...this.data, ...JSON.parse(storedData) };
             }
             
-            const currentUser = localStorage.getItem('Tophill Portal_current_user');
+            const currentUser = localStorage.getItem('edumanage_current_user');
             if (currentUser) {
                 this.currentUser = JSON.parse(currentUser);
             }
@@ -140,9 +140,9 @@ class Tophill PortalApp {
      */
     saveData() {
         try {
-            localStorage.setItem('Tophill Portal_data', JSON.stringify(this.data));
+            localStorage.setItem('edumanage_data', JSON.stringify(this.data));
             if (this.currentUser) {
-                localStorage.setItem('Tophill Portal_current_user', JSON.stringify(this.currentUser));
+                localStorage.setItem('edumanage_current_user', JSON.stringify(this.currentUser));
             }
         } catch (error) {
             console.error('Error saving data:', error);
@@ -3126,8 +3126,8 @@ class Tophill PortalApp {
 }
 
 // Initialize the application
-const Tophill PortalApp = new Tophill PortalApp();
+const eduManageApp = new EduManageApp();
 
 // Export for global access
-window.Tophill PortalApp = Tophill PortalApp;
-window.app = Tophill PortalApp;
+window.eduManageApp = eduManageApp;
+window.app = eduManageApp;

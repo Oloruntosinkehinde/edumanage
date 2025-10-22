@@ -56,7 +56,7 @@ class CSVManager {
     buildApiUrl(endpoint) {
         if (!this.apiBasePath) {
             const pathSegments = window.location.pathname.split('/').filter(Boolean);
-            const projectIndex = pathSegments.indexOf('Tophill Portal');
+            const projectIndex = pathSegments.indexOf('edumanage');
 
             if (projectIndex !== -1) {
                 this.apiBasePath = '/' + pathSegments.slice(0, projectIndex + 1).join('/');

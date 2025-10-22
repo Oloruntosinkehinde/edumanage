@@ -1,6 +1,6 @@
 <?php
 /**
- * Subject Model - Tophill Portal PHP Backend
+ * Subject Model - EduManage PHP Backend
  */
 
 class Subject

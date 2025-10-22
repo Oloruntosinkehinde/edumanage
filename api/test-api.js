@@ -15,7 +15,7 @@ const tests = [
     let passed = 0;
 
     console.log('=================================');
-    console.log('Tophill Portal API Smoke Tests');
+    console.log('EduManage API Smoke Tests');
     console.log('=================================\n');
 
     for (const test of tests) {

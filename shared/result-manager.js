@@ -1,7 +1,7 @@
 /**
  * Result Management System
  * Handles all result calculations, data operations, and academic performance tracking
- * Author: Tophill Portal System
+ * Author: EduManage System
  * Version: 2.0.0 (Optimized)
  */
 

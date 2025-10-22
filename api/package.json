@@ -1,7 +1,7 @@
 {
-  "name": "Tophill Portal-api",
+  "name": "edumanage-api",
   "version": "1.0.0",
-  "description": "Tophill Portal REST API Backend",
+  "description": "EduManage REST API Backend",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",

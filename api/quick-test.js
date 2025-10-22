@@ -41,7 +41,7 @@ function test(path, method = 'GET', data = null, token = null) {
 }
 
 async function run() {
-  console.log('\n🔍 Testing Tophill Portal API...\n');
+  console.log('\n🔍 Testing EduManage API...\n');
 
   // 1. Health check
   console.log('1. Health Check');
@@ -50,7 +50,7 @@ async function run() {
 
   // 2. Login
   console.log('\n2. Login as Admin');
-  const login = await test('/auth/login', 'POST', { email: 'admin@Tophill Portal.com', password: 'password123' });
+  const login = await test('/auth/login', 'POST', { email: 'admin@edumanage.com', password: 'password123' });
   console.log(`   Status: ${login.status}`);
   console.log(`   Response:`, JSON.stringify(login.data, null, 2));
   

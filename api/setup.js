@@ -7,7 +7,7 @@ const dbConfig = {
   host: process.env.DB_HOST || 'localhost',
   user: process.env.DB_USER || 'root',
   password: process.env.DB_PASSWORD || '',
-  database: process.env.DB_NAME || 'Tophill Portal',
+  database: process.env.DB_NAME || 'edumanage',
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0
@@ -17,7 +17,7 @@ const dbConfig = {
 const sampleData = {
   users: [
     {
-      email: 'admin@Tophill Portal.com',
+      email: 'admin@edumanage.com',
       password: 'admin123',
       firstName: 'Admin',
       lastName: 'User',
@@ -25,7 +25,7 @@ const sampleData = {
       isActive: 1
     },
     {
-      email: 'teacher@Tophill Portal.com',
+      email: 'teacher@edumanage.com',
       password: 'teacher123',
       firstName: 'John',
       lastName: 'Doe',
@@ -33,7 +33,7 @@ const sampleData = {
       isActive: 1
     },
     {
-      email: 'student@Tophill Portal.com',
+      email: 'student@edumanage.com',
       password: 'student123',
       firstName: 'Jane',
       lastName: 'Smith',
@@ -310,7 +310,7 @@ async function setupDatabase() {
     // Insert teachers
     for (const teacher of sampleData.teachers) {
       // Find teacher user ID
-      const teacherUserId = userMap['teacher@Tophill Portal.com'];
+      const teacherUserId = userMap['teacher@edumanage.com'];
       
       if (teacherUserId) {
         // Check if teacher already exists
@@ -332,7 +332,7 @@ async function setupDatabase() {
     // Insert students
     for (const student of sampleData.students) {
       // Find student user ID
-      const studentUserId = userMap['student@Tophill Portal.com'];
+      const studentUserId = userMap['student@edumanage.com'];
       
       if (studentUserId) {
         // Check if student already exists

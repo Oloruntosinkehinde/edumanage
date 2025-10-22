@@ -1,5 +1,5 @@
 /**
- * Tophill Portal API Client
+ * EduManage API Client
  * Handles all communication with the backend API
  * Allows switching between localStorage and HTTP backends
  */
@@ -43,7 +43,7 @@ class ApiClient {
      * Load auth token from localStorage
      */
     loadAuthToken() {
-        this.authToken = localStorage.getItem('Tophill Portal_auth_token');
+        this.authToken = localStorage.getItem('edumanage_auth_token');
     }
 
     /**
@@ -53,9 +53,9 @@ class ApiClient {
     saveAuthToken(token) {
         this.authToken = token;
         if (token) {
-            localStorage.setItem('Tophill Portal_auth_token', token);
+            localStorage.setItem('edumanage_auth_token', token);
         } else {
-            localStorage.removeItem('Tophill Portal_auth_token');
+            localStorage.removeItem('edumanage_auth_token');
         }
     }
 
@@ -122,7 +122,7 @@ class ApiClient {
     localStorageRead(type, filters = {}) {
         try {
             // Load all data from localStorage
-            const allData = JSON.parse(localStorage.getItem('Tophill Portal_data')) || {};
+            const allData = JSON.parse(localStorage.getItem('edumanage_data')) || {};
             
             // Get specific collection
             const collection = allData[type] || [];
@@ -152,13 +152,13 @@ class ApiClient {
     localStorageSave(type, data) {
         try {
             // Load existing data
-            const allData = JSON.parse(localStorage.getItem('Tophill Portal_data')) || {};
+            const allData = JSON.parse(localStorage.getItem('edumanage_data')) || {};
             
             // Update the specific collection
             allData[type] = data;
             
             // Save back to localStorage
-            localStorage.setItem('Tophill Portal_data', JSON.stringify(allData));
+            localStorage.setItem('edumanage_data', JSON.stringify(allData));
             
             return true;
         } catch (error) {

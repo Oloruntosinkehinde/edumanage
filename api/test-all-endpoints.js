@@ -90,7 +90,7 @@ async function testEndpoint(name, method, url, data = null, requiresAuth = true)
 
 async function runTests() {
   console.clear();
-  logSection('Tophill Portal API Endpoint Tests');
+  logSection('EduManage API Endpoint Tests');
   logInfo(`Base URL: ${BASE_URL}`);
   console.log('');
 
@@ -117,7 +117,7 @@ async function runTests() {
     'POST',
     '/auth/login',
     {
-      email: 'admin@Tophill Portal.com',
+      email: 'admin@edumanage.com',
       password: 'password123'
     },
     false

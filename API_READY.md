@@ -1,4 +1,4 @@
-# Tophill Portal API - Setup Complete ✅
+# EduManage API - Setup Complete ✅
 
 ## Status: FULLY OPERATIONAL
 
@@ -11,7 +11,7 @@
 ## ✅ Completed Tasks
 
 ### 1. Database Setup
-- ✅ MySQL database `Tophill Portal` created
+- ✅ MySQL database `edumanage` created
 - ✅ All 12 tables created from schema
 - ✅ Database seeded with comprehensive test data:
   - 9 users (1 admin, 3 teachers, 5 students)
@@ -115,22 +115,22 @@
 ```
 Username: admin
 Password: password123
-Email: admin@Tophill Portal.com
+Email: admin@edumanage.com
 ```
 
 ### Teacher Accounts
 ```
 Username: john.doe
 Password: password123
-Email: john.doe@Tophill Portal.com
+Email: john.doe@edumanage.com
 
 Username: jane.smith
 Password: password123
-Email: jane.smith@Tophill Portal.com
+Email: jane.smith@edumanage.com
 
 Username: robert.brown
 Password: password123
-Email: robert.brown@Tophill Portal.com
+Email: robert.brown@edumanage.com
 ```
 
 ### Student Accounts
@@ -152,18 +152,18 @@ Email: bob.williams@student.edu
 
 ### Method 1: Using Batch File (Recommended)
 ```cmd
-c:\xampp\htdocs\Tophill Portal\api\start-server.bat
+c:\xampp\htdocs\edumanage\api\start-server.bat
 ```
 
 ### Method 2: Using NPM
 ```cmd
-cd c:\xampp\htdocs\Tophill Portal\api
+cd c:\xampp\htdocs\edumanage\api
 npm start
 ```
 
 ### Method 3: Using Node Directly
 ```cmd
-cd c:\xampp\htdocs\Tophill Portal\api
+cd c:\xampp\htdocs\edumanage\api
 node server.js
 ```
 
@@ -181,7 +181,7 @@ Simply open your browser and navigate to:
 
 ### Using the Quick Test Script
 ```cmd
-cd c:\xampp\htdocs\Tophill Portal\api
+cd c:\xampp\htdocs\edumanage\api
 node quick-test.js
 ```
 
@@ -238,7 +238,7 @@ PORT=3000
 DB_HOST=localhost
 DB_USER=root
 DB_PASSWORD=
-DB_NAME=Tophill Portal
+DB_NAME=edumanage
 JWT_SECRET=your-super-secret-jwt-key-change-this-in-production
 JWT_EXPIRES_IN=24h
 ```
@@ -246,7 +246,7 @@ JWT_EXPIRES_IN=24h
 ### Database Connection
 - Host: localhost
 - Port: 3306 (MySQL via XAMPP)
-- Database: Tophill Portal
+- Database: edumanage
 - User: root
 - Password: (empty)
 
@@ -271,7 +271,7 @@ JWT_EXPIRES_IN=24h
 ## 📂 Project Structure
 
 ```
-c:\xampp\htdocs\Tophill Portal\
+c:\xampp\htdocs\edumanage\
 ├── api/
 │   ├── server.js                 # Main server entry point
 │   ├── app.js                    # Express app configuration
@@ -329,4 +329,4 @@ The API is fully functional and ready for frontend integration. You can now:
 ✅ **All Major Endpoints**: Students, Teachers, Subjects, Results, Payments, Feeds, Notifications  
 ✅ **Ready for Frontend**: CORS enabled, all CRUD operations available
 
-**The Tophill Portal API is production-ready for local development!** 🎉
+**The EduManage API is production-ready for local development!** 🎉

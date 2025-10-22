@@ -1,5 +1,5 @@
 /**
- * Tophill Portal Dropdown Utilities
+ * EduManage Dropdown Utilities
  * Centralized dropdown management for consistent class, session, term, and subject options
  */
 

@@ -6,7 +6,7 @@ const dbConfig = {
   host: process.env.DB_HOST || 'localhost',
   user: process.env.DB_USER || 'root',
   password: process.env.DB_PASSWORD || '',
-  database: process.env.DB_NAME || 'Tophill Portal'
+  database: process.env.DB_NAME || 'edumanage'
 };
 
 async function seedDatabase() {
@@ -44,11 +44,11 @@ async function seedDatabase() {
     console.log('1. Inserting users...');
     const userInserts = [
       // Admin
-      ['admin', 'admin@Tophill Portal.com', 'Admin User', 'admin', hashedPassword, 'active'],
+      ['admin', 'admin@edumanage.com', 'Admin User', 'admin', hashedPassword, 'active'],
       // Teachers
-      ['john.doe', 'john.doe@Tophill Portal.com', 'John Doe', 'teacher', hashedPassword, 'active'],
-      ['jane.smith', 'jane.smith@Tophill Portal.com', 'Jane Smith', 'teacher', hashedPassword, 'active'],
-      ['mike.wilson', 'mike.wilson@Tophill Portal.com', 'Mike Wilson', 'teacher', hashedPassword, 'active'],
+      ['john.doe', 'john.doe@edumanage.com', 'John Doe', 'teacher', hashedPassword, 'active'],
+      ['jane.smith', 'jane.smith@edumanage.com', 'Jane Smith', 'teacher', hashedPassword, 'active'],
+      ['mike.wilson', 'mike.wilson@edumanage.com', 'Mike Wilson', 'teacher', hashedPassword, 'active'],
       // Students
       ['alice.j', 'alice.johnson@student.edu', 'Alice Johnson', 'student', hashedPassword, 'active'],
       ['bob.b', 'bob.brown@student.edu', 'Bob Brown', 'student', hashedPassword, 'active'],
@@ -86,9 +86,9 @@ async function seedDatabase() {
     // 3. Insert Teachers
     console.log('3. Inserting teachers...');
     const teacherInserts = [
-      ['TCH001', 'John Doe', 'john.doe@Tophill Portal.com', '["MATH101", "CS101"]', '["Grade 10", "Grade 11"]', '+1234567890', 'MSc Mathematics', '5 years', '2020-01-15', 'active'],
-      ['TCH002', 'Jane Smith', 'jane.smith@Tophill Portal.com', '["ENG101", "HIST101"]', '["Grade 9", "Grade 10"]', '+1234567891', 'MA English Literature', '8 years', '2017-08-20', 'active'],
-      ['TCH003', 'Mike Wilson', 'mike.wilson@Tophill Portal.com', '["SCI101"]', '["Grade 9", "Grade 10", "Grade 11"]', '+1234567892', 'PhD Physics', '12 years', '2013-09-01', 'active']
+      ['TCH001', 'John Doe', 'john.doe@edumanage.com', '["MATH101", "CS101"]', '["Grade 10", "Grade 11"]', '+1234567890', 'MSc Mathematics', '5 years', '2020-01-15', 'active'],
+      ['TCH002', 'Jane Smith', 'jane.smith@edumanage.com', '["ENG101", "HIST101"]', '["Grade 9", "Grade 10"]', '+1234567891', 'MA English Literature', '8 years', '2017-08-20', 'active'],
+      ['TCH003', 'Mike Wilson', 'mike.wilson@edumanage.com', '["SCI101"]', '["Grade 9", "Grade 10", "Grade 11"]', '+1234567892', 'PhD Physics', '12 years', '2013-09-01', 'active']
     ];
 
     for (const teacher of teacherInserts) {
@@ -166,7 +166,7 @@ async function seedDatabase() {
     // 7. Insert Feeds
     console.log('7. Inserting feeds...');
     const feedInserts = [
-      ['FEED001', 'Welcome to Tophill Portal', 'Welcome to the new school year! We are excited to have you here.', 'ADM001', 'announcement', 'high', 'all', null, '2023-09-01', null, 1, '{}'],
+      ['FEED001', 'Welcome to EduManage', 'Welcome to the new school year! We are excited to have you here.', 'ADM001', 'announcement', 'high', 'all', null, '2023-09-01', null, 1, '{}'],
       ['FEED002', 'Math Assignment Due', 'Don\'t forget to submit your Math assignment by Friday.', 'TCH001', 'assignment', 'medium', 'class', '["Grade 10A"]', '2023-09-10', '2023-09-15', 0, '{"subject": "MATH101"}'],
       ['FEED003', 'Sports Day Event', 'Join us for Sports Day on October 15th!', 'ADM001', 'event', 'medium', 'all', null, '2023-10-01', '2023-10-15', 1, '{"location": "Main Field"}']
     ];
@@ -199,8 +199,8 @@ async function seedDatabase() {
     console.log('✅ Database seeded successfully!');
     console.log('=================================\n');
     console.log('Test Credentials:');
-    console.log('  Admin:   admin@Tophill Portal.com / password123');
-    console.log('  Teacher: john.doe@Tophill Portal.com / password123');
+    console.log('  Admin:   admin@edumanage.com / password123');
+    console.log('  Teacher: john.doe@edumanage.com / password123');
     console.log('  Student: alice.johnson@student.edu / password123');
     console.log('\n');
 

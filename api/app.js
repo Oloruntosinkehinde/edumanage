@@ -10,7 +10,7 @@ const app = express();
 
 // Session configuration
 app.use(session({
-  secret: process.env.SESSION_SECRET || 'Tophill Portal-session-secret-2024',
+  secret: process.env.SESSION_SECRET || 'edumanage-session-secret-2024',
   resave: false,
   saveUninitialized: false,
   cookie: {

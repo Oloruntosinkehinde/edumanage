@@ -84,7 +84,7 @@ class CommunicationManager {
                 }
             } else {
                 // Fallback to localStorage if API client not available
-                const session = localStorage.getItem('Tophill Portal_session');
+                const session = localStorage.getItem('edumanage_session');
                 
                 if (session) {
                     const sessionData = JSON.parse(session);
@@ -264,7 +264,7 @@ class CommunicationManager {
             {
                 id: 'feed_1',
                 type: 'announcement',
-                title: 'Welcome to Tophill Portal Communication Center',
+                title: 'Welcome to EduManage Communication Center',
                 content: 'Stay updated with all school announcements and important information.',
                 author: 'Admin',
                 timestamp: new Date(now - 3600000), // 1 hour ago

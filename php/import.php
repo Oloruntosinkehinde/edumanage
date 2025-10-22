@@ -1,6 +1,6 @@
 <?php
 /**
- * CSV Import Endpoint for Tophill Portal
+ * CSV Import Endpoint for EduManage
  */
 
 header('Access-Control-Allow-Origin: *');

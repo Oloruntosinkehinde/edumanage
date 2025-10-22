@@ -5,7 +5,7 @@ const mysql = require('mysql2/promise');
     host: 'localhost',
     user: 'root',
     password: '',
-    database: 'Tophill Portal'
+    database: 'edumanage'
   });
   
   console.log('Payments:');

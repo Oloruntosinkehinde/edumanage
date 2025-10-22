@@ -1,6 +1,6 @@
 <?php
 /**
- * Student Model - Tophill Portal PHP Backend
+ * Student Model - EduManage PHP Backend
  */
 
 class Student

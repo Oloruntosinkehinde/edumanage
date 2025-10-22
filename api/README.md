@@ -1,6 +1,6 @@
-# Tophill Portal API
+# EduManage API
 
-This is the REST API backend for the Tophill Portal application. It provides endpoints for managing students, teachers, subjects, results, and payments.
+This is the REST API backend for the EduManage application. It provides endpoints for managing students, teachers, subjects, results, and payments.
 
 ## Getting Started
 
@@ -31,7 +31,7 @@ npm run dev
 
 ## Database Setup
 
-1. Create a database named `Tophill Portal` in your MySQL server
+1. Create a database named `edumanage` in your MySQL server
 2. Import the database schema from `../php/schema/mysql-schema.sql`
 
 ## Available Scripts

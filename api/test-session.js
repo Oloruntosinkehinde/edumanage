@@ -60,7 +60,7 @@ function makeRequest(method, path, body = null) {
 }
 
 async function testAPI() {
-  console.log('🔍 Testing Tophill Portal API with Session Auth...\n');
+  console.log('🔍 Testing EduManage API with Session Auth...\n');
 
   try {
     // Test 1: Health Check
@@ -71,7 +71,7 @@ async function testAPI() {
     // Test 2: Login
     console.log('\n2. Login as Admin');
     const login = await makeRequest('POST', '/auth/login', {
-      email: 'admin@Tophill Portal.com',
+      email: 'admin@edumanage.com',
       password: 'password123'
     });
     console.log(`   Status: ${login.status}`);

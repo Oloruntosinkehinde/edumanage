@@ -1,6 +1,6 @@
 <?php
 /**
- * Result Model - Tophill Portal PHP Backend
+ * Result Model - EduManage PHP Backend
  */
 
 class Result
